@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PersoSim Editor
-Bundle-SymbolicName: de.persosim.editor.ui;singleton:=true
+Bundle-SymbolicName: de.persosim.editor.ui.test;singleton:=true
 Bundle-Version: 0.10.3.qualifier
 Bundle-Vendor: secunet Security Networks AG
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -20,5 +20,7 @@ Require-Bundle: org.globaltester.cryptoprovider,
  org.eclipse.e4.core.di.annotations,
  org.eclipse.swt,
  de.persosim.simulator,
- org.eclipse.jface
-Export-Package: de.persosim.editor.ui.editor
+ org.eclipse.jface,
+ org.globaltester.cryptoprovider.bc,
+ com.secunet.persosim.simulator.protocols.pace,
+ de.persosim.editor.ui
