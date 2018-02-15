@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: PersoSim Editor
+Bundle-SymbolicName: de.persosim.simulator;singleton:=true
+Bundle-Version: 0.10.3.qualifier
+Bundle-Vendor: secunet Security Networks AG
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: .
+Import-Package: org.osgi.framework,
+ org.osgi.service.log;version="1.3.0",
+ org.osgi.util.tracker
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.globaltester.cryptoprovider,
+ org.eclipse.equinox.registry,
+ org.globaltester.simulator,
+ org.globaltester.logging,
+ org.globaltester.lib.xstream,
+ org.globaltester.base,
+ org.eclipse.e4.ui.di,
+ org.eclipse.e4.core.di.annotations,
+ org.eclipse.swt
