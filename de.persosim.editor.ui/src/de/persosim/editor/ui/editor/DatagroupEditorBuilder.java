@@ -16,7 +16,9 @@ import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
+import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
+import de.persosim.simulator.cardobjects.MasterFileIdentifier;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.cardobjects.TypeIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
@@ -27,7 +29,7 @@ import de.persosim.simulator.tlv.TlvDataObjectFactory;
 
 public class DatagroupEditorBuilder{
 
-	public static void build(Composite parent, Personalization perso, DedicatedFileIdentifier dedicatedFileIdentifier) {
+	public static void build(Composite parent, Personalization perso, CardObjectIdentifier masterFileIdentifier) {
 		
 		parent.setLayout(new FillLayout());
 		
@@ -46,61 +48,35 @@ public class DatagroupEditorBuilder{
 		
 		MasterFile mf = PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class).getObjectTree();
 		
-		Collection<CardObject> currentDfCandidates = mf.findChildren(dedicatedFileIdentifier);
+		Collection<CardObject> currentDfCandidates = mf.findChildren(masterFileIdentifier);
 		
 		//FIXME check for size, type etc.
 		if (currentDfCandidates.isEmpty()) {
 			return;
 		}
 		DedicatedFile df = (DedicatedFile) currentDfCandidates.iterator().next();
+
 		
-		
-		for (CardObject elementaryFile : df.findChildren(new TypeIdentifier(ElementaryFile.class))) {
-			try {
-				ElementaryFile ef = (ElementaryFile)elementaryFile;
-				byte [] content = ef.getContent();
-				
-				Label lblDgName = new Label(overview, SWT.NONE);
-				GridData lblDgNameGridData = new GridData();
-				lblDgNameGridData.verticalAlignment = SWT.TOP;
-				lblDgName.setLayoutData(lblDgNameGridData);
-				
-				ShortFileIdentifier sfi = null;
-				
-				for (CardObjectIdentifier identifierCandidate : ef.getAllIdentifiers()) {
-					if (identifierCandidate instanceof ShortFileIdentifier) {
-						sfi = (ShortFileIdentifier) identifierCandidate;
-					}
+		NewEditorCallback callback = new NewEditorCallback() {
+			
+			@Override
+			public Composite getParent() {
+				for (Control current : editor.getChildren()) {
+					current.dispose();
 				}
 				
-				lblDgName.setText("DG " + sfi.getShortFileIdentifier());
-				
-				Composite contentComposite = new Composite(overview, SWT.NONE);
-				GridData contentCompositeGridData = new GridData();
-				contentCompositeGridData.grabExcessHorizontalSpace = true;
-				contentCompositeGridData.grabExcessVerticalSpace = true;
-				contentCompositeGridData.minimumHeight = 40;
-				contentComposite.setLayoutData(contentCompositeGridData);
-				
-				NewEditorCallback callback = new NewEditorCallback() {
-					
-					@Override
-					public Composite getParent() {
-						for (Control current : editor.getChildren()) {
-							current.dispose();
-						}
-						
-						return new Composite(editor, SWT.NONE);
-					}
-				};
-				
-				new TlvEditor(contentComposite, TlvDataObjectFactory.createTLVDataObject(content), callback);
-				
-			} catch (AccessDeniedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return new Composite(editor, SWT.NONE);
 			}
-		}
+
+			@Override
+			public void done() {
+				editor.requestLayout();
+				editor.redraw();
+			}
+		};
+		
+		new DfEditor(overview, df, callback);
+		
 		
 		parent.pack();
 		parent.requestLayout();

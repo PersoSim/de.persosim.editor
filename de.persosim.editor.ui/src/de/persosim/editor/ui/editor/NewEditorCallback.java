@@ -4,4 +4,6 @@ import org.eclipse.swt.widgets.Composite;
 
 public interface NewEditorCallback {
 	public Composite getParent();
+
+	public void done();
 }

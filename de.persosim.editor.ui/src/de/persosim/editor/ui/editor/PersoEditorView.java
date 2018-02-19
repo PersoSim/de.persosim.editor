@@ -28,6 +28,7 @@ import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
+import de.persosim.simulator.cardobjects.MasterFileIdentifier;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
@@ -59,7 +60,7 @@ public class PersoEditorView {
 		TabItem tbtmmf = new TabItem(tabFolder, SWT.NONE);
 		tbtmmf.setText("Masterfile");
 		Composite editor = new Composite(tabFolder, SWT.NONE);
-		DatagroupEditorBuilder.build(editor, perso, new DedicatedFileIdentifier(HexString.toByteArray(DefaultPersonalization.AID_MF)));
+		DatagroupEditorBuilder.build(editor, perso, new MasterFileIdentifier());
 		tbtmmf.setControl(editor);
 
 		tbtmmf = new TabItem(tabFolder, SWT.NONE);
