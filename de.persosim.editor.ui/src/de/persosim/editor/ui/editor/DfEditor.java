@@ -33,12 +33,16 @@ import de.persosim.simulator.utils.HexString;
 public class DfEditor {
 
 	private Tree dfTree;
+	private boolean compress = true;
 
-	public DfEditor(Composite viewer, DedicatedFile df, NewEditorCallback editor) {
+	public DfEditor(Composite viewer, DedicatedFile df, NewEditorCallback editor, boolean compress) {
+		this.compress = compress;
+		
 		viewer.setLayout(new FillLayout());
 
-		dfTree = new Tree(viewer, SWT.NONE);
 		
+		dfTree = new Tree(viewer, SWT.NONE);
+
 		dfTree.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -46,7 +50,7 @@ public class DfEditor {
 				if (!(e.item instanceof TreeItem)) {
 					return;
 				}
-				
+
 				Composite localEditor = editor.getParent();
 				localEditor.setLayout(new GridLayout(1, false));
 				showEditor((TreeItem) e.item, localEditor);
@@ -64,7 +68,7 @@ public class DfEditor {
 				Label typeLabel = new Label(localEditor, SWT.NONE);
 				Text text = new Text(localEditor, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 				GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
-				//layoutData.heightHint = 100;
+				// layoutData.heightHint = 100;
 				text.setLayoutData(layoutData);
 				if (tlv.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)
 						|| tlv.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING)
@@ -95,11 +99,12 @@ public class DfEditor {
 					text.setText(HexString.encode(tlv.getValueField()));
 					text.addModifyListener(new ModifyListener() {
 						Color defaultColor = text.getBackground();
+
 						@Override
 						public void modifyText(ModifyEvent e) {
 							try {
-							tlv.setValue(HexString.toByteArray(text.getText()));
-							text.setBackground(defaultColor);
+								tlv.setValue(HexString.toByteArray(text.getText()));
+								text.setBackground(defaultColor);
 							} catch (Exception ex) {
 								text.getBackground();
 								text.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
@@ -121,18 +126,15 @@ public class DfEditor {
 			}
 		});
 
-
 		for (CardObject elementaryFile : df.findChildren(new TypeIdentifier(ElementaryFile.class))) {
 			try {
-				ElementaryFile ef = (ElementaryFile)elementaryFile;
-				byte [] content = ef.getContent();
-				
-				
-				
+				ElementaryFile ef = (ElementaryFile) elementaryFile;
+				byte[] content = ef.getContent();
+
 				TreeItem newItem = new TreeItem(dfTree, SWT.NONE);
 				newItem.setData(ef);
 				addObject(newItem, TlvDataObjectFactory.createTLVDataObject(content));
-				
+
 			} catch (AccessDeniedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -142,31 +144,42 @@ public class DfEditor {
 	}
 
 	private void addObject(TreeItem parent, TlvDataObject tlvObject) {
-		TreeItem item = createItem(parent);
-		item.setData(tlvObject);
-		handleItem(tlvObject, item);
-
-	}
-
-	private void handleItem(TlvDataObject tlvObject, TreeItem item) {
 		if (tlvObject.getTlvValue() instanceof TlvDataObjectContainer) {
-			for (TlvDataObject current : ((TlvDataObjectContainer) tlvObject.getTlvValue()).getTlvObjects()) {
+			TreeItem item = parent;
+			if (!compress) {
+				item = createItem(parent);
+				item.setData(tlvObject);
+				setItemText(item);
+				dfTree.showItem(item);
+			}
+			for (TlvDataObject current : ((TlvDataObjectContainer) tlvObject.getTlvValue())) {
 				addObject(item, current);
 			}
 		} else {
+			TreeItem item = createItem(parent);
+			item.setData(tlvObject);
 			setItemText(item);
+			dfTree.showItem(item);
 		}
-		dfTree.showItem(item);
+
 	}
 
 	private void setItemText(TreeItem item) {
 		if (item.getData() instanceof CardObject) {
-			item.setText("CardObject " + ((CardObject)item.getData()).getAllIdentifiers().iterator().next().toString());
+			item.setText(
+					"CardObject " + ((CardObject) item.getData()).getAllIdentifiers().iterator().next().toString());
 		} else if (item.getData() instanceof TlvDataObject) {
-			
+
 			TlvDataObject tlvObject = (TlvDataObject) item.getData();
-			String itemText = HexString.encode((tlvObject).getTlvTag().toByteArray()) + " "
-					+ HexString.encode(tlvObject.getTlvLength().toByteArray()) + " ";
+			
+			String itemText = "";
+			
+			if (!compress) {
+				itemText = HexString.encode((tlvObject).getTlvTag().toByteArray()) + " "
+						+ HexString.encode(tlvObject.getTlvLength().toByteArray()) + " ";
+
+			}
+			
 			
 			if (tlvObject instanceof PrimitiveTlvDataObject) {
 				if (tlvObject.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)
@@ -181,14 +194,13 @@ public class DfEditor {
 			} else {
 				item.setText(itemText);
 			}
-			
+
 		}
 
 		if (item.getParentItem() != null) {
 			setItemText(item.getParentItem());
 		}
-		
-		
+
 	}
 
 	private TreeItem createItem(TreeItem parent) {

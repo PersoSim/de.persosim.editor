@@ -5,31 +5,21 @@ import java.util.Collection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.DedicatedFile;
-import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
-import de.persosim.simulator.cardobjects.ElementaryFile;
-import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
-import de.persosim.simulator.cardobjects.MasterFileIdentifier;
-import de.persosim.simulator.cardobjects.ShortFileIdentifier;
-import de.persosim.simulator.cardobjects.TypeIdentifier;
-import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.platform.CommandProcessor;
 import de.persosim.simulator.platform.PersonalizationHelper;
-import de.persosim.simulator.tlv.TlvDataObjectFactory;
 
 public class DatagroupEditorBuilder{
 
-	public static void build(Composite parent, Personalization perso, CardObjectIdentifier masterFileIdentifier) {
+	public static void build(Composite parent, Personalization perso, CardObjectIdentifier fileIdentifier) {
 		
 		parent.setLayout(new FillLayout());
 		
@@ -47,14 +37,18 @@ public class DatagroupEditorBuilder{
 		editor.setLayout(new FillLayout());
 		
 		MasterFile mf = PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class).getObjectTree();
+		DedicatedFile df = mf;
 		
-		Collection<CardObject> currentDfCandidates = mf.findChildren(masterFileIdentifier);
-		
-		//FIXME check for size, type etc.
-		if (currentDfCandidates.isEmpty()) {
-			return;
+		if (fileIdentifier != null) {
+			Collection<CardObject> currentDfCandidates = mf.findChildren(fileIdentifier);
+			
+			//FIXME check for size, type etc.
+			if (currentDfCandidates.isEmpty()) {
+				return;
+			}
+			df = (DedicatedFile) currentDfCandidates.iterator().next();
 		}
-		DedicatedFile df = (DedicatedFile) currentDfCandidates.iterator().next();
+		
 
 		
 		NewEditorCallback callback = new NewEditorCallback() {
@@ -75,7 +69,7 @@ public class DatagroupEditorBuilder{
 			}
 		};
 		
-		new DfEditor(overview, df, callback);
+		new DfEditor(overview, df, callback, false);
 		
 		
 		parent.pack();

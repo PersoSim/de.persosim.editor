@@ -60,7 +60,7 @@ public class PersoEditorView {
 		TabItem tbtmmf = new TabItem(tabFolder, SWT.NONE);
 		tbtmmf.setText("Masterfile");
 		Composite editor = new Composite(tabFolder, SWT.NONE);
-		DatagroupEditorBuilder.build(editor, perso, new MasterFileIdentifier());
+		DatagroupEditorBuilder.build(editor, perso, null);
 		tbtmmf.setControl(editor);
 
 		tbtmmf = new TabItem(tabFolder, SWT.NONE);
