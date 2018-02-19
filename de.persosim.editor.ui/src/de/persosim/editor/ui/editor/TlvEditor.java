@@ -3,12 +3,20 @@ package de.persosim.editor.ui.editor;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 
+import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectContainer;
@@ -16,50 +24,144 @@ import de.persosim.simulator.utils.HexString;
 
 public class TlvEditor {
 
-	public TlvEditor(Composite parent, TlvDataObject tlvObject) {
-		parent.setLayout(new GridLayout(3, false));
+	private Tree tlvTree;
 
-		addObject(parent, tlvObject);
+	public TlvEditor(Composite viewer, TlvDataObject tlvObject, NewEditorCallback editor) {
+		viewer.setLayout(new FillLayout());
+
+		tlvTree = new Tree(viewer, SWT.NONE);
+		
+		tlvTree.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (!(e.item instanceof TreeItem)) {
+					return;
+				}
+				
+				Composite localEditor = editor.getParent();
+				localEditor.setLayout(new GridLayout(1, false));
+				showEditor((TreeItem) e.item, localEditor);
+			}
+
+			private void showEditor(TreeItem item, Composite localEditor) {
+				if (!(item.getData() instanceof PrimitiveTlvDataObject)) {
+					new Label(localEditor, SWT.NONE).setText("Not editable");
+					return;
+				}
+				PrimitiveTlvDataObject tlv = (PrimitiveTlvDataObject) item.getData();
+				Text text = new Text(localEditor, SWT.NONE);
+				if (tlv.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)
+						|| tlv.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING)
+						|| tlv.getTlvTag().equals(TlvConstants.TAG_NUMERIC_STRING)) {
+
+					text.setText(new String(tlv.getValueField(), StandardCharsets.US_ASCII));
+					text.addModifyListener(new ModifyListener() {
+
+						@Override
+						public void modifyText(ModifyEvent e) {
+							tlv.setValue(text.getText().getBytes(StandardCharsets.US_ASCII));
+							setItemText(item);
+						}
+					});
+				} else if (tlv.getTlvTag().equals(TlvConstants.TAG_UTF8_STRING)) {
+					text.setText(new String(tlv.getValueField(), StandardCharsets.UTF_8));
+					text.addModifyListener(new ModifyListener() {
+
+						@Override
+						public void modifyText(ModifyEvent e) {
+							tlv.setValue(text.getText().getBytes(StandardCharsets.UTF_8));
+							setItemText(item);
+						}
+					});
+				} else {
+					text.setText(HexString.encode(tlv.getValueField()));
+					text.addModifyListener(new ModifyListener() {
+
+						@Override
+						public void modifyText(ModifyEvent e) {
+							tlv.setValue(HexString.toByteArray(text.getText()));
+							setItemText(item);
+						}
+					});
+				}
+
+				text.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
+				text.setEditable(true);
+
+				localEditor.pack();
+				localEditor.requestLayout();
+				localEditor.redraw();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		addObject(tlvTree, tlvObject);
+		tlvTree.pack();
 	}
 
-	private void addObject(Composite parent, TlvDataObject tlvObject) {
+	private void addObject(Tree tlvTree, TlvDataObject tlvObject) {
+		TreeItem item = createItem(tlvTree);
+		item.setData(tlvObject);
+		handleItem(tlvObject, item);
+	}
 
-		Composite currentComposite = new Composite(parent, SWT.NONE);
-		currentComposite.setLayout(new GridLayout(3, false));
+	private void addObject(TreeItem parent, TlvDataObject tlvObject) {
+		TreeItem item = createItem(parent);
+		item.setData(tlvObject);
+		handleItem(tlvObject, item);
 
-		Label lblTag = new Label(currentComposite, SWT.NONE);
-		lblTag.setText("Tag: " + HexString.encode(tlvObject.getTlvTag().toByteArray()));
+	}
 
-		Label lblLength = new Label(currentComposite, SWT.NONE);
-		lblLength.setText("Length: " + HexString.encode(tlvObject.getTlvLength().toByteArray()));
-
+	private void handleItem(TlvDataObject tlvObject, TreeItem item) {
 		if (tlvObject.getTlvValue() instanceof TlvDataObjectContainer) {
-			//dummy composite for positioning
-			new Composite(currentComposite, SWT.NONE);
-			
-			Composite subElements = new Composite(currentComposite, SWT.NONE);
-			subElements.setLayout(new GridLayout(1, false));
-			GridData subElementsLayoutData = new GridData();
-			subElementsLayoutData.grabExcessHorizontalSpace = true;
-			subElementsLayoutData.horizontalSpan = 2;
-			subElements.setLayoutData(subElementsLayoutData);
-
 			for (TlvDataObject current : ((TlvDataObjectContainer) tlvObject.getTlvValue()).getTlvObjects()) {
-				addObject(subElements, current);
+				addObject(item, current);
 			}
 		} else {
-			Text txtValue = new Text(parent, SWT.NONE);
-			if (tlvObject.getTlvTag().equals(TlvConstants.TAG_IA5_STRING) || tlvObject.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING) || tlvObject.getTlvTag().equals(TlvConstants.TAG_NUMERIC_STRING)) {
-				txtValue.setText(new String(tlvObject.getValueField(), StandardCharsets.US_ASCII));
-			} else if (tlvObject.getTlvTag().equals(TlvConstants.TAG_UTF8_STRING)) {
-				txtValue.setText(new String(tlvObject.getValueField(), StandardCharsets.UTF_8));
-			} else {
-				txtValue.setText(HexString.encode(tlvObject.getValueField()));
-			}
+			setItemText(item);
+		}
+		tlvTree.showItem(item);
+	}
 
-			GridData txtValueGridData = new GridData();
-			txtValueGridData.grabExcessHorizontalSpace = true;
+	private void setItemText(TreeItem item) {
+		TlvDataObject tlvObject = (TlvDataObject) item.getData();
+		String itemText = HexString.encode((tlvObject).getTlvTag().toByteArray()) + " "
+				+ HexString.encode(tlvObject.getTlvLength().toByteArray()) + " ";
+		
+		if (tlvObject instanceof PrimitiveTlvDataObject) {
+			if (tlvObject.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)
+					|| tlvObject.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING)
+					|| tlvObject.getTlvTag().equals(TlvConstants.TAG_NUMERIC_STRING)) {
+				item.setText(itemText + new String(tlvObject.getValueField(), StandardCharsets.US_ASCII));
+			} else if (tlvObject.getTlvTag().equals(TlvConstants.TAG_UTF8_STRING)) {
+				item.setText(itemText + new String(tlvObject.getValueField(), StandardCharsets.UTF_8));
+			} else {
+				item.setText(itemText + HexString.encode(tlvObject.getValueField()));
+			}
+		} else {
+			item.setText(itemText);
 		}
 
+		if (item.getParentItem() != null) {
+			setItemText(item.getParentItem());
+		}
+		
+		
+	}
+
+	private TreeItem createItem(TreeItem parent) {
+		TreeItem treeItem = new TreeItem(parent, SWT.NONE);
+		return treeItem;
+	}
+
+	private TreeItem createItem(Tree tlvTree) {
+		TreeItem treeItem = new TreeItem(tlvTree, SWT.NONE);
+		return treeItem;
 	}
 }

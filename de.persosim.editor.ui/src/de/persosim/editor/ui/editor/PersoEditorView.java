@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.globaltester.logging.BasicLogger;
@@ -36,10 +36,6 @@ import de.persosim.simulator.utils.HexString;
 public class PersoEditorView {
 	public static final String ID = "de.persosim.editor.e4.ui.plugin.partdescriptor.persoeditor";
 	private TabFolder tabFolder;
-
-	public PersoEditorView(Shell shell) {
-		createPartControl(shell);
-	}
 
 	public void updateContent(Path personalizationFile) {
 		if (!Files.exists(personalizationFile)) {
@@ -62,18 +58,21 @@ public class PersoEditorView {
 	private void updateUi(Personalization perso) {
 		TabItem tbtmmf = new TabItem(tabFolder, SWT.NONE);
 		tbtmmf.setText("Masterfile");
-		tbtmmf.setControl(new DatagroupEditor(tabFolder, perso, new DedicatedFileIdentifier(HexString
-				.toByteArray(DefaultPersonalization.AID_MF))));
+		Composite editor = new Composite(tabFolder, SWT.NONE);
+		DatagroupEditorBuilder.build(editor, perso, new DedicatedFileIdentifier(HexString.toByteArray(DefaultPersonalization.AID_MF)));
+		tbtmmf.setControl(editor);
 
 		tbtmmf = new TabItem(tabFolder, SWT.NONE);
 		tbtmmf.setText("ePassport");
-		tbtmmf.setControl(new DatagroupEditor(tabFolder, perso, new DedicatedFileIdentifier(HexString
-				.toByteArray(DefaultPersonalization.AID_EPA))));
+		editor = new Composite(tabFolder, SWT.NONE);
+		DatagroupEditorBuilder.build(editor, perso, new DedicatedFileIdentifier(HexString.toByteArray(DefaultPersonalization.AID_EPA)));
+		tbtmmf.setControl(editor);
 
 		tbtmmf = new TabItem(tabFolder, SWT.NONE);
 		tbtmmf.setText("eID");
-		tbtmmf.setControl(new DatagroupEditor(tabFolder, perso, new DedicatedFileIdentifier(HexString
-				.toByteArray(DefaultPersonalization.AID_EID))));
+		editor = new Composite(tabFolder, SWT.NONE);
+		DatagroupEditorBuilder.build(editor, perso, new DedicatedFileIdentifier(HexString.toByteArray(DefaultPersonalization.AID_EID)));
+		tbtmmf.setControl(editor);
 	}
 
 	@PostConstruct

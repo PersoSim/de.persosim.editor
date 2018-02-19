@@ -3,9 +3,12 @@ package de.persosim.editor.ui.editor;
 import java.util.Collection;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import de.persosim.simulator.cardobjects.CardObject;
@@ -22,11 +25,24 @@ import de.persosim.simulator.platform.CommandProcessor;
 import de.persosim.simulator.platform.PersonalizationHelper;
 import de.persosim.simulator.tlv.TlvDataObjectFactory;
 
-public class DatagroupEditor extends Composite{
+public class DatagroupEditorBuilder{
 
-	public DatagroupEditor(Composite parent, Personalization perso, DedicatedFileIdentifier dedicatedFileIdentifier) {
-		super(parent, SWT.NONE);		
-		setLayout(new GridLayout(2, false));
+	public static void build(Composite parent, Personalization perso, DedicatedFileIdentifier dedicatedFileIdentifier) {
+		
+		parent.setLayout(new FillLayout());
+		
+		
+		SashForm sashForm = new SashForm(parent, SWT.HORIZONTAL);
+		
+		sashForm.setLayout(new FillLayout());
+
+		Composite overview = new Composite(sashForm, SWT.NONE);
+		
+		overview.setLayout(new GridLayout(2, false));
+		
+		Composite editor = new Composite(sashForm, SWT.NONE);
+		
+		editor.setLayout(new FillLayout());
 		
 		MasterFile mf = PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class).getObjectTree();
 		
@@ -44,7 +60,7 @@ public class DatagroupEditor extends Composite{
 				ElementaryFile ef = (ElementaryFile)elementaryFile;
 				byte [] content = ef.getContent();
 				
-				Label lblDgName = new Label(this, SWT.NONE);
+				Label lblDgName = new Label(overview, SWT.NONE);
 				GridData lblDgNameGridData = new GridData();
 				lblDgNameGridData.verticalAlignment = SWT.TOP;
 				lblDgName.setLayoutData(lblDgNameGridData);
@@ -59,17 +75,34 @@ public class DatagroupEditor extends Composite{
 				
 				lblDgName.setText("DG " + sfi.getShortFileIdentifier());
 				
-				Composite contentComposite = new Composite(this, SWT.NONE);
+				Composite contentComposite = new Composite(overview, SWT.NONE);
 				GridData contentCompositeGridData = new GridData();
 				contentCompositeGridData.grabExcessHorizontalSpace = true;
+				contentCompositeGridData.grabExcessVerticalSpace = true;
+				contentCompositeGridData.minimumHeight = 40;
 				contentComposite.setLayoutData(contentCompositeGridData);
 				
-				new TlvEditor(contentComposite, TlvDataObjectFactory.createTLVDataObject(content));
+				NewEditorCallback callback = new NewEditorCallback() {
+					
+					@Override
+					public Composite getParent() {
+						for (Control current : editor.getChildren()) {
+							current.dispose();
+						}
+						
+						return new Composite(editor, SWT.NONE);
+					}
+				};
+				
+				new TlvEditor(contentComposite, TlvDataObjectFactory.createTLVDataObject(content), callback);
 				
 			} catch (AccessDeniedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		
+		parent.pack();
+		parent.requestLayout();
 	}
 }

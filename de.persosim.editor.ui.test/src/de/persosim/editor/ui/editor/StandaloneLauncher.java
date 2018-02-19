@@ -2,7 +2,6 @@ package de.persosim.editor.ui.editor;
 
 import java.nio.file.Paths;
 
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.globaltester.cryptoprovider.Crypto;
@@ -13,8 +12,8 @@ public class StandaloneLauncher {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
-		PersoEditorView editor = new PersoEditorView(shell);
+		PersoEditorView editor = new PersoEditorView();
+		editor.createPartControl(shell);
 
 
 		Crypto.setCryptoProvider(new ProviderBc().getCryptoProviderObject());
