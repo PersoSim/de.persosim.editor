@@ -20,5 +20,6 @@ Require-Bundle: org.globaltester.cryptoprovider,
  org.eclipse.e4.core.di.annotations,
  org.eclipse.swt,
  de.persosim.simulator,
- org.eclipse.jface
+ org.eclipse.jface,
+ org.globaltester.cryptoprovider.bc
 Export-Package: de.persosim.editor.ui.editor

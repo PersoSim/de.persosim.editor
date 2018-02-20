@@ -32,6 +32,7 @@ import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.editor.ui.editor.handlers.ConstructedTlvHandler;
+import de.persosim.editor.ui.editor.handlers.DatagroupDumpHandler;
 import de.persosim.editor.ui.editor.handlers.DatagroupHandler;
 import de.persosim.editor.ui.editor.handlers.DefaultHandlerProvider;
 import de.persosim.editor.ui.editor.handlers.ObjectHandler;
@@ -69,10 +70,8 @@ public class PersoEditorView {
 		tbtmmf.setText("Masterfile");
 		Composite editor = new Composite(tabFolder, SWT.NONE);
 		
-		
-
 		List<ObjectHandler> objectHandlers = new LinkedList<>();
-		objectHandlers.add(new DatagroupHandler(Collections.emptyMap()));
+		objectHandlers.add(new DatagroupDumpHandler(Collections.emptyMap()));
 		objectHandlers.add(new ConstructedTlvHandler(false));
 		objectHandlers.add(new PrimitiveTlvHandler(false));
 		
@@ -132,16 +131,16 @@ public class PersoEditorView {
 		Group grpControl = new Group(parent, SWT.NONE);
 		grpControl.setLayout(new RowLayout(SWT.HORIZONTAL));
 		grpControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-		grpControl.setText("Signature Options");
-
-		Button btnResignEfCardSecurity = new Button(grpControl, SWT.CHECK);
-		btnResignEfCardSecurity.setText("Resign EF.CardSecurity");
-
-		Button btnResignEfchipsecurity = new Button(grpControl, SWT.CHECK);
-		btnResignEfchipsecurity.setText("Resign EF.ChipSecurity");
-
-		Button btnUpdateEfsod = new Button(grpControl, SWT.CHECK);
-		btnUpdateEfsod.setText("Update EF.SOD");
+		grpControl.setText("Actions");
+		
+		Button btnOpen = new Button(grpControl, SWT.NONE);
+		btnOpen.setText("Open");
+		
+		Button btnSave = new Button(grpControl, SWT.NONE);
+		btnSave.setText("Save");
+		
+		Button btnSignatureSettings = new Button(grpControl, SWT.NONE);
+		btnSignatureSettings.setText("Signature Settings");
 	}
 
 	@Focus

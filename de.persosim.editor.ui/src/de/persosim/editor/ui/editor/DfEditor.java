@@ -44,7 +44,7 @@ public class DfEditor {
 			}
 
 			private void showEditor(TreeItem item, Composite localEditor) {
-				ObjectHandler objectHandler = provider.get(item.getData());
+				ObjectHandler objectHandler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
 
 				if (objectHandler != null) {
 					objectHandler.createEditor(localEditor, item);

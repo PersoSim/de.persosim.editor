@@ -2,6 +2,7 @@ package de.persosim.editor.ui.editor.handlers;
 
 import java.util.Map;
 
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -14,15 +15,14 @@ import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
-import de.persosim.simulator.tlv.TlvDataObject;
-import de.persosim.simulator.tlv.TlvDataObjectFactory;
+import de.persosim.simulator.utils.HexString;
 
-public class DatagroupHandler extends AbstractObjectHandler {
+public class DatagroupDumpHandler extends AbstractObjectHandler {
 
 	
 	private Map<Integer, String> dgMapping;
 
-	public DatagroupHandler(Map<Integer, String> dgMapping) {
+	public DatagroupDumpHandler(Map<Integer, String> dgMapping) {
 		this.dgMapping = dgMapping;
 	}
 
@@ -54,26 +54,25 @@ public class DatagroupHandler extends AbstractObjectHandler {
 		item.setData(ef);
 		setText(item);
 		item.setData(HANDLER, this);
-		try {
-			TlvDataObject tlvObject = TlvDataObjectFactory.createTLVDataObject(ef.getContent());
-			ObjectHandler handler = provider.get(tlvObject);
-			if (handler != null) {
-				handler.createItem(item, tlvObject, provider);
-			}
-		} catch (AccessDeniedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	@Override
 	public void createEditor(Composite parent, TreeItem item) {
 		if (item.getData() instanceof ElementaryFile) {
+			ElementaryFile ef = (ElementaryFile) item.getData();
 			Label typeLabel = new Label(parent, SWT.NONE);
-			Text text = new Text(parent, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+			Text text = new Text(parent, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+			text.setFont(JFaceResources.getTextFont());
+			
 			GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
 			text.setLayoutData(layoutData);
+			text.setEditable(false);
 			typeLabel.setText("Type: elementary file, not editable");
+			try {
+				text.setText(HexString.dump(ef.getContent()));
+			} catch (AccessDeniedException e) {
+				text.setText(e.getMessage());
+			}
 		}
 	}
 
