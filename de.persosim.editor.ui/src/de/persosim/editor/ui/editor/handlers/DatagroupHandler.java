@@ -67,7 +67,7 @@ public class DatagroupHandler extends AbstractObjectHandler {
 	}
 
 	@Override
-	public void createEditor(Composite parent, TreeItem item, HandlerProvider provider) {
+	public void createEditor(Composite parent, TreeItem item) {
 		if (item.getData() instanceof ElementaryFile) {
 			Label typeLabel = new Label(parent, SWT.NONE);
 			Text text = new Text(parent, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);

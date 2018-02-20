@@ -57,7 +57,7 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 	}
 
 	@Override
-	public void createEditor(Composite parent, TreeItem item, HandlerProvider provider) {
+	public void createEditor(Composite parent, TreeItem item) {
 		if (item.getData() instanceof PrimitiveTlvDataObject) {
 			PrimitiveTlvDataObject tlv = (PrimitiveTlvDataObject) item.getData();
 			Label typeLabel = new Label(parent, SWT.NONE);

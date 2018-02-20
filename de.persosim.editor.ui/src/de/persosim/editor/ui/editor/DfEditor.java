@@ -47,7 +47,7 @@ public class DfEditor {
 				ObjectHandler objectHandler = provider.get(item.getData());
 
 				if (objectHandler != null) {
-					objectHandler.createEditor(localEditor, item, provider);
+					objectHandler.createEditor(localEditor, item);
 					return;
 				}
 
