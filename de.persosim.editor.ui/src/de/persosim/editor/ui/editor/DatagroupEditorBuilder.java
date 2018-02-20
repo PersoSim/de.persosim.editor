@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Control;
 import de.persosim.editor.ui.editor.handlers.ConstructedTlvHandler;
 import de.persosim.editor.ui.editor.handlers.DatagroupHandler;
 import de.persosim.editor.ui.editor.handlers.DefaultHandlerProvider;
+import de.persosim.editor.ui.editor.handlers.HandlerProvider;
 import de.persosim.editor.ui.editor.handlers.ObjectHandler;
 import de.persosim.editor.ui.editor.handlers.PrimitiveTlvHandler;
 import de.persosim.simulator.cardobjects.CardObject;
@@ -26,7 +27,7 @@ import de.persosim.simulator.platform.PersonalizationHelper;
 
 public class DatagroupEditorBuilder{
 
-	public static void build(Composite parent, Personalization perso, CardObjectIdentifier fileIdentifier) {
+	public static void build(Composite parent, Personalization perso, CardObjectIdentifier fileIdentifier, HandlerProvider provider) {
 		
 		parent.setLayout(new FillLayout());
 		
@@ -76,11 +77,7 @@ public class DatagroupEditorBuilder{
 			}
 		};
 		
-		List<ObjectHandler> objectHandlers = new LinkedList<>();
-		objectHandlers.add(new DatagroupHandler());
-		objectHandlers.add(new ConstructedTlvHandler());
-		objectHandlers.add(new PrimitiveTlvHandler());
-		new DfEditor(overview, df, callback, false, new DefaultHandlerProvider(objectHandlers));
+		new DfEditor(overview, df, callback, false, provider);
 		
 		
 		parent.pack();

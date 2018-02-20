@@ -14,6 +14,12 @@ import de.persosim.simulator.utils.HexString;
 
 public class ConstructedTlvHandler extends AbstractObjectHandler {
 
+	private boolean compress;
+
+	public ConstructedTlvHandler(boolean compress) {
+		this.compress = compress;
+	}
+	
 	@Override
 	public boolean canHandle(Object object) {
 		if (object instanceof ConstructedTlvDataObject) {
@@ -25,9 +31,16 @@ public class ConstructedTlvHandler extends AbstractObjectHandler {
 	@Override
 	public void createItem(TreeItem parentItem, Object object, HandlerProvider provider) {
 		if (object instanceof ConstructedTlvDataObject) {
-			TreeItem item = new TreeItem(parentItem, SWT.NONE);
+			TreeItem item = getItem(parentItem);
 			handleItem((ConstructedTlvDataObject) object, provider, item);
 		}
+	}
+
+	private TreeItem getItem(TreeItem parentItem) {
+		if (compress) {
+			return parentItem;
+		}
+		return new TreeItem(parentItem, SWT.NONE);
 	}
 
 	@Override
@@ -39,9 +52,11 @@ public class ConstructedTlvHandler extends AbstractObjectHandler {
 	}
 
 	private void handleItem(ConstructedTlvDataObject tlv, HandlerProvider provider, TreeItem item) {
-		item.setData(tlv);
-		setText(item);
-		item.setData(HANDLER, this);
+		if (!compress) {
+			item.setData(tlv);
+			setText(item);
+			item.setData(HANDLER, this);
+		}
 		for (TlvDataObject current : tlv.getTlvDataObjectContainer().getTlvObjects()) {
 			ObjectHandler handler = provider.get(current);
 			if (handler != null) {

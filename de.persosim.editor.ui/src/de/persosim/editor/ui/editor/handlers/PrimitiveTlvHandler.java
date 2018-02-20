@@ -20,6 +20,11 @@ import de.persosim.simulator.utils.HexString;
 
 public class PrimitiveTlvHandler extends AbstractObjectHandler {
 
+	private boolean compress;
+
+	public PrimitiveTlvHandler(boolean compress) {
+		this.compress = compress;
+	}
 
 	@Override
 	public boolean canHandle(Object object) {
@@ -45,8 +50,7 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 		}
 	}
 
-	private void handleItem(PrimitiveTlvDataObject tlv, HandlerProvider provider,
-			TreeItem item) {
+	private void handleItem(PrimitiveTlvDataObject tlv, HandlerProvider provider, TreeItem item) {
 		item.setData(tlv);
 		setText(item);
 		item.setData(HANDLER, this);
@@ -113,8 +117,13 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 	public void setText(TreeItem item) {
 		if (item.getData() instanceof PrimitiveTlvDataObject) {
 			PrimitiveTlvDataObject tlv = (PrimitiveTlvDataObject) item.getData();
-			item.setText(HexString.encode(tlv.getTlvTag().toByteArray()) + " "
-					+ HexString.encode(tlv.getTlvLength().toByteArray()) + " ");
+			if (compress) {
+				item.setText("");
+			} else {
+
+				item.setText(HexString.encode(tlv.getTlvTag().toByteArray()) + " "
+						+ HexString.encode(tlv.getTlvLength().toByteArray()) + " ");
+			}
 
 			if (tlv.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)
 					|| tlv.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING)

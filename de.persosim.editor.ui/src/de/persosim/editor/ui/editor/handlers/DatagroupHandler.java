@@ -1,5 +1,7 @@
 package de.persosim.editor.ui.editor.handlers;
 
+import java.util.Map;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -8,12 +10,21 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
+import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
+import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectFactory;
 
 public class DatagroupHandler extends AbstractObjectHandler {
+
+	
+	private Map<Integer, String> dgMapping;
+
+	public DatagroupHandler(Map<Integer, String> dgMapping) {
+		this.dgMapping = dgMapping;
+	}
 
 	@Override
 	public boolean canHandle(Object object) {
@@ -70,7 +81,19 @@ public class DatagroupHandler extends AbstractObjectHandler {
 	public void setText(TreeItem item) {
 		if (item.getData() instanceof ElementaryFile) {
 			ElementaryFile ef = (ElementaryFile) item.getData();
-			item.setText("Elementary file " + ef.toString());
+			Integer sfid = null;
+			for (CardObjectIdentifier current : ef.getAllIdentifiers()) {
+				if (current instanceof ShortFileIdentifier) {
+					sfid = ((ShortFileIdentifier) current).getShortFileIdentifier();
+					break;
+				}
+			}
+
+			if (dgMapping.get(sfid) != null) {
+				item.setText("eID DG " + sfid + " " + dgMapping.get(sfid));
+			} else {
+				item.setText("Elementary file " + ef.toString());
+			}
 		}
 	}
 

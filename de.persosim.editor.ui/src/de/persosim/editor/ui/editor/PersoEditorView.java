@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -26,6 +31,11 @@ import org.eclipse.swt.widgets.TabItem;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 
+import de.persosim.editor.ui.editor.handlers.ConstructedTlvHandler;
+import de.persosim.editor.ui.editor.handlers.DatagroupHandler;
+import de.persosim.editor.ui.editor.handlers.DefaultHandlerProvider;
+import de.persosim.editor.ui.editor.handlers.ObjectHandler;
+import de.persosim.editor.ui.editor.handlers.PrimitiveTlvHandler;
 import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
@@ -58,19 +68,50 @@ public class PersoEditorView {
 		TabItem tbtmmf = new TabItem(tabFolder, SWT.NONE);
 		tbtmmf.setText("Masterfile");
 		Composite editor = new Composite(tabFolder, SWT.NONE);
-		DatagroupEditorBuilder.build(editor, perso, null);
+		
+		
+
+		List<ObjectHandler> objectHandlers = new LinkedList<>();
+		objectHandlers.add(new DatagroupHandler(Collections.emptyMap()));
+		objectHandlers.add(new ConstructedTlvHandler(false));
+		objectHandlers.add(new PrimitiveTlvHandler(false));
+		
+		DatagroupEditorBuilder.build(editor, perso, null, new DefaultHandlerProvider(objectHandlers));
 		tbtmmf.setControl(editor);
 
-		tbtmmf = new TabItem(tabFolder, SWT.NONE);
-		tbtmmf.setText("ePassport");
-		editor = new Composite(tabFolder, SWT.NONE);
-		DatagroupEditorBuilder.build(editor, perso, new DedicatedFileIdentifier(HexString.toByteArray(DefaultPersonalization.AID_EPA)));
-		tbtmmf.setControl(editor);
-
+		Map<Integer, String> dgMapping = new HashMap<>();
+		dgMapping.put((Integer) 0x01, "Document Type");
+		dgMapping.put((Integer) 0x02, "Issuing State, Region and Municipality");
+		dgMapping.put((Integer) 0x03, "Date of Expiry, Date of Issuance");
+		dgMapping.put((Integer) 0x04, "Given Names");
+		dgMapping.put((Integer) 0x05, "Family Names");
+		dgMapping.put((Integer) 0x06, "Nom de Plume");
+		dgMapping.put((Integer) 0x07, "Academic Title");
+		dgMapping.put((Integer) 0x08, "Date of Birth");
+		dgMapping.put((Integer) 0x09, "Place of Birth");
+		dgMapping.put((Integer) 0x0A, "Nationality");
+		dgMapping.put((Integer) 0x0B, "Sex");
+		dgMapping.put((Integer) 0x0C, "Optional Data");
+		dgMapping.put((Integer) 0x0D, "Birth Name");
+		dgMapping.put((Integer) 0x0E, "Written Signature");
+		dgMapping.put((Integer) 0x0F, "RFU");
+		dgMapping.put((Integer) 0x10, "RFU");
+		dgMapping.put((Integer) 0x11, "Normal Place of Residence (multiple)");
+		dgMapping.put((Integer) 0x12, "Municipality ID");
+		dgMapping.put((Integer) 0x13, "Residence Permit I");
+		dgMapping.put((Integer) 0x14, "Residence Permit II");
+		dgMapping.put((Integer) 0x15, "Phone Number");
+		dgMapping.put((Integer) 0x16, "Email Address");
+		
+		objectHandlers = new LinkedList<>();
+		objectHandlers.add(new DatagroupHandler(dgMapping));
+		objectHandlers.add(new ConstructedTlvHandler(true));
+		objectHandlers.add(new PrimitiveTlvHandler(true));
+		
 		tbtmmf = new TabItem(tabFolder, SWT.NONE);
 		tbtmmf.setText("eID");
 		editor = new Composite(tabFolder, SWT.NONE);
-		DatagroupEditorBuilder.build(editor, perso, new DedicatedFileIdentifier(HexString.toByteArray(DefaultPersonalization.AID_EID)));
+		DatagroupEditorBuilder.build(editor, perso, new DedicatedFileIdentifier(HexString.toByteArray(DefaultPersonalization.AID_EID)), new DefaultHandlerProvider(objectHandlers));
 		tbtmmf.setControl(editor);
 	}
 
