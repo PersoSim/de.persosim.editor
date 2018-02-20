@@ -1,6 +1,8 @@
 package de.persosim.editor.ui.editor;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -9,6 +11,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import de.persosim.editor.ui.editor.handlers.ConstructedTlvHandler;
+import de.persosim.editor.ui.editor.handlers.DatagroupHandler;
+import de.persosim.editor.ui.editor.handlers.PrimitiveTlvHandler;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.DedicatedFile;
@@ -69,7 +74,11 @@ public class DatagroupEditorBuilder{
 			}
 		};
 		
-		new DfEditor(overview, df, callback, false);
+		List<ObjectHandler> objectHandlers = new LinkedList<>();
+		objectHandlers.add(new DatagroupHandler());
+		objectHandlers.add(new ConstructedTlvHandler());
+		objectHandlers.add(new PrimitiveTlvHandler());
+		new DfEditor(overview, df, callback, false, new DefaultHandlerProvider(objectHandlers));
 		
 		
 		parent.pack();
