@@ -1,4 +1,4 @@
-package de.persosim.editor.ui.editor;
+package de.persosim.editor.ui.editor.handlers;
 
 import java.util.List;
 

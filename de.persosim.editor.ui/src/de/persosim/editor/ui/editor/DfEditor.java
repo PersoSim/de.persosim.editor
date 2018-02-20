@@ -9,6 +9,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
+import de.persosim.editor.ui.editor.handlers.HandlerProvider;
+import de.persosim.editor.ui.editor.handlers.ObjectHandler;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.ElementaryFile;
@@ -18,13 +20,13 @@ public class DfEditor {
 
 	private Tree dfTree;
 
-	public DfEditor(Composite viewer, DedicatedFile df, NewEditorCallback editor, boolean compress, HandlerProvider provider) {
-		
+	public DfEditor(Composite viewer, DedicatedFile df, NewEditorCallback editor, boolean compress,
+			HandlerProvider provider) {
+
 		viewer.setLayout(new FillLayout());
 
-		
 		dfTree = new Tree(viewer, SWT.NONE);
-		
+
 		dfTree.addSelectionListener(new SelectionListener() {
 
 			@Override
@@ -43,7 +45,7 @@ public class DfEditor {
 
 			private void showEditor(TreeItem item, Composite localEditor) {
 				ObjectHandler objectHandler = provider.get(item.getData());
-				
+
 				if (objectHandler != null) {
 					objectHandler.createEditor(localEditor, item, provider);
 					return;
@@ -61,13 +63,10 @@ public class DfEditor {
 			}
 		});
 
-		TreeItem dummy = new TreeItem(dfTree, SWT.NONE);
-		
 		for (CardObject elementaryFile : df.findChildren(new TypeIdentifier(ElementaryFile.class))) {
-			provider.get(elementaryFile).createItem(dummy, elementaryFile, provider);
+			provider.get(elementaryFile).createItem(dfTree, elementaryFile, provider);
 		}
-		dfTree.showItem(dummy);
-		
+
 		dfTree.pack();
 	}
 }

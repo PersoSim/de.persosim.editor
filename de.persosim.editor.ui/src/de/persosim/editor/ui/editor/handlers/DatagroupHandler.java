@@ -8,14 +8,12 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.persosim.editor.ui.editor.HandlerProvider;
-import de.persosim.editor.ui.editor.ObjectHandler;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectFactory;
 
-public class DatagroupHandler implements ObjectHandler {
+public class DatagroupHandler extends AbstractObjectHandler {
 
 	@Override
 	public boolean canHandle(Object object) {
@@ -43,7 +41,8 @@ public class DatagroupHandler implements ObjectHandler {
 
 	private void handleItem(ElementaryFile ef, HandlerProvider provider, TreeItem item) {
 		item.setData(ef);
-		setText(item, ef);
+		setText(item);
+		item.setData(HANDLER, this);
 		try {
 			TlvDataObject tlvObject = TlvDataObjectFactory.createTLVDataObject(ef.getContent());
 			ObjectHandler handler = provider.get(tlvObject);
@@ -68,8 +67,8 @@ public class DatagroupHandler implements ObjectHandler {
 	}
 
 	@Override
-	public void setText(TreeItem item, Object object) {
-		if (object instanceof ElementaryFile) {
+	public void setText(TreeItem item) {
+		if (item.getData() instanceof ElementaryFile) {
 			ElementaryFile ef = (ElementaryFile) item.getData();
 			item.setText("Elementary file " + ef.toString());
 		}

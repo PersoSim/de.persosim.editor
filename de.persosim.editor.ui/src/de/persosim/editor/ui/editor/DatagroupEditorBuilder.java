@@ -13,6 +13,8 @@ import org.eclipse.swt.widgets.Control;
 
 import de.persosim.editor.ui.editor.handlers.ConstructedTlvHandler;
 import de.persosim.editor.ui.editor.handlers.DatagroupHandler;
+import de.persosim.editor.ui.editor.handlers.DefaultHandlerProvider;
+import de.persosim.editor.ui.editor.handlers.ObjectHandler;
 import de.persosim.editor.ui.editor.handlers.PrimitiveTlvHandler;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;

@@ -8,13 +8,11 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.persosim.editor.ui.editor.HandlerProvider;
-import de.persosim.editor.ui.editor.ObjectHandler;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.utils.HexString;
 
-public class ConstructedTlvHandler implements ObjectHandler {
+public class ConstructedTlvHandler extends AbstractObjectHandler {
 
 	@Override
 	public boolean canHandle(Object object) {
@@ -42,7 +40,8 @@ public class ConstructedTlvHandler implements ObjectHandler {
 
 	private void handleItem(ConstructedTlvDataObject tlv, HandlerProvider provider, TreeItem item) {
 		item.setData(tlv);
-		setText(item, tlv);
+		setText(item);
+		item.setData(HANDLER, this);
 		for (TlvDataObject current : tlv.getTlvDataObjectContainer().getTlvObjects()) {
 			ObjectHandler handler = provider.get(current);
 			if (handler != null) {
@@ -63,9 +62,9 @@ public class ConstructedTlvHandler implements ObjectHandler {
 	}
 
 	@Override
-	public void setText(TreeItem item, Object object) {
+	public void setText(TreeItem item) {
 		if (item.getData() instanceof ConstructedTlvDataObject) {
-			ConstructedTlvDataObject tlv = (ConstructedTlvDataObject) object;
+			ConstructedTlvDataObject tlv = (ConstructedTlvDataObject) item.getData();
 			item.setText(HexString.encode(tlv.getTlvTag().toByteArray()) + " "
 					+ HexString.encode(tlv.getTlvLength().toByteArray()));
 		}

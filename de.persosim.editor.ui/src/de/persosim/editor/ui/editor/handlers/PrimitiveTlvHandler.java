@@ -14,13 +14,12 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.persosim.editor.ui.editor.HandlerProvider;
-import de.persosim.editor.ui.editor.ObjectHandler;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.utils.HexString;
 
-public class PrimitiveTlvHandler implements ObjectHandler {
+public class PrimitiveTlvHandler extends AbstractObjectHandler {
+
 
 	@Override
 	public boolean canHandle(Object object) {
@@ -49,7 +48,8 @@ public class PrimitiveTlvHandler implements ObjectHandler {
 	private void handleItem(PrimitiveTlvDataObject tlv, HandlerProvider provider,
 			TreeItem item) {
 		item.setData(tlv);
-		setText(item, tlv);
+		setText(item);
+		item.setData(HANDLER, this);
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class PrimitiveTlvHandler implements ObjectHandler {
 					@Override
 					public void modifyText(ModifyEvent e) {
 						tlv.setValue(text.getText().getBytes(StandardCharsets.US_ASCII));
-						setText(item, tlv);
+						updateTextRecursively(item);
 					}
 				});
 			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_UTF8_STRING)) {
@@ -82,7 +82,7 @@ public class PrimitiveTlvHandler implements ObjectHandler {
 					@Override
 					public void modifyText(ModifyEvent e) {
 						tlv.setValue(text.getText().getBytes(StandardCharsets.UTF_8));
-						setText(item, tlv);
+						updateTextRecursively(item);
 					}
 				});
 			} else {
@@ -100,7 +100,7 @@ public class PrimitiveTlvHandler implements ObjectHandler {
 							text.getBackground();
 							text.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
 						}
-						setText(item, tlv);
+						updateTextRecursively(item);
 					}
 				});
 			}
@@ -110,11 +110,11 @@ public class PrimitiveTlvHandler implements ObjectHandler {
 	}
 
 	@Override
-	public void setText(TreeItem item, Object object) {
+	public void setText(TreeItem item) {
 		if (item.getData() instanceof PrimitiveTlvDataObject) {
 			PrimitiveTlvDataObject tlv = (PrimitiveTlvDataObject) item.getData();
 			item.setText(HexString.encode(tlv.getTlvTag().toByteArray()) + " "
-					+ HexString.encode(tlv.getTlvLength().toByteArray()) + " " + HexString.encode(tlv.getValueField()));
+					+ HexString.encode(tlv.getTlvLength().toByteArray()) + " ");
 
 			if (tlv.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)
 					|| tlv.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING)
