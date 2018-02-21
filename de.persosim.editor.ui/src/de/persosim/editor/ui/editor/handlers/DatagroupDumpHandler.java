@@ -50,7 +50,7 @@ public class DatagroupDumpHandler extends AbstractObjectHandler {
 		}
 	}
 
-	private void handleItem(ElementaryFile ef, HandlerProvider provider, TreeItem item) {
+	protected void handleItem(ElementaryFile ef, HandlerProvider provider, TreeItem item) {
 		item.setData(ef);
 		setText(item);
 		item.setData(HANDLER, this);
