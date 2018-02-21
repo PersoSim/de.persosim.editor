@@ -20,6 +20,7 @@ import de.persosim.simulator.tlv.TlvDataObjectFactory;
 public class DatagroupHandler extends AbstractObjectHandler {
 
 	
+	private static final String EXTRACTED_TLV = "EXTRACTED_TLV";
 	private Map<Integer, String> dgMapping;
 
 	public DatagroupHandler(Map<Integer, String> dgMapping) {
@@ -59,6 +60,7 @@ public class DatagroupHandler extends AbstractObjectHandler {
 			ObjectHandler handler = provider.get(tlvObject);
 			if (handler != null) {
 				handler.createItem(item, tlvObject, provider);
+				item.setData(EXTRACTED_TLV, tlvObject);
 			}
 		} catch (AccessDeniedException e) {
 			// TODO Auto-generated catch block
@@ -93,6 +95,21 @@ public class DatagroupHandler extends AbstractObjectHandler {
 				item.setText("DG " + sfid + " " + dgMapping.get(sfid));
 			} else {
 				item.setText(ef.toString());
+			}
+		}
+	}
+	
+	@Override
+	public void persist(TreeItem item) {
+		ElementaryFile ef = (ElementaryFile) item.getData();
+		TlvDataObject tlv = (TlvDataObject) item.getData(EXTRACTED_TLV);
+		
+		if (tlv != null) {
+			try {
+				ef.setContent(tlv.toByteArray());
+			} catch (AccessDeniedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}

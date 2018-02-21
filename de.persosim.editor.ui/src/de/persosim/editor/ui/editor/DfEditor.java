@@ -69,4 +69,26 @@ public class DfEditor {
 
 		dfTree.pack();
 	}
+
+	public void persist() {
+		for (TreeItem current : dfTree.getItems()) {
+			ObjectHandler handler = (ObjectHandler) current.getData(ObjectHandler.HANDLER);
+			if (handler != null) {
+				handler.persist(current);
+			}
+			
+			persist(current.getItems());
+		}
+	}
+
+	private void persist(TreeItem[] items) {
+		for (TreeItem current : items) {
+			ObjectHandler handler = (ObjectHandler) current.getData(ObjectHandler.HANDLER);
+			if (handler != null) {
+				handler.persist(current);
+			}
+			
+			persist(current.getItems());
+		}
+	}
 }

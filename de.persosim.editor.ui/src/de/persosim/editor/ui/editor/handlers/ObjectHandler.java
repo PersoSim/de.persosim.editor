@@ -12,4 +12,5 @@ public interface ObjectHandler {
 	void createItem(TreeItem parentItem, Object object, HandlerProvider provider);
 	void setText(TreeItem item);
 	void updateTextRecursively(TreeItem item);
+	void persist(TreeItem item);
 }

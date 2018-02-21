@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,7 @@ import de.persosim.simulator.utils.HexString;
 public class PersoEditorView {
 	public static final String ID = "de.persosim.editor.e4.ui.plugin.partdescriptor.persoeditor";
 	private TabFolder tabFolder;
+	private Collection<DfEditor> toBePersisted = new HashSet<>();
 
 	public void updateContent(Path personalizationFile) {
 		if (!Files.exists(personalizationFile)) {
@@ -149,5 +152,8 @@ public class PersoEditorView {
 
 	@Persist
 	void doSave(@Optional IProgressMonitor monitor) {
+		for (DfEditor editor : toBePersisted) {
+			editor.persist();
+		}
 	}
 }

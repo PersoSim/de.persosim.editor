@@ -20,7 +20,7 @@ import de.persosim.simulator.platform.PersonalizationHelper;
 
 public class DatagroupEditorBuilder{
 
-	public static void build(Composite parent, Personalization perso, CardObjectIdentifier fileIdentifier, HandlerProvider provider) {
+	public static DfEditor build(Composite parent, Personalization perso, CardObjectIdentifier fileIdentifier, HandlerProvider provider) {
 		
 		parent.setLayout(new FillLayout());
 		
@@ -45,7 +45,7 @@ public class DatagroupEditorBuilder{
 			
 			//FIXME check for size, type etc.
 			if (currentDfCandidates.isEmpty()) {
-				return;
+				return null;
 			}
 			df = (DedicatedFile) currentDfCandidates.iterator().next();
 		}
@@ -70,10 +70,12 @@ public class DatagroupEditorBuilder{
 			}
 		};
 		
-		new DfEditor(overview, df, callback, false, provider);
+		DfEditor result = new DfEditor(overview, df, callback, false, provider);
 		
 		
 		parent.pack();
 		parent.requestLayout();
+		
+		return result;
 	}
 }

@@ -11,4 +11,9 @@ public abstract class AbstractObjectHandler implements ObjectHandler{
 			((ObjectHandler)item.getParentItem().getData(HANDLER)).updateTextRecursively(item.getParentItem());
 		}
 	}
+	
+	@Override
+	public void persist(TreeItem item) {
+		// intentionally do nothing
+	}
 }
