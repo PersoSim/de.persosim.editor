@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,6 +21,8 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -27,6 +30,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -49,12 +53,16 @@ public class PersoEditorView {
 	public static final String ID = "de.persosim.editor.e4.ui.plugin.partdescriptor.persoeditor";
 	private TabFolder tabFolder;
 	private Collection<DfEditor> toBePersisted = new HashSet<>();
+	private Personalization perso;
+	private Path persoFile;
 
 	public void updateContent(Path personalizationFile) {
 		if (!Files.exists(personalizationFile)) {
 			throw new IllegalArgumentException("Personalization file does not exist");
 		}
 
+		this.persoFile = personalizationFile;
+		
 		try (Reader reader = Files.newBufferedReader(personalizationFile)) {
 			Personalization perso = (Personalization) PersonalizationFactory.unmarshal(reader);
 			updateContent(perso);
@@ -66,22 +74,31 @@ public class PersoEditorView {
 
 	public void updateContent(Personalization perso) {
 		updateUi(perso);
+		this.perso = perso;
 	}
 
 	private void updateUi(Personalization perso) {
+		
+		toBePersisted = new HashSet<>();
+		
 		TabItem tbtmmf = new TabItem(tabFolder, SWT.NONE);
 		tbtmmf.setText("Masterfile");
 		Composite editor = new Composite(tabFolder, SWT.NONE);
+		
+		Map<Integer, String> dgMapping = new HashMap<>();
+		dgMapping.put((Integer) 0x1C, "EF.CardAccess");
+		dgMapping.put((Integer) 0x1D, "EF.CardSecurity");
+		dgMapping.put((Integer) 0x1B, "EF.ChipSecurity");
 		
 		List<ObjectHandler> objectHandlers = new LinkedList<>();
 		objectHandlers.add(new DatagroupDumpHandler(Collections.emptyMap()));
 		objectHandlers.add(new ConstructedTlvHandler(false));
 		objectHandlers.add(new PrimitiveTlvHandler(false));
 		
-		DatagroupEditorBuilder.build(editor, perso, null, new DefaultHandlerProvider(objectHandlers));
+		toBePersisted.add(DatagroupEditorBuilder.build(editor, perso, null, new DefaultHandlerProvider(objectHandlers)));
 		tbtmmf.setControl(editor);
 
-		Map<Integer, String> dgMapping = new HashMap<>();
+		dgMapping = new HashMap<>();
 		dgMapping.put((Integer) 0x01, "Document Type");
 		dgMapping.put((Integer) 0x02, "Issuing State, Region and Municipality");
 		dgMapping.put((Integer) 0x03, "Date of Expiry, Date of Issuance");
@@ -113,7 +130,7 @@ public class PersoEditorView {
 		tbtmmf = new TabItem(tabFolder, SWT.NONE);
 		tbtmmf.setText("eID");
 		editor = new Composite(tabFolder, SWT.NONE);
-		DatagroupEditorBuilder.build(editor, perso, new DedicatedFileIdentifier(HexString.toByteArray(DefaultPersonalization.AID_EID)), new DefaultHandlerProvider(objectHandlers));
+		toBePersisted.add(DatagroupEditorBuilder.build(editor, perso, new DedicatedFileIdentifier(HexString.toByteArray(DefaultPersonalization.AID_EID)), new DefaultHandlerProvider(objectHandlers)));
 		tbtmmf.setControl(editor);
 	}
 
@@ -138,9 +155,43 @@ public class PersoEditorView {
 		
 		Button btnOpen = new Button(grpControl, SWT.NONE);
 		btnOpen.setText("Open");
+		btnOpen.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+		        FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
+		        fd.setText("Open");
+		        fd.setFilterPath("C:/");
+		        String[] filterExt = { "*.perso", "*.*" };
+		        fd.setFilterExtensions(filterExt);
+		        String selection = fd.open();
+		        if (selection != null) {
+					updateContent(Paths.get(selection));
+		        }
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		
 		Button btnSave = new Button(grpControl, SWT.NONE);
 		btnSave.setText("Save");
+		btnSave.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				doSave(null);
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		
 		Button btnSignatureSettings = new Button(grpControl, SWT.NONE);
 		btnSignatureSettings.setText("Signature Settings");
@@ -154,6 +205,9 @@ public class PersoEditorView {
 	void doSave(@Optional IProgressMonitor monitor) {
 		for (DfEditor editor : toBePersisted) {
 			editor.persist();
+		}
+		if (perso != null && persoFile != null) {
+			PersonalizationFactory.marshal(perso, persoFile.toAbsolutePath().toString());
 		}
 	}
 }

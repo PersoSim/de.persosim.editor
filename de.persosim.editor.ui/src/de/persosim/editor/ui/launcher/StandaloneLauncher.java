@@ -22,7 +22,7 @@ public class StandaloneLauncher {
 
 		
 		
-		editor.updateContent(Paths.get("../../de.persosim.simulator/de.persosim.simulator/personalization/profiles/DefaultPersoGt.perso"));
+		editor.updateContent(Paths.get("../../de.persosim.simulator/de.persosim.simulator/personalization/profiles/DefaultPersoGt.perso").toAbsolutePath());
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
