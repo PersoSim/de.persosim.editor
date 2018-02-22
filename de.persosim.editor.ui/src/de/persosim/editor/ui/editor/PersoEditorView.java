@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,10 +44,16 @@ import de.persosim.editor.ui.editor.handlers.DatagroupHandler;
 import de.persosim.editor.ui.editor.handlers.DefaultHandlerProvider;
 import de.persosim.editor.ui.editor.handlers.ObjectHandler;
 import de.persosim.editor.ui.editor.handlers.PrimitiveTlvHandler;
+import de.persosim.editor.ui.editor.signing.SecInfoCmsBuilder;
+import de.persosim.editor.ui.editor.signing.SecInfoFileUpdater;
+import de.persosim.editor.ui.editor.signing.SignedSecInfoFileUpdater;
 import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
+import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
+import de.persosim.simulator.preferences.PersoSimPreferenceManager;
+import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.utils.HexString;
 
 public class PersoEditorView {
@@ -80,6 +87,10 @@ public class PersoEditorView {
 	private void updateUi(Personalization perso) {
 		
 		toBePersisted = new HashSet<>();
+		
+		for (TabItem current : tabFolder.getItems()) {
+			current.dispose();
+		}
 		
 		TabItem tbtmmf = new TabItem(tabFolder, SWT.NONE);
 		tbtmmf.setText("Masterfile");
@@ -195,6 +206,20 @@ public class PersoEditorView {
 		
 		Button btnSignatureSettings = new Button(grpControl, SWT.NONE);
 		btnSignatureSettings.setText("Signature Settings");
+		
+		btnSignatureSettings.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				new SignatureSettingsDialog(Display.getCurrent().getActiveShell()).open();
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 
 	@Focus
@@ -206,8 +231,45 @@ public class PersoEditorView {
 		for (DfEditor editor : toBePersisted) {
 			editor.persist();
 		}
+		
+		if (Boolean.parseBoolean(PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS))) {
+			new SecInfoFileUpdater(null, new FileIdentifier(0x011c),
+					SecInfoPublicity.PUBLIC).execute(perso);
+		}
+
+		String dscert = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSCERT);
+		String dskey = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSKEY);
+		
+		boolean updateEfCardSecurity = Boolean.parseBoolean(PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY));
+		boolean updateEfChipSecurity = Boolean.parseBoolean(PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY));
+		
+		if (updateEfCardSecurity || updateEfChipSecurity) {
+			if (dscert == null || dskey == null) {
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error on document signer certificates", "Please check the document signer certificate settings.");
+			}
+		}
+		
+		if (updateEfCardSecurity) {
+			try {
+				SecInfoCmsBuilder builder = new SecInfoCmsBuilder(Files.readAllBytes(Paths.get(dscert)), Files.readAllBytes(Paths.get(dskey)));
+				new SignedSecInfoFileUpdater(null, new FileIdentifier(0x011d), SecInfoPublicity.PRIVILEGED, builder).execute(perso);
+			} catch (InvalidKeySpecException | IOException e) {
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error on reading document signer certificates", "Please check the document signer certificate settings.");
+			}
+		}
+		
+		if (updateEfChipSecurity) {			
+			try {
+				SecInfoCmsBuilder builder = new SecInfoCmsBuilder(Files.readAllBytes(Paths.get(dscert)), Files.readAllBytes(Paths.get(dskey)));
+				new SignedSecInfoFileUpdater(null, new FileIdentifier(0x011b), SecInfoPublicity.AUTHENTICATED, builder).execute(perso);
+			} catch (InvalidKeySpecException | IOException e) {
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error on reading document signer certificates", "Please check the document signer certificate settings.");
+			}
+		}
+		
 		if (perso != null && persoFile != null) {
 			PersonalizationFactory.marshal(perso, persoFile.toAbsolutePath().toString());
+			updateContent(perso);
 		}
 	}
 }
