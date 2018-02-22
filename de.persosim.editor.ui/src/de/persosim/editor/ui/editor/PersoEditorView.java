@@ -69,44 +69,46 @@ public class PersoEditorView {
 		}
 
 		this.persoFile = personalizationFile;
-		
+
 		try (Reader reader = Files.newBufferedReader(personalizationFile)) {
 			Personalization perso = (Personalization) PersonalizationFactory.unmarshal(reader);
 			updateContent(perso);
 		} catch (IOException e) {
 			BasicLogger.logException(getClass(), "Reading the personalization file failed.", e, LogLevel.ERROR);
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), "File error", "Reading the personalization file failed.");
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), "File error",
+					"Reading the personalization file failed.");
 		}
 	}
 
 	public void updateContent(Personalization perso) {
 		updateUi(perso);
-		this.perso = perso;
 	}
 
 	private void updateUi(Personalization perso) {
-		
+		this.perso = perso;
+
 		toBePersisted = new HashSet<>();
-		
+
 		for (TabItem current : tabFolder.getItems()) {
 			current.dispose();
 		}
-		
+
 		TabItem tbtmmf = new TabItem(tabFolder, SWT.NONE);
 		tbtmmf.setText("Masterfile");
 		Composite editor = new Composite(tabFolder, SWT.NONE);
-		
+
 		Map<Integer, String> dgMapping = new HashMap<>();
 		dgMapping.put((Integer) 0x1C, "EF.CardAccess");
 		dgMapping.put((Integer) 0x1D, "EF.CardSecurity");
 		dgMapping.put((Integer) 0x1B, "EF.ChipSecurity");
-		
+
 		List<ObjectHandler> objectHandlers = new LinkedList<>();
 		objectHandlers.add(new DatagroupDumpHandler(Collections.emptyMap()));
 		objectHandlers.add(new ConstructedTlvHandler(false));
 		objectHandlers.add(new PrimitiveTlvHandler(false));
-		
-		toBePersisted.add(DatagroupEditorBuilder.build(editor, perso, null, new DefaultHandlerProvider(objectHandlers)));
+
+		toBePersisted
+				.add(DatagroupEditorBuilder.build(editor, perso, null, new DefaultHandlerProvider(objectHandlers)));
 		tbtmmf.setControl(editor);
 
 		dgMapping = new HashMap<>();
@@ -132,16 +134,18 @@ public class PersoEditorView {
 		dgMapping.put((Integer) 0x14, "Residence Permit II");
 		dgMapping.put((Integer) 0x15, "Phone Number");
 		dgMapping.put((Integer) 0x16, "Email Address");
-		
+
 		objectHandlers = new LinkedList<>();
 		objectHandlers.add(new DatagroupHandler(dgMapping));
 		objectHandlers.add(new ConstructedTlvHandler(true));
 		objectHandlers.add(new PrimitiveTlvHandler(true));
-		
+
 		tbtmmf = new TabItem(tabFolder, SWT.NONE);
 		tbtmmf.setText("eID");
 		editor = new Composite(tabFolder, SWT.NONE);
-		toBePersisted.add(DatagroupEditorBuilder.build(editor, perso, new DedicatedFileIdentifier(HexString.toByteArray(DefaultPersonalization.AID_EID)), new DefaultHandlerProvider(objectHandlers)));
+		toBePersisted.add(DatagroupEditorBuilder.build(editor, perso,
+				new DedicatedFileIdentifier(HexString.toByteArray(DefaultPersonalization.AID_EID)),
+				new DefaultHandlerProvider(objectHandlers)));
 		tbtmmf.setControl(editor);
 	}
 
@@ -163,61 +167,61 @@ public class PersoEditorView {
 		grpControl.setLayout(new RowLayout(SWT.HORIZONTAL));
 		grpControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		grpControl.setText("Actions");
-		
+
 		Button btnOpen = new Button(grpControl, SWT.NONE);
 		btnOpen.setText("Open");
 		btnOpen.addSelectionListener(new SelectionListener() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-		        FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
-		        fd.setText("Open");
-		        fd.setFilterPath("C:/");
-		        String[] filterExt = { "*.perso", "*.*" };
-		        fd.setFilterExtensions(filterExt);
-		        String selection = fd.open();
-		        if (selection != null) {
+				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
+				fd.setText("Open");
+				fd.setFilterPath("C:/");
+				String[] filterExt = { "*.perso", "*.*" };
+				fd.setFilterExtensions(filterExt);
+				String selection = fd.open();
+				if (selection != null) {
 					updateContent(Paths.get(selection));
-		        }
+				}
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
-		
+
 		Button btnSave = new Button(grpControl, SWT.NONE);
 		btnSave.setText("Save");
 		btnSave.addSelectionListener(new SelectionListener() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				doSave(null);
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
-		
+
 		Button btnSignatureSettings = new Button(grpControl, SWT.NONE);
 		btnSignatureSettings.setText("Signature Settings");
-		
+
 		btnSignatureSettings.addSelectionListener(new SelectionListener() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				new SignatureSettingsDialog(Display.getCurrent().getActiveShell()).open();
 			}
-			
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 	}
@@ -231,42 +235,53 @@ public class PersoEditorView {
 		for (DfEditor editor : toBePersisted) {
 			editor.persist();
 		}
-		
-		if (Boolean.parseBoolean(PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS))) {
-			new SecInfoFileUpdater(null, new FileIdentifier(0x011c),
-					SecInfoPublicity.PUBLIC).execute(perso);
+
+		if (Boolean.parseBoolean(
+				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS))) {
+			new SecInfoFileUpdater(null, new FileIdentifier(0x011c), SecInfoPublicity.PUBLIC).execute(perso);
 		}
 
 		String dscert = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSCERT);
 		String dskey = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSKEY);
-		
-		boolean updateEfCardSecurity = Boolean.parseBoolean(PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY));
-		boolean updateEfChipSecurity = Boolean.parseBoolean(PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY));
-		
+
+		boolean updateEfCardSecurity = Boolean.parseBoolean(
+				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY));
+		boolean updateEfChipSecurity = Boolean.parseBoolean(
+				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY));
+
 		if (updateEfCardSecurity || updateEfChipSecurity) {
 			if (dscert == null || dskey == null) {
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error on document signer certificates", "Please check the document signer certificate settings.");
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error on document signer certificates",
+						"Please check the document signer certificate settings.");
 			}
 		}
-		
+
 		if (updateEfCardSecurity) {
 			try {
-				SecInfoCmsBuilder builder = new SecInfoCmsBuilder(Files.readAllBytes(Paths.get(dscert)), Files.readAllBytes(Paths.get(dskey)));
-				new SignedSecInfoFileUpdater(null, new FileIdentifier(0x011d), SecInfoPublicity.PRIVILEGED, builder).execute(perso);
+				SecInfoCmsBuilder builder = new SecInfoCmsBuilder(Files.readAllBytes(Paths.get(dscert)),
+						Files.readAllBytes(Paths.get(dskey)));
+				new SignedSecInfoFileUpdater(null, new FileIdentifier(0x011d), SecInfoPublicity.PRIVILEGED, builder)
+						.execute(perso);
 			} catch (InvalidKeySpecException | IOException e) {
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error on reading document signer certificates", "Please check the document signer certificate settings.");
+				MessageDialog.openError(Display.getCurrent().getActiveShell(),
+						"Error on reading document signer certificates",
+						"Please check the document signer certificate settings.");
 			}
 		}
-		
-		if (updateEfChipSecurity) {			
+
+		if (updateEfChipSecurity) {
 			try {
-				SecInfoCmsBuilder builder = new SecInfoCmsBuilder(Files.readAllBytes(Paths.get(dscert)), Files.readAllBytes(Paths.get(dskey)));
-				new SignedSecInfoFileUpdater(null, new FileIdentifier(0x011b), SecInfoPublicity.AUTHENTICATED, builder).execute(perso);
+				SecInfoCmsBuilder builder = new SecInfoCmsBuilder(Files.readAllBytes(Paths.get(dscert)),
+						Files.readAllBytes(Paths.get(dskey)));
+				new SignedSecInfoFileUpdater(null, new FileIdentifier(0x011b), SecInfoPublicity.AUTHENTICATED, builder)
+						.execute(perso);
 			} catch (InvalidKeySpecException | IOException e) {
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error on reading document signer certificates", "Please check the document signer certificate settings.");
+				MessageDialog.openError(Display.getCurrent().getActiveShell(),
+						"Error on reading document signer certificates",
+						"Please check the document signer certificate settings.");
 			}
 		}
-		
+
 		if (perso != null && persoFile != null) {
 			PersonalizationFactory.marshal(perso, persoFile.toAbsolutePath().toString());
 			updateContent(perso);
