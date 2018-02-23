@@ -5,21 +5,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.StringJoiner;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.persosim.editor.ui.editor.UiHelper;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -82,134 +71,88 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 		ConstructedTlvDataObject tlv = (ConstructedTlvDataObject) item.getData();
 		
 		if (TlvConstants.TAG_SEQUENCE.equals(tlv.getTlvTag())){
-			createField(item, false, composite, tlv, TlvConstants.TAG_AA, TlvConstants.TAG_UTF8_STRING,	StandardCharsets.UTF_8, "Street");
-			createField(item, true, composite, tlv, TlvConstants.TAG_AB, TlvConstants.TAG_UTF8_STRING, StandardCharsets.UTF_8, "City");
-			createField(item, false, composite, tlv, TlvConstants.TAG_AC, TlvConstants.TAG_UTF8_STRING,	StandardCharsets.UTF_8, "State or region");
-			createField(item, true, composite, tlv, TlvConstants.TAG_AD, TlvConstants.TAG_PRINTABLE_STRING,	StandardCharsets.US_ASCII, "Country code");
-			createField(item, false, composite, tlv, TlvConstants.TAG_AE, TlvConstants.TAG_PRINTABLE_STRING, StandardCharsets.US_ASCII, "Zipcode");
+			createField(item, false, composite, tlv, TlvConstants.TAG_AA, TlvConstants.TAG_UTF8_STRING,	StandardCharsets.UTF_8, "Street", new UpperCaseTextFieldChecker());
+			createField(item, true, composite, tlv, TlvConstants.TAG_AB, TlvConstants.TAG_UTF8_STRING, StandardCharsets.UTF_8, "City", new UpperCaseTextFieldChecker());
+			createField(item, false, composite, tlv, TlvConstants.TAG_AC, TlvConstants.TAG_UTF8_STRING,	StandardCharsets.UTF_8, "State or region", new UpperCaseTextFieldChecker());
+			createField(item, true, composite, tlv, TlvConstants.TAG_AD, TlvConstants.TAG_PRINTABLE_STRING,	StandardCharsets.US_ASCII, "Country code", new IcaoCountryChecker());
+			createField(item, false, composite, tlv, TlvConstants.TAG_AE, TlvConstants.TAG_PRINTABLE_STRING, StandardCharsets.US_ASCII, "Zipcode", new UpperCaseTextFieldChecker());
 		} else if (TlvConstants.TAG_A1.equals(tlv.getTlvTag())){
-			createPrimitiveField(item, composite, tlv, "Freetext Place");
+			createSimpleField(item, true, composite, tlv, StandardCharsets.UTF_8, "Freetext Place", new UpperCaseTextFieldChecker());
 		} else if (TlvConstants.TAG_A2.equals(tlv.getTlvTag())){
-			createPrimitiveField(item, composite, tlv, "NoPlaceInfo");
+			createSimpleField(item, true, composite, tlv, StandardCharsets.UTF_8, "NoPlaceInfo", new UpperCaseTextFieldChecker());
 		}
 		
 
 	}
 
-	private void createPrimitiveField(TreeItem item, Composite composite, ConstructedTlvDataObject tlv, String infoText) {
-		Label info = new Label(composite, SWT.NONE);
-		info.setText(infoText);
-		GridData gd = new GridData();
-		gd.horizontalSpan = 2;
-		info.setLayoutData(gd);
+	private void createSimpleField(TreeItem item, boolean mandatory, Composite composite, ConstructedTlvDataObject wrapper, Charset charset, String infoText, TextFieldChecker checker) {
 
-		Button fieldUsed = new Button(composite, SWT.CHECK);
-		fieldUsed.setEnabled(false);
-		fieldUsed.setSelection(true);
-
-		Text field = new Text(composite, SWT.NONE);
-		field.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		field.setText(new String(((PrimitiveTlvDataObject) tlv.getTlvDataObjectContainer().getTlvObjects().get(0)).getValueField(), StandardCharsets.UTF_8));
-		
-		field.addModifyListener(new ModifyListener() {
-
-			@Override
-			public void modifyText(ModifyEvent e) {
-				((PrimitiveTlvDataObject) tlv.getTlvDataObjectContainer().getTlvObjects().get(0)).setValue(field.getText().getBytes(StandardCharsets.UTF_8));
+			EditorFieldHelper.createField(item, mandatory, composite, new TlvModifier() {
 				
-				ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
-				if (handler != null) {
-					handler.updateTextRecursively(item);
+				@Override
+				public void setValue(String value) {
+					PrimitiveTlvDataObject ptlv = (PrimitiveTlvDataObject) wrapper.getTlvDataObjectContainer().iterator().next();
+					ptlv.setValue(value.getBytes(charset));
 				}
-			}
-		});
+				
+				@Override
+				public void remove() {
+				}
+				
+				@Override
+				public String getValue() {
+					return new String(wrapper.getTlvDataObjectContainer().iterator().next().getValueField(), charset);
+				}
+			}, checker, infoText);
+		
+
 	}
 
-	private void createField(TreeItem item, boolean mandatory, Composite composite, ConstructedTlvDataObject generalPlaceSequence,
-			TlvTag tlvTag, TlvTag typeTag, Charset charset, String infoText) {
-		Label info = new Label(composite, SWT.NONE);
-		info.setText(infoText);
-		GridData gd = new GridData();
-		gd.horizontalSpan = 2;
-		info.setLayoutData(gd);
+private void createField(TreeItem item, boolean mandatory, Composite composite, ConstructedTlvDataObject generalPlaceSequence,
+		TlvTag tlvTag, TlvTag typeTag, Charset charset, String infoText, TextFieldChecker checker) {
 
-		Button fieldUsed = new Button(composite, SWT.CHECK);
-		fieldUsed.setEnabled(!mandatory);
-
-		Text field = new Text(composite, SWT.NONE);
-		field.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		Color defaultColor = field.getBackground();
-
-		if (mandatory || generalPlaceSequence.containsTlvDataObject(tlvTag)) {
-			fieldUsed.setSelection(true);
-			field.setEnabled(true);
-			ConstructedTlvDataObject ctlv = (ConstructedTlvDataObject) generalPlaceSequence.getTlvDataObject(tlvTag);
-			field.setText(new String(ctlv.getTlvDataObject(typeTag).getValueField(), charset));
-			UiHelper.setColorIfLowerCase(field);
-		} else {
-			field.setEnabled(false);
-		}
-
-		field.addModifyListener(new ModifyListener() {
+		EditorFieldHelper.createField(item, mandatory, composite, new TlvModifier() {
 			
 			@Override
-			public void modifyText(ModifyEvent e) {
-				modifyTlv(generalPlaceSequence, tlvTag, typeTag, charset, field);
-				
-				if (!UiHelper.setColorIfLowerCase(field)){
-					field.setBackground(defaultColor);
+			public void setValue(String value) {
+				if (!generalPlaceSequence.containsTlvDataObject(tlvTag)){
+					generalPlaceSequence.addTlvDataObject(new ConstructedTlvDataObject(tlvTag));
 				}
-				
-				ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
-				if (handler != null) {
-					handler.updateTextRecursively(item);
+				ConstructedTlvDataObject ctlv = (ConstructedTlvDataObject) generalPlaceSequence.getTlvDataObject(tlvTag);
+				if (!ctlv.containsTlvDataObject(typeTag)){
+					ctlv.addTlvDataObject(new PrimitiveTlvDataObject(typeTag));
 				}
-			}
-		});
-
-		fieldUsed.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				field.setEnabled(fieldUsed.getSelection());
-				if (!fieldUsed.getSelection()) {
-					if (generalPlaceSequence.containsTlvDataObject(tlvTag)) {
-						generalPlaceSequence.removeTlvDataObject(tlvTag);
+				PrimitiveTlvDataObject ptlv = (PrimitiveTlvDataObject) ctlv.getTlvDataObject(typeTag);
+				ptlv.setValue(value.getBytes(charset));
+				
+				generalPlaceSequence.sort(new Comparator<TlvDataObject>() {
+					
+					@Override
+					public int compare(TlvDataObject o1, TlvDataObject o2) {
+						return o1.getTagNo() - o2.getTagNo();
 					}
-				} else {
-					modifyTlv(generalPlaceSequence, tlvTag, typeTag, charset, field);
-				}
-
-				ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
-				if (handler != null) {
-					handler.updateTextRecursively(item);
-				}
+				});
 			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-
-	}
-
-	private void modifyTlv(ConstructedTlvDataObject generalPlaceSequence, TlvTag tlvTag, TlvTag typeTag,
-			Charset charset, Text field) {
-		if (generalPlaceSequence.containsTlvDataObject(tlvTag)) {
-			generalPlaceSequence.removeTlvDataObject(tlvTag);
-		}
-
-		PrimitiveTlvDataObject newContent = new PrimitiveTlvDataObject(typeTag,
-				field.getText().getBytes(charset));
-		
-		generalPlaceSequence.addTlvDataObject(new ConstructedTlvDataObject(tlvTag, newContent));
-
-		generalPlaceSequence.sort(new Comparator<TlvDataObject>() {
 			
 			@Override
-			public int compare(TlvDataObject o1, TlvDataObject o2) {
-				return o1.getTagNo() - o2.getTagNo();
+			public void remove() {
+				if (generalPlaceSequence.containsTlvDataObject(tlvTag)){
+					generalPlaceSequence.removeTlvDataObject(tlvTag);
+				}
 			}
-		});
-	}
+			
+			@Override
+			public String getValue() {
+				if (generalPlaceSequence.containsTlvDataObject(tlvTag)){
+					ConstructedTlvDataObject ctlv = (ConstructedTlvDataObject) generalPlaceSequence.getTlvDataObject(tlvTag);
+					if (ctlv.containsTlvDataObject(typeTag)){
+						return new String(ctlv.getTlvDataObject(typeTag).getValueField(), charset);
+					}
+				}
+				return null;
+			}
+		}, checker, infoText);
+	
+
+}
 }

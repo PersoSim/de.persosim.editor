@@ -4,27 +4,17 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.persosim.editor.ui.editor.UiHelper;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.utils.HexString;
 
 public class PrimitiveTlvHandler extends AbstractObjectHandler {
-
-	private static final String REGEX_DETECT_NON_NUMBER = ".*[^0-9].*";
-	private static final String REGEX_DETECT_LOWER_CASE = ".*[a-z].*";
+	
 	private boolean compress;
 
 	public PrimitiveTlvHandler(boolean compress) {
@@ -107,69 +97,60 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 	@Override
 	protected void createEditingComposite(Composite composite, TreeItem item) {
 		if (item.getData() instanceof PrimitiveTlvDataObject) {
-			composite.setLayout(new GridLayout(1, false));
+			composite.setLayout(new GridLayout(2, false));
 			PrimitiveTlvDataObject tlv = (PrimitiveTlvDataObject) item.getData();
-			Label typeLabel = new Label(composite, SWT.NONE);
-			
-			Text text = new Text(composite, SWT.NONE);
-			GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
-			text.setLayoutData(layoutData);
-			Color defaultColor = text.getBackground();
-			UiHelper.setColorIfLowerCase(text);
 			
 			if (tlv.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)) {
-				typeLabel.setText("Data: IA5 string");
-				text.setText(new String(tlv.getValueField(), StandardCharsets.US_ASCII));
-				text.addModifyListener(getModifier(item, tlv, text, StandardCharsets.US_ASCII, defaultColor, REGEX_DETECT_LOWER_CASE));
+				createSimpleField(item, true, composite, tlv, StandardCharsets.US_ASCII, "IA5 string", new UpperCaseTextFieldChecker());
 			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING)) {
-				typeLabel.setText("Data: PRINTABLE string");
-				text.setText(new String(tlv.getValueField(), StandardCharsets.US_ASCII));
-				text.addModifyListener(getModifier(item, tlv, text, StandardCharsets.US_ASCII, defaultColor, REGEX_DETECT_LOWER_CASE));
+				createSimpleField(item, true, composite, tlv, StandardCharsets.US_ASCII, "PRINTABLE string", new UpperCaseTextFieldChecker());
 			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_NUMERIC_STRING)) {
-				typeLabel.setText("Data: NUMERIC string");
-				text.setText(new String(tlv.getValueField(), StandardCharsets.US_ASCII));
-				text.addModifyListener(getModifier(item, tlv, text, StandardCharsets.US_ASCII, defaultColor, REGEX_DETECT_NON_NUMBER));
-				UiHelper.setColorIfMatch(text, REGEX_DETECT_NON_NUMBER);
+				createSimpleField(item, true, composite, tlv, StandardCharsets.US_ASCII, "NUMERIC string", new UpperCaseTextFieldChecker());
 			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_UTF8_STRING)) {
-				typeLabel.setText("Data: UTF8 string");
-				text.setText(new String(tlv.getValueField(), StandardCharsets.UTF_8));
-				text.addModifyListener(getModifier(item, tlv, text, StandardCharsets.UTF_8, defaultColor, REGEX_DETECT_LOWER_CASE));
+				createSimpleField(item, true, composite, tlv, StandardCharsets.US_ASCII, "UTF8 string", new UpperCaseTextFieldChecker());
 			} else {
-				typeLabel.setText("Data: binary data as hexadecimal string");
-				text.setText(HexString.encode(tlv.getValueField()));
-				text.addModifyListener(new ModifyListener() {
-					Color defaultColor = text.getBackground();
-
+				EditorFieldHelper.createField(item, true, composite, new TlvModifier() {
+					
 					@Override
-					public void modifyText(ModifyEvent e) {
-						try {
-							tlv.setValue(HexString.toByteArray(text.getText()));
-							text.setBackground(defaultColor);
-						} catch (Exception ex) {
-							text.getBackground();
-							text.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
-						}
-						updateTextRecursively(item);
+					public void setValue(String value) {
+						tlv.setValue(HexString.toByteArray(value));
 					}
-				});
+					
+					@Override
+					public void remove() {
+					}
+					
+					@Override
+					public String getValue() {
+						return HexString.encode(tlv.getValueField());
+					}
+				}, new HexChecker(), "binary data as hexadecimal string");
 			}
 			
 			composite.pack();
 		}
 	}
+	
 
-	private ModifyListener getModifier(TreeItem item, PrimitiveTlvDataObject tlv, Text text, Charset charset, Color defaultColor, String regex) {
-		return new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				if (!UiHelper.setColorIfMatch(text, regex)){
-					text.setBackground(defaultColor);
+	private void createSimpleField(TreeItem item, boolean mandatory, Composite composite, PrimitiveTlvDataObject tlv, Charset charset, String infoText, TextFieldChecker checker) {
+
+			EditorFieldHelper.createField(item, mandatory, composite, new TlvModifier() {
+
+				@Override
+				public String getValue() {
+					return new String(tlv.getValueField(), charset);
 				}
-				
-				tlv.setValue(text.getText().getBytes(charset));
-				updateTextRecursively(item);
-			}
-		};
+
+				@Override
+				public void setValue(String string) {
+					tlv.setValue(string.getBytes(charset));
+				}
+
+				@Override
+				public void remove() {
+				}}, checker, infoText);
+		
+
 	}
 
 }
