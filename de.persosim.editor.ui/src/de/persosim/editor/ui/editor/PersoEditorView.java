@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -103,14 +102,12 @@ public class PersoEditorView {
 		dgMapping.put((Integer) 0x1C, "EF.CardAccess");
 		dgMapping.put((Integer) 0x1D, "EF.CardSecurity");
 		dgMapping.put((Integer) 0x1B, "EF.ChipSecurity");
+		dgMapping.put((Integer) 0x1E, "EF.DIR");
 
 		List<ObjectHandler> objectHandlers = new LinkedList<>();
-		objectHandlers.add(new DatagroupDumpHandler(Collections.emptyMap()));
-		objectHandlers.add(new ConstructedTlvHandler(false));
-		objectHandlers.add(new PrimitiveTlvHandler(false));
+		objectHandlers.add(new DatagroupDumpHandler(dgMapping));
 
-		toBePersisted
-				.add(DatagroupEditorBuilder.build(editor, perso, null, new DefaultHandlerProvider(objectHandlers)));
+		toBePersisted.add(DatagroupEditorBuilder.build(editor, perso, null, new DefaultHandlerProvider(objectHandlers)));
 		tbtmmf.setControl(editor);
 
 		dgMapping = new HashMap<>();
@@ -130,7 +127,7 @@ public class PersoEditorView {
 		dgMapping.put((Integer) 0x0E, "Written Signature");
 		dgMapping.put((Integer) 0x0F, "RFU");
 		dgMapping.put((Integer) 0x10, "RFU");
-		dgMapping.put((Integer) 0x11, "Normal Place of Residence (multiple)");
+		dgMapping.put((Integer) 0x11, "Normal Place of Residence");
 		dgMapping.put((Integer) 0x12, "Municipality ID");
 		dgMapping.put((Integer) 0x13, "Residence Permit I");
 		dgMapping.put((Integer) 0x14, "Residence Permit II");
