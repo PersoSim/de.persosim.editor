@@ -5,6 +5,7 @@ import java.util.Map;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
@@ -68,23 +69,24 @@ public class DatagroupDumpHandler extends AbstractObjectHandler {
 			}
 
 			if (dgMapping.get(sfid) != null) {
-				item.setText("DG " + sfid + " " + dgMapping.get(sfid));
+				item.setText(dgMapping.get(sfid));
 			} else {
-				item.setText(ef.toString());
+				item.setText("DG " + sfid);
 			}
 		}
 	}
 
 	@Override
 	protected String getType() {
-		return "elementary file, not editable";
+		return "elementary file, not editable file content dump";
 	}
 
 	@Override
 	protected void createEditingComposite(Composite composite, TreeItem item) {
+		composite.setLayout(new GridLayout(1, false));
 		if (item.getData() instanceof ElementaryFile) {
 			ElementaryFile ef = (ElementaryFile) item.getData();
-			Text text = new Text(composite, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+			Text text = new Text(composite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 			text.setFont(JFaceResources.getTextFont());
 			
 			GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
