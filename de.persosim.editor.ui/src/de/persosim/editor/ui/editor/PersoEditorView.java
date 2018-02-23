@@ -112,8 +112,8 @@ public class PersoEditorView {
 
 		dgMapping = new HashMap<>();
 		dgMapping.put((Integer) 0x01, "Document Type");
-		dgMapping.put((Integer) 0x02, "Issuing State, Region and Municipality");
-		dgMapping.put((Integer) 0x03, "Date of Expiry, Date of Issuance");
+		dgMapping.put((Integer) 0x02, "Issuing Entity");
+		dgMapping.put((Integer) 0x03, "Validity Period");
 		dgMapping.put((Integer) 0x04, "Given Names");
 		dgMapping.put((Integer) 0x05, "Family Names");
 		dgMapping.put((Integer) 0x06, "Nom de Plume");
@@ -127,7 +127,7 @@ public class PersoEditorView {
 		dgMapping.put((Integer) 0x0E, "Written Signature");
 		dgMapping.put((Integer) 0x0F, "RFU");
 		dgMapping.put((Integer) 0x10, "RFU");
-		dgMapping.put((Integer) 0x11, "Normal Place of Residence");
+		dgMapping.put((Integer) 0x11, "Place of Residence");
 		dgMapping.put((Integer) 0x12, "Municipality ID");
 		dgMapping.put((Integer) 0x13, "Residence Permit I");
 		dgMapping.put((Integer) 0x14, "Residence Permit II");
