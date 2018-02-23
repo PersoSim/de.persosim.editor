@@ -7,6 +7,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -86,6 +87,7 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 	@Override
 	protected void createEditingComposite(Composite composite, TreeItem item) {
 		if (item.getData() instanceof PrimitiveTlvDataObject) {
+			composite.setLayout(new GridLayout(1, false));
 			PrimitiveTlvDataObject tlv = (PrimitiveTlvDataObject) item.getData();
 			Label typeLabel = new Label(composite, SWT.NONE);
 			Text text = new Text(composite, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
@@ -135,7 +137,7 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 					}
 				});
 			}
-
+			composite.pack();
 		}
 	}
 
