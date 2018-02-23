@@ -61,21 +61,37 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 	public void setText(TreeItem item) {
 		if (item.getData() instanceof PrimitiveTlvDataObject) {
 			PrimitiveTlvDataObject tlv = (PrimitiveTlvDataObject) item.getData();
-			if (compress) {
-				item.setText("");
-			} else {
 
-				item.setText(HexString.encode(tlv.getTlvTag().toByteArray()) + " "
-						+ HexString.encode(tlv.getTlvLength().toByteArray()) + " ");
+			String text = "";
+			
+			if (!compress) {
+				text = HexString.encode(tlv.getTlvTag().toByteArray()) + " "
+						+ HexString.encode(tlv.getTlvLength().toByteArray()) + " ";
 			}
+			
 
 			if (tlv.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)
 					|| tlv.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING)
 					|| tlv.getTlvTag().equals(TlvConstants.TAG_NUMERIC_STRING)) {
-				item.setText(item.getText() + new String(tlv.getValueField(), StandardCharsets.US_ASCII));
+				text = new String(tlv.getValueField(), StandardCharsets.US_ASCII);
 			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_UTF8_STRING)) {
-				item.setText(item.getText() + new String(tlv.getValueField(), StandardCharsets.UTF_8));
+				text = new String(tlv.getValueField(), StandardCharsets.UTF_8);
+			} else {
+				text = HexString.encode(tlv.getValueField());
 			}
+			
+
+			if (text.isEmpty()){
+				if (compress){
+					text = "<empty>";	
+				}	
+			} else {
+				if (text.length() > 32){
+					text = text.substring(0, 31);
+				}
+				
+			}
+			item.setText(text);
 		}
 	}
 

@@ -2,6 +2,7 @@ package de.persosim.editor.ui.editor.handlers;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
 import java.util.StringJoiner;
 
 import org.eclipse.swt.SWT;
@@ -31,12 +32,14 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 
 	@Override
 	public boolean canHandle(Object object) {
-		if (object instanceof ConstructedTlvDataObject){
-			ConstructedTlvDataObject generalPlace = (ConstructedTlvDataObject)object;
-			if (TlvConstants.TAG_SEQUENCE.equals(generalPlace.getTlvTag())){
-				//XXX possible necessary to check deeper if it is used in a HandlerProvider
+		if (object instanceof ConstructedTlvDataObject) {
+			ConstructedTlvDataObject generalPlace = (ConstructedTlvDataObject) object;
+			if (TlvConstants.TAG_SEQUENCE.equals(generalPlace.getTlvTag()) || TlvConstants.TAG_A1.equals(generalPlace.getTlvTag()) || TlvConstants.TAG_A2.equals(generalPlace.getTlvTag())) {
 				return true;
 			}
+
+			// XXX possible necessary to check deeper if it is used in a
+			// HandlerProvider
 		}
 		return false;
 	}
@@ -44,15 +47,16 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 	@Override
 	public void setText(TreeItem item) {
 		StringJoiner joiner = new StringJoiner(",");
-		extractPrimitiveStrings(joiner, (TlvDataObject)item.getData());
+		extractPrimitiveStrings(joiner, (TlvDataObject) item.getData());
 		item.setText(joiner.toString());
 	}
 
 	private void extractPrimitiveStrings(StringJoiner joiner, TlvDataObject data) {
-		if (data instanceof PrimitiveTlvDataObject){
+		if (data instanceof PrimitiveTlvDataObject) {
 			joiner.add(new String(data.getValueField()));
-		} else if (data instanceof ConstructedTlvDataObject){
-			for (TlvDataObject current : ((ConstructedTlvDataObject)data).getTlvDataObjectContainer().getTlvObjects()){
+		} else if (data instanceof ConstructedTlvDataObject) {
+			for (TlvDataObject current : ((ConstructedTlvDataObject) data).getTlvDataObjectContainer()
+					.getTlvObjects()) {
 				extractPrimitiveStrings(joiner, current);
 			}
 		}
@@ -62,7 +66,7 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 	protected String getType() {
 		return "GeneralPlace";
 	}
-	
+
 	@Override
 	protected void handleItem(ConstructedTlvDataObject tlv, HandlerProvider provider, TreeItem item) {
 		item.setData(tlv);
@@ -73,81 +77,127 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 	@Override
 	protected void createEditingComposite(Composite composite, TreeItem item) {
 		composite.setLayout(new GridLayout(2, false));
-		ConstructedTlvDataObject set = (ConstructedTlvDataObject) item.getData();
+		ConstructedTlvDataObject tlv = (ConstructedTlvDataObject) item.getData();
 		
+		if (TlvConstants.TAG_SEQUENCE.equals(tlv.getTlvTag())){
+			createField(item, false, composite, tlv, TlvConstants.TAG_AA, TlvConstants.TAG_UTF8_STRING,	StandardCharsets.UTF_8, "Street");
+			createField(item, true, composite, tlv, TlvConstants.TAG_AB, TlvConstants.TAG_UTF8_STRING, StandardCharsets.UTF_8, "City");
+			createField(item, false, composite, tlv, TlvConstants.TAG_AC, TlvConstants.TAG_UTF8_STRING,	StandardCharsets.UTF_8, "State or region");
+			createField(item, true, composite, tlv, TlvConstants.TAG_AD, TlvConstants.TAG_PRINTABLE_STRING,	StandardCharsets.US_ASCII, "Country code");
+			createField(item, false, composite, tlv, TlvConstants.TAG_AE, TlvConstants.TAG_PRINTABLE_STRING, StandardCharsets.US_ASCII, "Zipcode");
+		} else if (TlvConstants.TAG_A1.equals(tlv.getTlvTag())){
+			createPrimitiveField(item, composite, tlv, "Freetext Place");
+		} else if (TlvConstants.TAG_A2.equals(tlv.getTlvTag())){
+			createPrimitiveField(item, composite, tlv, "NoPlaceInfo");
+		}
 		
-		createField(item, false, composite, set, TlvConstants.TAG_AA, TlvConstants.TAG_UTF8_STRING, StandardCharsets.UTF_8, "Street");
-		createField(item, true, composite, set, TlvConstants.TAG_AB, TlvConstants.TAG_UTF8_STRING, StandardCharsets.UTF_8, "City");
-		createField(item, false, composite, set, TlvConstants.TAG_AC, TlvConstants.TAG_UTF8_STRING, StandardCharsets.UTF_8, "State or region");
-		createField(item, true, composite, set, TlvConstants.TAG_AD, TlvConstants.TAG_PRINTABLE_STRING, StandardCharsets.US_ASCII, "Country code");
-		createField(item, false, composite, set, TlvConstants.TAG_AE, TlvConstants.TAG_PRINTABLE_STRING, StandardCharsets.US_ASCII, "Zipcode");
+
 	}
 
-
-	private void createField(TreeItem item, boolean mandatory, Composite composite, ConstructedTlvDataObject set, TlvTag tlvTag, TlvTag typeTag, Charset charset, String infoText) {
+	private void createPrimitiveField(TreeItem item, Composite composite, ConstructedTlvDataObject tlv, String infoText) {
 		Label info = new Label(composite, SWT.NONE);
 		info.setText(infoText);
 		GridData gd = new GridData();
 		gd.horizontalSpan = 2;
 		info.setLayoutData(gd);
-		
+
 		Button fieldUsed = new Button(composite, SWT.CHECK);
-		fieldUsed.setEnabled(!mandatory);
-		
+		fieldUsed.setEnabled(false);
+		fieldUsed.setSelection(true);
+
 		Text field = new Text(composite, SWT.NONE);
 		field.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		field.setText(new String(((PrimitiveTlvDataObject) tlv.getTlvDataObjectContainer().getTlvObjects().get(0)).getValueField(), StandardCharsets.UTF_8));
 		
-		if (mandatory | set.containsTlvDataObject(tlvTag)){
+		field.addModifyListener(new ModifyListener() {
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				((PrimitiveTlvDataObject) tlv.getTlvDataObjectContainer().getTlvObjects().get(0)).setValue(field.getText().getBytes(StandardCharsets.UTF_8));
+				
+				ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
+				if (handler != null) {
+					handler.updateTextRecursively(item);
+				}
+			}
+		});
+	}
+
+	private void createField(TreeItem item, boolean mandatory, Composite composite, ConstructedTlvDataObject generalPlaceSequence,
+			TlvTag tlvTag, TlvTag typeTag, Charset charset, String infoText) {
+		Label info = new Label(composite, SWT.NONE);
+		info.setText(infoText);
+		GridData gd = new GridData();
+		gd.horizontalSpan = 2;
+		info.setLayoutData(gd);
+
+		Button fieldUsed = new Button(composite, SWT.CHECK);
+		fieldUsed.setEnabled(!mandatory);
+
+		Text field = new Text(composite, SWT.NONE);
+		field.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+		if (mandatory | generalPlaceSequence.containsTlvDataObject(tlvTag)) {
 			fieldUsed.setSelection(true);
 			field.setEnabled(true);
-			ConstructedTlvDataObject ctlv = (ConstructedTlvDataObject) set.getTlvDataObject(tlvTag);
+			ConstructedTlvDataObject ctlv = (ConstructedTlvDataObject) generalPlaceSequence.getTlvDataObject(tlvTag);
 			field.setText(new String(ctlv.getTlvDataObject(typeTag).getValueField(), charset));
 		} else {
 			field.setEnabled(false);
 		}
-		
+
 		field.addModifyListener(new ModifyListener() {
-			
+
 			@Override
 			public void modifyText(ModifyEvent e) {
-				if (set.containsTlvDataObject(tlvTag)){
-					set.removeTlvDataObject(tlvTag);
+				if (generalPlaceSequence.containsTlvDataObject(tlvTag)) {
+					generalPlaceSequence.removeTlvDataObject(tlvTag);
 				}
-				
-				PrimitiveTlvDataObject newContent = new PrimitiveTlvDataObject(typeTag, field.getText().getBytes(charset));
-				set.addTlvDataObject(new ConstructedTlvDataObject(tlvTag, newContent));
+
+				PrimitiveTlvDataObject newContent = new PrimitiveTlvDataObject(typeTag,
+						field.getText().getBytes(charset));
+				generalPlaceSequence.addTlvDataObject(new ConstructedTlvDataObject(tlvTag, newContent));
+
+				generalPlaceSequence.sort(new Comparator<TlvDataObject>() {
+					
+					@Override
+					public int compare(TlvDataObject o1, TlvDataObject o2) {
+						return o1.getTagNo() - o2.getTagNo();
+					}
+				});
 				
 				ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
-				if (handler != null){
+				if (handler != null) {
 					handler.updateTextRecursively(item);
 				}
 			}
 		});
-		
+
 		fieldUsed.addSelectionListener(new SelectionListener() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				field.setEnabled(fieldUsed.getSelection());
-				if (!fieldUsed.getSelection()){
-					if (set.containsTlvDataObject(tlvTag)){
-						set.removeTlvDataObject(tlvTag);
+				if (!fieldUsed.getSelection()) {
+					if (generalPlaceSequence.containsTlvDataObject(tlvTag)) {
+						generalPlaceSequence.removeTlvDataObject(tlvTag);
 					}
 				} else {
-					PrimitiveTlvDataObject newContent = new PrimitiveTlvDataObject(typeTag, field.getText().getBytes(charset));
-					set.addTlvDataObject(new ConstructedTlvDataObject(tlvTag, newContent));
+					PrimitiveTlvDataObject newContent = new PrimitiveTlvDataObject(typeTag,
+							field.getText().getBytes(charset));
+					generalPlaceSequence.addTlvDataObject(new ConstructedTlvDataObject(tlvTag, newContent));
 				}
-				
+
 				ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
-				if (handler != null){
+				if (handler != null) {
 					handler.updateTextRecursively(item);
 				}
 			}
-			
+
 			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {				
+			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-		
+
 	}
 }
