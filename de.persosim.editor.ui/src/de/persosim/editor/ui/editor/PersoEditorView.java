@@ -42,6 +42,7 @@ import de.persosim.editor.ui.editor.handlers.ConstructedTlvHandler;
 import de.persosim.editor.ui.editor.handlers.DatagroupDumpHandler;
 import de.persosim.editor.ui.editor.handlers.DatagroupHandler;
 import de.persosim.editor.ui.editor.handlers.DefaultHandlerProvider;
+import de.persosim.editor.ui.editor.handlers.EidDatagroup17Handler;
 import de.persosim.editor.ui.editor.handlers.ObjectHandler;
 import de.persosim.editor.ui.editor.handlers.PrimitiveTlvHandler;
 import de.persosim.editor.ui.editor.signing.SecInfoCmsBuilder;
@@ -136,6 +137,7 @@ public class PersoEditorView {
 		dgMapping.put((Integer) 0x16, "Email Address");
 
 		objectHandlers = new LinkedList<>();
+		objectHandlers.add(new EidDatagroup17Handler(dgMapping));
 		objectHandlers.add(new DatagroupHandler(dgMapping));
 		objectHandlers.add(new ConstructedTlvHandler(true));
 		objectHandlers.add(new PrimitiveTlvHandler(true));

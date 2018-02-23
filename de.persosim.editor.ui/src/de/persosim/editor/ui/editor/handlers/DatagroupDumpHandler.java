@@ -6,7 +6,6 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -57,26 +56,6 @@ public class DatagroupDumpHandler extends AbstractObjectHandler {
 	}
 
 	@Override
-	public void createEditor(Composite parent, TreeItem item) {
-		if (item.getData() instanceof ElementaryFile) {
-			ElementaryFile ef = (ElementaryFile) item.getData();
-			Label typeLabel = new Label(parent, SWT.NONE);
-			Text text = new Text(parent, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-			text.setFont(JFaceResources.getTextFont());
-			
-			GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
-			text.setLayoutData(layoutData);
-			text.setEditable(false);
-			typeLabel.setText("Type: elementary file, not editable");
-			try {
-				text.setText(HexString.dump(ef.getContent()));
-			} catch (AccessDeniedException e) {
-				text.setText(e.getMessage());
-			}
-		}
-	}
-
-	@Override
 	public void setText(TreeItem item) {
 		if (item.getData() instanceof ElementaryFile) {
 			ElementaryFile ef = (ElementaryFile) item.getData();
@@ -92,6 +71,29 @@ public class DatagroupDumpHandler extends AbstractObjectHandler {
 				item.setText("DG " + sfid + " " + dgMapping.get(sfid));
 			} else {
 				item.setText(ef.toString());
+			}
+		}
+	}
+
+	@Override
+	protected String getType() {
+		return "elementary file, not editable";
+	}
+
+	@Override
+	protected void createEditingComposite(Composite composite, TreeItem item) {
+		if (item.getData() instanceof ElementaryFile) {
+			ElementaryFile ef = (ElementaryFile) item.getData();
+			Text text = new Text(composite, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+			text.setFont(JFaceResources.getTextFont());
+			
+			GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
+			text.setLayoutData(layoutData);
+			text.setEditable(false);
+			try {
+				text.setText(HexString.dump(ef.getContent()));
+			} catch (AccessDeniedException e) {
+				text.setText(e.getMessage());
 			}
 		}
 	}

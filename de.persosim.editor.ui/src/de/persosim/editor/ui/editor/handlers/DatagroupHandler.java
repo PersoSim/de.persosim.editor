@@ -2,11 +2,6 @@ package de.persosim.editor.ui.editor.handlers;
 
 import java.util.Map;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.persosim.simulator.cardobjects.ElementaryFile;
@@ -47,16 +42,10 @@ public class DatagroupHandler extends DatagroupDumpHandler {
 			e.printStackTrace();
 		}
 	}
-
+	
 	@Override
-	public void createEditor(Composite parent, TreeItem item) {
-		if (item.getData() instanceof ElementaryFile) {
-			Label typeLabel = new Label(parent, SWT.NONE);
-			Text text = new Text(parent, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-			GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
-			text.setLayoutData(layoutData);
-			typeLabel.setText("Type: elementary file, not editable");
-		}
+	protected String getType() {
+		return "elementary file, not editable";
 	}
 	
 	@Override

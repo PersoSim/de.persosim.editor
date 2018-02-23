@@ -57,63 +57,6 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 	}
 
 	@Override
-	public void createEditor(Composite parent, TreeItem item) {
-		if (item.getData() instanceof PrimitiveTlvDataObject) {
-			PrimitiveTlvDataObject tlv = (PrimitiveTlvDataObject) item.getData();
-			Label typeLabel = new Label(parent, SWT.NONE);
-			Text text = new Text(parent, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-			GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
-			text.setLayoutData(layoutData);
-
-			if (tlv.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)
-					|| tlv.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING)
-					|| tlv.getTlvTag().equals(TlvConstants.TAG_NUMERIC_STRING)) {
-				typeLabel.setText("Type: IA5,PRINTABLE or NUMERIC string");
-				text.setText(new String(tlv.getValueField(), StandardCharsets.US_ASCII));
-				text.addModifyListener(new ModifyListener() {
-
-					@Override
-					public void modifyText(ModifyEvent e) {
-						tlv.setValue(text.getText().getBytes(StandardCharsets.US_ASCII));
-						updateTextRecursively(item);
-					}
-				});
-			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_UTF8_STRING)) {
-				typeLabel.setText("Type: UTF8 string");
-				text.setText(new String(tlv.getValueField(), StandardCharsets.UTF_8));
-				text.addModifyListener(new ModifyListener() {
-
-					@Override
-					public void modifyText(ModifyEvent e) {
-						tlv.setValue(text.getText().getBytes(StandardCharsets.UTF_8));
-						updateTextRecursively(item);
-					}
-				});
-			} else {
-				typeLabel.setText("Type: binary data as hexadecimal string");
-				text.setText(HexString.encode(tlv.getValueField()));
-				text.addModifyListener(new ModifyListener() {
-					Color defaultColor = text.getBackground();
-
-					@Override
-					public void modifyText(ModifyEvent e) {
-						try {
-							tlv.setValue(HexString.toByteArray(text.getText()));
-							text.setBackground(defaultColor);
-						} catch (Exception ex) {
-							text.getBackground();
-							text.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
-						}
-						updateTextRecursively(item);
-					}
-				});
-			}
-
-		}
-
-	}
-
-	@Override
 	public void setText(TreeItem item) {
 		if (item.getData() instanceof PrimitiveTlvDataObject) {
 			PrimitiveTlvDataObject tlv = (PrimitiveTlvDataObject) item.getData();
@@ -132,6 +75,67 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_UTF8_STRING)) {
 				item.setText(item.getText() + new String(tlv.getValueField(), StandardCharsets.UTF_8));
 			}
+		}
+	}
+
+	@Override
+	protected String getType() {
+		return "primitive value field, editable";
+	}
+
+	@Override
+	protected void createEditingComposite(Composite composite, TreeItem item) {
+		if (item.getData() instanceof PrimitiveTlvDataObject) {
+			PrimitiveTlvDataObject tlv = (PrimitiveTlvDataObject) item.getData();
+			Label typeLabel = new Label(composite, SWT.NONE);
+			Text text = new Text(composite, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+			GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
+			text.setLayoutData(layoutData);
+
+			if (tlv.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)
+					|| tlv.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING)
+					|| tlv.getTlvTag().equals(TlvConstants.TAG_NUMERIC_STRING)) {
+				typeLabel.setText("Data: IA5,PRINTABLE or NUMERIC string");
+				text.setText(new String(tlv.getValueField(), StandardCharsets.US_ASCII));
+				text.addModifyListener(new ModifyListener() {
+
+					@Override
+					public void modifyText(ModifyEvent e) {
+						tlv.setValue(text.getText().getBytes(StandardCharsets.US_ASCII));
+						updateTextRecursively(item);
+					}
+				});
+			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_UTF8_STRING)) {
+				typeLabel.setText("Data: UTF8 string");
+				text.setText(new String(tlv.getValueField(), StandardCharsets.UTF_8));
+				text.addModifyListener(new ModifyListener() {
+
+					@Override
+					public void modifyText(ModifyEvent e) {
+						tlv.setValue(text.getText().getBytes(StandardCharsets.UTF_8));
+						updateTextRecursively(item);
+					}
+				});
+			} else {
+				typeLabel.setText("Data: binary data as hexadecimal string");
+				text.setText(HexString.encode(tlv.getValueField()));
+				text.addModifyListener(new ModifyListener() {
+					Color defaultColor = text.getBackground();
+
+					@Override
+					public void modifyText(ModifyEvent e) {
+						try {
+							tlv.setValue(HexString.toByteArray(text.getText()));
+							text.setBackground(defaultColor);
+						} catch (Exception ex) {
+							text.getBackground();
+							text.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
+						}
+						updateTextRecursively(item);
+					}
+				});
+			}
+
 		}
 	}
 

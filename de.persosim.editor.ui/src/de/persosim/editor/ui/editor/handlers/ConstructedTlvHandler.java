@@ -1,10 +1,7 @@
 package de.persosim.editor.ui.editor.handlers;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
@@ -66,23 +63,22 @@ public class ConstructedTlvHandler extends AbstractObjectHandler {
 	}
 
 	@Override
-	public void createEditor(Composite parent, TreeItem item) {
-		if (item.getData() instanceof ConstructedTlvDataObject) {
-			Label typeLabel = new Label(parent, SWT.NONE);
-			Text text = new Text(parent, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-			GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
-			text.setLayoutData(layoutData);
-			typeLabel.setText("Type: constructed, not editable");
-		}
-	}
-
-	@Override
 	public void setText(TreeItem item) {
 		if (item.getData() instanceof ConstructedTlvDataObject) {
 			ConstructedTlvDataObject tlv = (ConstructedTlvDataObject) item.getData();
 			item.setText(HexString.encode(tlv.getTlvTag().toByteArray()) + " "
 					+ HexString.encode(tlv.getTlvLength().toByteArray()));
 		}
+	}
+
+	@Override
+	protected String getType() {
+		return "constructed, not editable";
+	}
+
+	@Override
+	protected void createEditingComposite(Composite composite, TreeItem item) {
+		// no editor needed
 	}
 
 }
