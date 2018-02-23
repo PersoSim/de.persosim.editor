@@ -1,5 +1,6 @@
 package de.persosim.editor.ui.editor.handlers;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.swt.SWT;
@@ -15,12 +16,15 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
+import de.persosim.editor.ui.editor.UiHelper;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.utils.HexString;
 
 public class PrimitiveTlvHandler extends AbstractObjectHandler {
 
+	private static final String REGEX_DETECT_NON_NUMBER = ".*[^0-9].*";
+	private static final String REGEX_DETECT_LOWER_CASE = ".*[a-z].*";
 	private boolean compress;
 
 	public PrimitiveTlvHandler(boolean compress) {
@@ -106,34 +110,30 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 			composite.setLayout(new GridLayout(1, false));
 			PrimitiveTlvDataObject tlv = (PrimitiveTlvDataObject) item.getData();
 			Label typeLabel = new Label(composite, SWT.NONE);
-			Text text = new Text(composite, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-			GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
+			
+			Text text = new Text(composite, SWT.NONE);
+			GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
 			text.setLayoutData(layoutData);
-
-			if (tlv.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)
-					|| tlv.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING)
-					|| tlv.getTlvTag().equals(TlvConstants.TAG_NUMERIC_STRING)) {
-				typeLabel.setText("Data: IA5,PRINTABLE or NUMERIC string");
+			Color defaultColor = text.getBackground();
+			UiHelper.setColorIfLowerCase(text);
+			
+			if (tlv.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)) {
+				typeLabel.setText("Data: IA5 string");
 				text.setText(new String(tlv.getValueField(), StandardCharsets.US_ASCII));
-				text.addModifyListener(new ModifyListener() {
-
-					@Override
-					public void modifyText(ModifyEvent e) {
-						tlv.setValue(text.getText().getBytes(StandardCharsets.US_ASCII));
-						updateTextRecursively(item);
-					}
-				});
+				text.addModifyListener(getModifier(item, tlv, text, StandardCharsets.US_ASCII, defaultColor, REGEX_DETECT_LOWER_CASE));
+			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING)) {
+				typeLabel.setText("Data: PRINTABLE string");
+				text.setText(new String(tlv.getValueField(), StandardCharsets.US_ASCII));
+				text.addModifyListener(getModifier(item, tlv, text, StandardCharsets.US_ASCII, defaultColor, REGEX_DETECT_LOWER_CASE));
+			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_NUMERIC_STRING)) {
+				typeLabel.setText("Data: NUMERIC string");
+				text.setText(new String(tlv.getValueField(), StandardCharsets.US_ASCII));
+				text.addModifyListener(getModifier(item, tlv, text, StandardCharsets.US_ASCII, defaultColor, REGEX_DETECT_NON_NUMBER));
+				UiHelper.setColorIfMatch(text, REGEX_DETECT_NON_NUMBER);
 			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_UTF8_STRING)) {
 				typeLabel.setText("Data: UTF8 string");
 				text.setText(new String(tlv.getValueField(), StandardCharsets.UTF_8));
-				text.addModifyListener(new ModifyListener() {
-
-					@Override
-					public void modifyText(ModifyEvent e) {
-						tlv.setValue(text.getText().getBytes(StandardCharsets.UTF_8));
-						updateTextRecursively(item);
-					}
-				});
+				text.addModifyListener(getModifier(item, tlv, text, StandardCharsets.UTF_8, defaultColor, REGEX_DETECT_LOWER_CASE));
 			} else {
 				typeLabel.setText("Data: binary data as hexadecimal string");
 				text.setText(HexString.encode(tlv.getValueField()));
@@ -153,8 +153,23 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 					}
 				});
 			}
+			
 			composite.pack();
 		}
+	}
+
+	private ModifyListener getModifier(TreeItem item, PrimitiveTlvDataObject tlv, Text text, Charset charset, Color defaultColor, String regex) {
+		return new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				if (!UiHelper.setColorIfMatch(text, regex)){
+					text.setBackground(defaultColor);
+				}
+				
+				tlv.setValue(text.getText().getBytes(charset));
+				updateTextRecursively(item);
+			}
+		};
 	}
 
 }
