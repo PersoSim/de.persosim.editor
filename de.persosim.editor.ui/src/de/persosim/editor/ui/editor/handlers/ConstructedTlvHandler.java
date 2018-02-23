@@ -48,7 +48,7 @@ public class ConstructedTlvHandler extends AbstractObjectHandler {
 		}
 	}
 
-	private void handleItem(ConstructedTlvDataObject tlv, HandlerProvider provider, TreeItem item) {
+	protected void handleItem(ConstructedTlvDataObject tlv, HandlerProvider provider, TreeItem item) {
 		if (!compress) {
 			item.setData(tlv);
 			setText(item);

@@ -2,18 +2,15 @@ package de.persosim.editor.ui.editor.handlers;
 
 import java.util.Map;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
+import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.tlv.ConstructedTlvDataObject;
+import de.persosim.simulator.tlv.TlvConstants;
+import de.persosim.simulator.tlv.TlvDataObject;
+import de.persosim.simulator.tlv.TlvDataObjectFactory;
 
 public class EidDatagroup17Handler extends DatagroupHandler implements ObjectHandler {
 	
@@ -32,50 +29,32 @@ public class EidDatagroup17Handler extends DatagroupHandler implements ObjectHan
 	}
 	
 	@Override
-	protected void createEditingComposite(Composite composite, TreeItem item) {
-		composite.setLayout(new GridLayout(2, false));
-		
-		Button streetUsed = new Button(composite, SWT.CHECK);
-		Text street = new Text(composite, SWT.NONE);
-		street.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
-		Button cityUsed = new Button(composite, SWT.CHECK);
-		cityUsed.setEnabled(false);
-		cityUsed.setSelection(true);
-		Text city = new Text(composite, SWT.NONE);
-		city.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
-		Button stateUsed = new Button(composite, SWT.CHECK);
-		Text state = new Text(composite, SWT.NONE);
-		state.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
-		Button countryUsed = new Button(composite, SWT.CHECK);
-		countryUsed.setEnabled(false);
-		countryUsed.setSelection(true);
-		Text country = new Text(composite, SWT.NONE);
-		country.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
-		Button zipcodeUsed = new Button(composite, SWT.CHECK);
-		Text zipcode = new Text(composite, SWT.NONE);
-		zipcode.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
-		SelectionListener selectionListener = new SelectionListener() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
+	protected void handleItem(ElementaryFile ef, HandlerProvider provider, TreeItem item) {
+		item.setData(ef);
+		setText(item);
+		item.setData(HANDLER, this);
+		try {
+			TlvDataObject tlvObject = TlvDataObjectFactory.createTLVDataObject(ef.getContent());
+			if (tlvObject instanceof ConstructedTlvDataObject){
+				tlvObject = ((ConstructedTlvDataObject) tlvObject).getTlvDataObjectContainer().getTlvObjects().get(0);
+				if (tlvObject instanceof ConstructedTlvDataObject){
+					ConstructedTlvDataObject ctlv = (ConstructedTlvDataObject) tlvObject;
+					GeneralPlaceHandler handler = new GeneralPlaceHandler(false);
+					if (TlvConstants.TAG_SET.equals(ctlv.getTlvTag())){
+						// multiple GeneralPlace contained
+						for (TlvDataObject current : ctlv.getTlvDataObjectContainer().getTlvObjects()){
+							handler.createItem(item, current, provider);
+						}
+					} else if (TlvConstants.TAG_SEQUENCE.equals(ctlv.getTlvTag())){
+						// singular GeneralPlace contained
+						handler.createItem(item, ctlv, provider);
+					}
+					//XXX: check and handle sets of GeneralPlace as well as application tag UTF8 freetextPlace and noPlaceInfo 
+				}
 			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		};
-
-		zipcodeUsed.addSelectionListener(selectionListener);
-		stateUsed.addSelectionListener(selectionListener);
-		streetUsed.addSelectionListener(selectionListener);
-		
+		} catch (AccessDeniedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
