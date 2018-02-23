@@ -10,6 +10,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -18,6 +19,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 
+import de.persosim.editor.ui.editor.UiHelper;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -136,35 +138,27 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 
 		Text field = new Text(composite, SWT.NONE);
 		field.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		Color defaultColor = field.getBackground();
 
-		if (mandatory | generalPlaceSequence.containsTlvDataObject(tlvTag)) {
+		if (mandatory || generalPlaceSequence.containsTlvDataObject(tlvTag)) {
 			fieldUsed.setSelection(true);
 			field.setEnabled(true);
 			ConstructedTlvDataObject ctlv = (ConstructedTlvDataObject) generalPlaceSequence.getTlvDataObject(tlvTag);
 			field.setText(new String(ctlv.getTlvDataObject(typeTag).getValueField(), charset));
+			UiHelper.setColorIfLowerCase(field);
 		} else {
 			field.setEnabled(false);
 		}
 
 		field.addModifyListener(new ModifyListener() {
-
+			
 			@Override
 			public void modifyText(ModifyEvent e) {
-				if (generalPlaceSequence.containsTlvDataObject(tlvTag)) {
-					generalPlaceSequence.removeTlvDataObject(tlvTag);
+				modifyTlv(generalPlaceSequence, tlvTag, typeTag, charset, field);
+				
+				if (!UiHelper.setColorIfLowerCase(field)){
+					field.setBackground(defaultColor);
 				}
-
-				PrimitiveTlvDataObject newContent = new PrimitiveTlvDataObject(typeTag,
-						field.getText().getBytes(charset));
-				generalPlaceSequence.addTlvDataObject(new ConstructedTlvDataObject(tlvTag, newContent));
-
-				generalPlaceSequence.sort(new Comparator<TlvDataObject>() {
-					
-					@Override
-					public int compare(TlvDataObject o1, TlvDataObject o2) {
-						return o1.getTagNo() - o2.getTagNo();
-					}
-				});
 				
 				ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
 				if (handler != null) {
@@ -183,9 +177,7 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 						generalPlaceSequence.removeTlvDataObject(tlvTag);
 					}
 				} else {
-					PrimitiveTlvDataObject newContent = new PrimitiveTlvDataObject(typeTag,
-							field.getText().getBytes(charset));
-					generalPlaceSequence.addTlvDataObject(new ConstructedTlvDataObject(tlvTag, newContent));
+					modifyTlv(generalPlaceSequence, tlvTag, typeTag, charset, field);
 				}
 
 				ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
@@ -199,5 +191,25 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 			}
 		});
 
+	}
+
+	private void modifyTlv(ConstructedTlvDataObject generalPlaceSequence, TlvTag tlvTag, TlvTag typeTag,
+			Charset charset, Text field) {
+		if (generalPlaceSequence.containsTlvDataObject(tlvTag)) {
+			generalPlaceSequence.removeTlvDataObject(tlvTag);
+		}
+
+		PrimitiveTlvDataObject newContent = new PrimitiveTlvDataObject(typeTag,
+				field.getText().getBytes(charset));
+		
+		generalPlaceSequence.addTlvDataObject(new ConstructedTlvDataObject(tlvTag, newContent));
+
+		generalPlaceSequence.sort(new Comparator<TlvDataObject>() {
+			
+			@Override
+			public int compare(TlvDataObject o1, TlvDataObject o2) {
+				return o1.getTagNo() - o2.getTagNo();
+			}
+		});
 	}
 }
