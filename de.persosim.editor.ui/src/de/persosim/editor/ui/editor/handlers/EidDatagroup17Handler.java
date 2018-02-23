@@ -49,7 +49,7 @@ public class EidDatagroup17Handler extends DatagroupHandler implements ObjectHan
 						// singular GeneralPlace contained
 						handler.createItem(item, ctlv, provider);
 					}
-					//XXX: check and handle sets of GeneralPlace as well as application tag UTF8 freetextPlace and noPlaceInfo 
+					//XXX: check and handle freetextPlace and noPlaceInfo 
 				}
 			}
 		} catch (AccessDeniedException e) {
