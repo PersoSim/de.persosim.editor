@@ -48,7 +48,6 @@ public class DfEditor {
 
 				if (objectHandler != null) {
 					objectHandler.createEditor(localEditor, item);
-					return;
 				}
 
 				localEditor.pack();
@@ -66,8 +65,24 @@ public class DfEditor {
 		for (CardObject elementaryFile : df.findChildren(new TypeIdentifier(ElementaryFile.class))) {
 			provider.get(elementaryFile).createItem(dfTree, elementaryFile, provider);
 		}
+		
+		show();
 
 		dfTree.pack();
+	}
+
+	public void show() {
+		for (TreeItem current : dfTree.getItems()) {
+			dfTree.showItem(current);
+			show(current.getItems());
+		}
+	}
+
+	private void show(TreeItem[] items) {
+		for (TreeItem current : items) {
+			dfTree.showItem(current);
+			show(current.getItems());
+		}
 	}
 
 	public void persist() {
