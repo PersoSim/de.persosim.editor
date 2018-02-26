@@ -117,7 +117,9 @@ public class SignatureSettingsDialog extends Dialog{
 		        fd.setFilterExtensions(filterExt);
 		        String selection = fd.open();
 		        dsCertPath.setText(selection);
-		        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_DSCERT, selection);
+		        if (selection != null){
+			        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_DSCERT, selection);	
+		        }
 			}
 			
 			@Override
@@ -150,7 +152,9 @@ public class SignatureSettingsDialog extends Dialog{
 		        fd.setFilterExtensions(filterExt);
 		        String selection = fd.open();
 		        dsKeyPath.setText(selection);
-		        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_DSKEY, selection);
+		        if (selection != null){
+			        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_DSKEY, selection);	
+		        }
 			}
 			
 			@Override
