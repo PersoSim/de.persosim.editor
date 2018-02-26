@@ -43,16 +43,22 @@ import de.persosim.editor.ui.editor.handlers.DatagroupHandler;
 import de.persosim.editor.ui.editor.handlers.DefaultHandlerProvider;
 import de.persosim.editor.ui.editor.handlers.EidDatagroup17Handler;
 import de.persosim.editor.ui.editor.handlers.EidDatagroup9Handler;
+import de.persosim.editor.ui.editor.handlers.EidDedicatedFileHandler;
 import de.persosim.editor.ui.editor.handlers.ObjectHandler;
 import de.persosim.editor.ui.editor.handlers.PrimitiveTlvHandler;
 import de.persosim.editor.ui.editor.signing.SecInfoCmsBuilder;
 import de.persosim.editor.ui.editor.signing.SecInfoFileUpdater;
 import de.persosim.editor.ui.editor.signing.SignedSecInfoFileUpdater;
+import de.persosim.simulator.cardobjects.CardObject;
+import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
 import de.persosim.simulator.cardobjects.FileIdentifier;
+import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
+import de.persosim.simulator.platform.CommandProcessor;
+import de.persosim.simulator.platform.PersonalizationHelper;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 import de.persosim.simulator.protocols.SecInfoPublicity;
 import de.persosim.simulator.utils.HexString;
@@ -107,25 +113,46 @@ public class PersoEditorView {
 		List<ObjectHandler> objectHandlers = new LinkedList<>();
 		objectHandlers.add(new DatagroupDumpHandler(dgMapping));
 
-		toBePersisted.add(DatagroupEditorBuilder.build(editor, perso, null, new DefaultHandlerProvider(objectHandlers)));
+		DefaultHandlerProvider provider = new DefaultHandlerProvider(objectHandlers);
+		
+		toBePersisted.add(DatagroupEditorBuilder.build(editor, perso, getMf(), provider));
 		tbtmmf.setControl(editor);
 
 		dgMapping = EidDgMapping.getMapping();
 
+		DedicatedFile df = getDf(HexString.toByteArray(DefaultPersonalization.AID_EID));
+		
 		objectHandlers = new LinkedList<>();
+
+		provider = new DefaultHandlerProvider(objectHandlers);
 		objectHandlers.add(new EidDatagroup9Handler(dgMapping));
 		objectHandlers.add(new EidDatagroup17Handler(dgMapping));
 		objectHandlers.add(new DatagroupHandler(dgMapping));
+		objectHandlers.add(new EidDedicatedFileHandler(df, provider));
 		objectHandlers.add(new ConstructedTlvHandler(true));
 		objectHandlers.add(new PrimitiveTlvHandler(true));
 
 		tbtmmf = new TabItem(tabFolder, SWT.NONE);
 		tbtmmf.setText("eID");
 		editor = new Composite(tabFolder, SWT.NONE);
-		toBePersisted.add(DatagroupEditorBuilder.build(editor, perso,
-				new DedicatedFileIdentifier(HexString.toByteArray(DefaultPersonalization.AID_EID)),
-				new DefaultHandlerProvider(objectHandlers)));
+		toBePersisted.add(DatagroupEditorBuilder.build(editor, perso, df, provider));
 		tbtmmf.setControl(editor);
+	}
+
+	private DedicatedFile getDf(byte[] aid) {
+		MasterFile mf = getMf();
+		
+		Collection<CardObject> currentDfCandidates = mf.findChildren(new DedicatedFileIdentifier(aid));
+		
+		if (currentDfCandidates.isEmpty()) {
+			return null;
+		}
+		
+		return (DedicatedFile) currentDfCandidates.iterator().next();
+	}
+
+	private MasterFile getMf() {
+		return PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class).getObjectTree();
 	}
 
 	@PostConstruct

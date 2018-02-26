@@ -1,7 +1,5 @@
 package de.persosim.editor.ui.editor;
 
-import java.util.Collection;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.FillLayout;
@@ -10,17 +8,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import de.persosim.editor.ui.editor.handlers.HandlerProvider;
-import de.persosim.simulator.cardobjects.CardObject;
-import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.DedicatedFile;
-import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.perso.Personalization;
-import de.persosim.simulator.platform.CommandProcessor;
-import de.persosim.simulator.platform.PersonalizationHelper;
 
 public class DatagroupEditorBuilder{
 
-	public static DfEditor build(Composite parent, Personalization perso, CardObjectIdentifier fileIdentifier, HandlerProvider provider) {
+	public static DfEditor build(Composite parent, Personalization perso, DedicatedFile df, HandlerProvider provider) {
 		
 		parent.setLayout(new FillLayout());
 		
@@ -36,21 +29,6 @@ public class DatagroupEditorBuilder{
 		Composite editor = new Composite(sashForm, SWT.NONE);
 		
 		editor.setLayout(new FillLayout());
-		
-		MasterFile mf = PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class).getObjectTree();
-		DedicatedFile df = mf;
-		
-		if (fileIdentifier != null) {
-			Collection<CardObject> currentDfCandidates = mf.findChildren(fileIdentifier);
-			
-			//FIXME check for size, type etc.
-			if (currentDfCandidates.isEmpty()) {
-				return null;
-			}
-			df = (DedicatedFile) currentDfCandidates.iterator().next();
-		}
-		
-
 		
 		NewEditorCallback callback = new NewEditorCallback() {
 			
