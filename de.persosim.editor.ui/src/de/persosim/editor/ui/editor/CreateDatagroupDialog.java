@@ -1,9 +1,12 @@
 package de.persosim.editor.ui.editor;
 
+import java.util.Map;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -16,7 +19,7 @@ public class CreateDatagroupDialog extends Dialog {
 
 	private DataGroupTemplateProvider datagroupTemplates;
 	private List dgTypes;
-	private String lastSelected = null;
+	private int lastSelected = -1;
 
 	public CreateDatagroupDialog(Shell parent, DataGroupTemplateProvider datagroupTemplates) {
 		super(parent);
@@ -25,18 +28,24 @@ public class CreateDatagroupDialog extends Dialog {
 	
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(new GridLayout(1, false));
-		dgTypes = new List(composite, SWT.NONE);
-
-		datagroupTemplates.supportedDgNames().stream().sorted().forEach(current -> {dgTypes.add(current);});
+		parent.setLayout(new GridLayout(1, false));
+		dgTypes = new List(parent, SWT.V_SCROLL);
+		GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		layoutData.minimumHeight = 200;
+		layoutData.minimumWidth = 100;
+		dgTypes.setLayoutData(layoutData);
+		
+		Map<Integer, String> mapping = EidDgMapping.getMapping();
+		Map<String,Integer> mappingToNumber = EidDgMapping.getMappingToNumber();
+		
+		datagroupTemplates.supportedDgNumbers().stream().forEach(current -> {dgTypes.add(mapping.get(current));});
 		
 		dgTypes.addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (dgTypes.getSelectionIndex() >= 0){
-					setSelected(dgTypes.getSelection()[0]);
+					setSelected(mappingToNumber.get(dgTypes.getSelection()[0]));
 				}
 			}
 			
@@ -47,17 +56,14 @@ public class CreateDatagroupDialog extends Dialog {
 			}
 		});
 		
-		return composite;
+		return parent;
 	}
 	
-	protected void setSelected(String string) {
-		lastSelected = string;
+	protected void setSelected(int number) {
+		lastSelected = number;
 	}
 
 	public ElementaryFile getElementaryFile(){
-		if (lastSelected != null){
-			return datagroupTemplates.getDgForName(lastSelected);
-		}
-		return null;
+		return datagroupTemplates.getDgForNumber(lastSelected);
 	}
 }

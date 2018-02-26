@@ -110,29 +110,7 @@ public class PersoEditorView {
 		toBePersisted.add(DatagroupEditorBuilder.build(editor, perso, null, new DefaultHandlerProvider(objectHandlers)));
 		tbtmmf.setControl(editor);
 
-		dgMapping = new HashMap<>();
-		dgMapping.put((Integer) 0x01, "Document Type");
-		dgMapping.put((Integer) 0x02, "Issuing Entity");
-		dgMapping.put((Integer) 0x03, "Validity Period");
-		dgMapping.put((Integer) 0x04, "Given Names");
-		dgMapping.put((Integer) 0x05, "Family Names");
-		dgMapping.put((Integer) 0x06, "Nom de Plume");
-		dgMapping.put((Integer) 0x07, "Academic Title");
-		dgMapping.put((Integer) 0x08, "Date of Birth");
-		dgMapping.put((Integer) 0x09, "Place of Birth");
-		dgMapping.put((Integer) 0x0A, "Nationality");
-		dgMapping.put((Integer) 0x0B, "Sex");
-		dgMapping.put((Integer) 0x0C, "Optional Data");
-		dgMapping.put((Integer) 0x0D, "Birth Name");
-		dgMapping.put((Integer) 0x0E, "Written Signature");
-		dgMapping.put((Integer) 0x0F, "RFU");
-		dgMapping.put((Integer) 0x10, "RFU");
-		dgMapping.put((Integer) 0x11, "Place of Residence");
-		dgMapping.put((Integer) 0x12, "Municipality ID");
-		dgMapping.put((Integer) 0x13, "Residence Permit I");
-		dgMapping.put((Integer) 0x14, "Residence Permit II");
-		dgMapping.put((Integer) 0x15, "Phone Number");
-		dgMapping.put((Integer) 0x16, "Email Address");
+		dgMapping = EidDgMapping.getMapping();
 
 		objectHandlers = new LinkedList<>();
 		objectHandlers.add(new EidDatagroup9Handler(dgMapping));

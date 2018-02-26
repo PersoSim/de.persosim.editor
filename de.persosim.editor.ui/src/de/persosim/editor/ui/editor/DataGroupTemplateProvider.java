@@ -6,8 +6,8 @@ import de.persosim.simulator.cardobjects.ElementaryFile;
 
 public interface DataGroupTemplateProvider {
 
-	public Collection<String> supportedDgNames();
+	public Collection<Integer> supportedDgNumbers();
 
-	public ElementaryFile getDgForName(String name);
+	public ElementaryFile getDgForNumber(int number);
 
 }
