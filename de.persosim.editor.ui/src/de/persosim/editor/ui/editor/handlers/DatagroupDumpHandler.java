@@ -4,9 +4,13 @@ import java.util.Map;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -100,4 +104,31 @@ public class DatagroupDumpHandler extends AbstractObjectHandler {
 		}
 	}
 
+	
+	@Override
+	public void createMenu(Menu menu, TreeItem item) {
+		super.createMenu(menu, item);
+		MenuItem mitem = new MenuItem(menu, SWT.NONE);
+		mitem.setText("Remove datagroup");
+		mitem.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ElementaryFile ef = (ElementaryFile) item.getData();
+				try {
+					ef.getParent().removeChild(ef);
+				} catch (AccessDeniedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				item.dispose();
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	}
 }

@@ -1,6 +1,7 @@
 package de.persosim.editor.ui.editor.handlers;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
@@ -13,4 +14,5 @@ public interface ObjectHandler {
 	void setText(TreeItem item);
 	void updateTextRecursively(TreeItem item);
 	void persist(TreeItem item);
+	public void createMenu(Menu menu, TreeItem item);
 }

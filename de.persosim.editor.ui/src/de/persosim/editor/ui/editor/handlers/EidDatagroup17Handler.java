@@ -12,7 +12,7 @@ import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectFactory;
 
-public class EidDatagroup17Handler extends DatagroupHandler implements ObjectHandler {
+public class EidDatagroup17Handler extends DatagroupHandler {
 	
 	public EidDatagroup17Handler(Map<Integer, String> dgMapping) {
 		super(dgMapping);

@@ -1,11 +1,17 @@
 package de.persosim.editor.ui.editor;
 
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.events.MenuListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
@@ -15,6 +21,7 @@ import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.TypeIdentifier;
+import de.persosim.simulator.exception.AccessDeniedException;
 
 public class DfEditor {
 
@@ -59,6 +66,57 @@ public class DfEditor {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 
+			}
+		});
+		
+		Menu menu = new Menu(dfTree);
+		dfTree.setMenu(menu);
+		menu.addMenuListener(new MenuListener() {
+			
+			@Override
+			public void menuShown(MenuEvent e) {
+				MenuItem[] items = menu.getItems();
+				for (MenuItem item : items){
+					item.dispose();
+				}
+				editor.getParent();
+				
+				MenuItem item = new MenuItem(menu, SWT.NONE);
+				item.setText("Add datagroup");
+				item.addSelectionListener(new SelectionListener() {
+					
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						CreateDatagroupDialog dialog = new CreateDatagroupDialog(Display.getCurrent().getActiveShell(), new EidDatagroupTemplateProvider());
+						if (dialog.open() == Dialog.OK){
+							ElementaryFile ef = dialog.getElementaryFile();
+							try {
+								df.addChild(ef);
+								provider.get(ef).createItem(dfTree, ef, provider);
+							} catch (AccessDeniedException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
+					}
+					
+					@Override
+					public void widgetDefaultSelected(SelectionEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
+				
+				if (dfTree.getSelectionCount() > 0){
+					ObjectHandler handler = (ObjectHandler) dfTree.getSelection()[0].getData(ObjectHandler.HANDLER);
+					handler.createMenu(menu, dfTree.getSelection()[0]);
+				}
+			}
+			
+			@Override
+			public void menuHidden(MenuEvent e) {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 

@@ -11,7 +11,7 @@ import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObject;
 import de.persosim.simulator.tlv.TlvDataObjectFactory;
 
-public class EidDatagroup9Handler extends DatagroupHandler implements ObjectHandler {
+public class EidDatagroup9Handler extends DatagroupHandler {
 	
 	public EidDatagroup9Handler(Map<Integer, String> dgMapping) {
 		super(dgMapping);

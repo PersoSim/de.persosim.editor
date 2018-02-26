@@ -6,6 +6,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TreeItem;
 
 public abstract class AbstractObjectHandler implements ObjectHandler{
@@ -30,6 +31,11 @@ public abstract class AbstractObjectHandler implements ObjectHandler{
 		Composite editor = new Composite(parent, SWT.NONE);
 		editor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		createEditingComposite(editor, item);
+	}
+	
+	@Override
+	public void createMenu(Menu menu, TreeItem item) {
+		//Intentionally do nothing
 	}
 	
 	abstract protected String getType();
