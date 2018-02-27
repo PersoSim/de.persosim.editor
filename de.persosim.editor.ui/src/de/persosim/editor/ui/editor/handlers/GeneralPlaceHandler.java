@@ -9,7 +9,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.persosim.editor.ui.editor.checker.IcaoCountryChecker;
+import de.persosim.editor.ui.editor.checker.AndChecker;
+import de.persosim.editor.ui.editor.checker.OrChecker;
 import de.persosim.editor.ui.editor.checker.TextFieldChecker;
 import de.persosim.editor.ui.editor.checker.UpperCaseTextFieldChecker;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -77,7 +78,7 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 			createField(item, false, composite, tlv, TlvConstants.TAG_AA, TlvConstants.TAG_UTF8_STRING,	StandardCharsets.UTF_8, "Street", new UpperCaseTextFieldChecker());
 			createField(item, true, composite, tlv, TlvConstants.TAG_AB, TlvConstants.TAG_UTF8_STRING, StandardCharsets.UTF_8, "City", new UpperCaseTextFieldChecker());
 			createField(item, false, composite, tlv, TlvConstants.TAG_AC, TlvConstants.TAG_UTF8_STRING,	StandardCharsets.UTF_8, "State or region", new UpperCaseTextFieldChecker());
-			createField(item, true, composite, tlv, TlvConstants.TAG_AD, TlvConstants.TAG_PRINTABLE_STRING,	StandardCharsets.US_ASCII, "Country code", new IcaoCountryChecker());
+			createField(item, true, composite, tlv, TlvConstants.TAG_AD, TlvConstants.TAG_PRINTABLE_STRING,	StandardCharsets.US_ASCII, "Country code", new AndChecker(new OrChecker(new LengthChecker(1, 1), new LengthChecker(3, 3), new UpperCaseTextFieldChecker())));
 			createField(item, false, composite, tlv, TlvConstants.TAG_AE, TlvConstants.TAG_PRINTABLE_STRING, StandardCharsets.US_ASCII, "Zipcode", new UpperCaseTextFieldChecker());
 		} else if (TlvConstants.TAG_A1.equals(tlv.getTlvTag())){
 			createSimpleField(item, true, composite, tlv, StandardCharsets.UTF_8, "Freetext Place", new UpperCaseTextFieldChecker());

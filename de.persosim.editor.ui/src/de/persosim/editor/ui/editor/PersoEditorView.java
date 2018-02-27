@@ -38,6 +38,9 @@ import org.eclipse.swt.widgets.TabItem;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 
+import de.persosim.editor.ui.editor.checker.AndChecker;
+import de.persosim.editor.ui.editor.checker.NumberChecker;
+import de.persosim.editor.ui.editor.checker.OrChecker;
 import de.persosim.editor.ui.editor.checker.UpperCaseTextFieldChecker;
 import de.persosim.editor.ui.editor.handlers.ConstructedTlvHandler;
 import de.persosim.editor.ui.editor.handlers.DatagroupDumpHandler;
@@ -46,8 +49,11 @@ import de.persosim.editor.ui.editor.handlers.DefaultHandlerProvider;
 import de.persosim.editor.ui.editor.handlers.EidDatagroup17HandlerSingularGeneralPlace;
 import de.persosim.editor.ui.editor.handlers.EidDatagroup17SetOfGeneralPlaceHandler;
 import de.persosim.editor.ui.editor.handlers.EidDatagroup1Handler;
+import de.persosim.editor.ui.editor.handlers.EidDatagroup2Handler;
 import de.persosim.editor.ui.editor.handlers.EidDatagroup9Handler;
 import de.persosim.editor.ui.editor.handlers.EidDedicatedFileHandler;
+import de.persosim.editor.ui.editor.handlers.EidStringDatagroupHandler;
+import de.persosim.editor.ui.editor.handlers.LengthChecker;
 import de.persosim.editor.ui.editor.handlers.ObjectHandler;
 import de.persosim.editor.ui.editor.handlers.PrimitiveTlvHandler;
 import de.persosim.editor.ui.editor.handlers.StringTlvHandler;
@@ -131,7 +137,16 @@ public class PersoEditorView {
 
 		provider = new DefaultHandlerProvider(objectHandlers);
 		objectHandlers.add(new EidDatagroup1Handler(dgMapping));
+		objectHandlers.add(new EidDatagroup2Handler(dgMapping));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 4, new UpperCaseTextFieldChecker()));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 5, new UpperCaseTextFieldChecker()));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 6, new UpperCaseTextFieldChecker()));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 7, new UpperCaseTextFieldChecker()));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 8, new AndChecker(new LengthChecker(8,8), new NumberChecker(), new UpperCaseTextFieldChecker())));
 		objectHandlers.add(new EidDatagroup9Handler(dgMapping));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 10, new AndChecker(new OrChecker(new LengthChecker(1,1), new LengthChecker(3, 3)), new UpperCaseTextFieldChecker())));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 11, new AndChecker(new LengthChecker(1,1), new UpperCaseTextFieldChecker())));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 13, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new EidDatagroup17HandlerSingularGeneralPlace(dgMapping));
 		objectHandlers.add(new EidDatagroup17SetOfGeneralPlaceHandler(dgMapping, new EidDatagroupTemplateProvider(Collections.emptySet())));
 		objectHandlers.add(new DatagroupHandler(dgMapping));

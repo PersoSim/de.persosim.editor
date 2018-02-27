@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 
+import de.persosim.editor.ui.editor.checker.FieldCheckResult;
 import de.persosim.editor.ui.editor.checker.TextFieldChecker;
 
 public class EditorFieldHelper {
@@ -28,7 +29,7 @@ public class EditorFieldHelper {
 	 * @param charset
 	 * @param infoText
 	 */
-	public static void createField(TreeItem item, boolean mandatory, Composite composite, TlvModifier modifier, TextFieldChecker checker, String infoText) {
+	public static Text createField(TreeItem item, boolean mandatory, Composite composite, TlvModifier modifier, TextFieldChecker checker, String infoText) {
 		Label info = new Label(composite, SWT.NONE);
 		info.setText(infoText);
 		GridData gd = new GridData();
@@ -43,13 +44,19 @@ public class EditorFieldHelper {
 		Color defaultColor = field.getBackground();
 
 
+		Label warning = new Label(composite, SWT.NONE);
+		warning.setText(infoText);
+		gd = new GridData();
+		gd.horizontalSpan = 2;
+		warning.setLayoutData(gd);
+
 		String value = modifier.getValue();
 		
 		if (mandatory || value != null) {
 			fieldUsed.setSelection(true);
 			field.setEnabled(true);
 			field.setText(value);
-			checkAndModify(field, modifier, checker, defaultColor);
+			checkAndModify(field, modifier, checker, defaultColor, warning);
 		} else {
 			field.setEnabled(false);
 		}
@@ -59,12 +66,14 @@ public class EditorFieldHelper {
 			@Override
 			public void modifyText(ModifyEvent e) {
 		
-				checkAndModify(field, modifier, checker, defaultColor);
+				checkAndModify(field, modifier, checker, defaultColor, warning);
 				
 				ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
 				if (handler != null) {
 					handler.updateTextRecursively(item);
 				}
+				warning.pack();
+				warning.requestLayout();
 			}
 		});
 
@@ -89,18 +98,19 @@ public class EditorFieldHelper {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 		});
-
-		
+		return field;
 	}
 
-	static void checkAndModify(Text field, TlvModifier modifier, TextFieldChecker checker, Color def){
-		switch (checker.check(field)){
-		case ERROR:
-			field.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
-			break;
+	static void checkAndModify(Text field, TlvModifier modifier, TextFieldChecker checker, Color def, Label warning){
+		FieldCheckResult check = checker.check(field);
+		warning.setText(check.getReason());
+		switch (check.getState()){
 		case OK:
 			field.setBackground(def);
 			modifier.setValue(field.getText());
+			break;
+		case ERROR:
+			field.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 			break;
 		case WARNING:
 			field.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_YELLOW));
