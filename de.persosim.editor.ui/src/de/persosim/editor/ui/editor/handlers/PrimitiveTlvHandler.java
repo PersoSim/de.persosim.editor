@@ -9,6 +9,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -17,6 +18,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -102,29 +104,15 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 			composite.setLayout(new GridLayout(2, false));
 			PrimitiveTlvDataObject tlv = (PrimitiveTlvDataObject) item.getData();
 
-			TlvModifier modifier = new TlvModifier() {
-
-				@Override
-				public void setValue(String value) {
-					tlv.setValue(HexString.toByteArray(value));
-				}
-
-				@Override
-				public void remove() {
-				}
-
-				@Override
-				public String getValue() {
-					return HexString.encode(tlv.getValueField());
-				}
-			};
+			TlvModifier modifier = new HexStringTlvModifier(tlv);
 			
 			Text field = EditorFieldHelper.createField(item, true, composite, modifier, new HexChecker(), "binary data as hexadecimal string");
 
 			//dummy to fill empty cell
-			new Composite(composite, SWT.NONE);
+			new Label(composite, SWT.NONE);
 			
 			Composite buttons = new Composite(composite, SWT.NONE);
+			buttons.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 			buttons.setLayout(new RowLayout());
 			
 			Button replace = new Button(buttons, SWT.PUSH);

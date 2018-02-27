@@ -21,7 +21,9 @@ public abstract class AbstractObjectHandler implements ObjectHandler{
 	
 	@Override
 	public void persist(TreeItem item) {
-		// intentionally do nothing
+		if (item.getParentItem() != null) {
+			((ObjectHandler)item.getParentItem().getData(HANDLER)).persist(item.getParentItem());
+		}
 	}
 	
 	@Override
@@ -35,6 +37,11 @@ public abstract class AbstractObjectHandler implements ObjectHandler{
 	
 	@Override
 	public void createMenu(Menu menu, TreeItem item) {
+		//Intentionally do nothing
+	}
+	
+	@Override
+	public void removeItem(TreeItem item) {
 		//Intentionally do nothing
 	}
 	

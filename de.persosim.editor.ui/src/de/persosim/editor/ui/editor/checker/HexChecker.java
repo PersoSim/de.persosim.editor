@@ -11,7 +11,7 @@ public class HexChecker implements TextFieldChecker {
 		if (field.getText().length() % 2 == 1){
 			return new FieldCheckResult("Hex string needs to be of even length", State.ERROR);
 		}
-		if (!field.getText().matches("[a-fA-F0-9\\s].*")){
+		if (!field.getText().matches("[a-fA-F0-9\\s]*")){
 			return new FieldCheckResult("Hex string can only contain letters, digits and whitespace", State.WARNING);
 		}
 		return FieldCheckResult.OK;

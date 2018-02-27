@@ -75,11 +75,9 @@ public class StringTlvHandler extends PrimitiveTlvHandler {
 			if (tlv.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)
 					|| tlv.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING)
 					|| tlv.getTlvTag().equals(TlvConstants.TAG_NUMERIC_STRING)) {
-				text = new String(tlv.getValueField(), StandardCharsets.US_ASCII);
+				text += new String(tlv.getValueField(), StandardCharsets.US_ASCII);
 			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_UTF8_STRING)) {
-				text = new String(tlv.getValueField(), StandardCharsets.UTF_8);
-			} else {
-				text = HexString.encode(tlv.getValueField());
+				text += new String(tlv.getValueField(), StandardCharsets.UTF_8);
 			}
 
 			if (text.isEmpty()) {

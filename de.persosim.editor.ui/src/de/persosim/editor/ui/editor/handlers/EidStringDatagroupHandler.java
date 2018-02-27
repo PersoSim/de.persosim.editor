@@ -35,7 +35,7 @@ public class EidStringDatagroupHandler extends DatagroupHandler {
 	protected void handleItem(HandlerProvider provider, TreeItem item, TlvDataObject tlvObject) {
 		if (tlvObject instanceof ConstructedTlvDataObject){
 			tlvObject = ((ConstructedTlvDataObject) tlvObject).getTlvDataObjectContainer().getTlvObjects().get(0);
-			StringTlvHandler handler = new StringTlvHandler(false, checker);
+			StringTlvHandler handler = new StringTlvHandler(true, checker);
 			handler.createItem(item, tlvObject, provider);
 		}
 	}

@@ -18,7 +18,7 @@ public class EidDgMapping {
 		dgMapping.put((Integer) 0x09, "Place of Birth");
 		dgMapping.put((Integer) 0x0A, "Nationality");
 		dgMapping.put((Integer) 0x0B, "Sex");
-		dgMapping.put((Integer) 0x0C, "Optional Data");
+		dgMapping.put((Integer) 0x0C, "Optional Data, readonly");
 		dgMapping.put((Integer) 0x0D, "Birth Name");
 		dgMapping.put((Integer) 0x0E, "Written Signature");
 		dgMapping.put((Integer) 0x0F, "RFU");
@@ -45,7 +45,7 @@ public class EidDgMapping {
 		dgMapping.put("Place of Birth", (Integer) 0x09);
 		dgMapping.put("Nationality", (Integer) 0x0A);
 		dgMapping.put("Sex", (Integer) 0x0B);
-		dgMapping.put("Optional Data", (Integer) 0x0C);
+		dgMapping.put("Optional Data, readonly", (Integer) 0x0C);
 		dgMapping.put("Birth Name", (Integer) 0x0D);
 		dgMapping.put("Written Signature", (Integer) 0x0E);
 		dgMapping.put("RFU", (Integer) 0x0F);

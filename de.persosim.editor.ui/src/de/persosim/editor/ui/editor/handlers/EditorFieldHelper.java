@@ -49,13 +49,16 @@ public class EditorFieldHelper {
 		gd = new GridData();
 		gd.horizontalSpan = 2;
 		warning.setLayoutData(gd);
+		warning.setText("");
 
 		String value = modifier.getValue();
 		
 		if (mandatory || value != null) {
 			fieldUsed.setSelection(true);
 			field.setEnabled(true);
-			field.setText(value);
+			if (value != null){
+				field.setText(value);
+			}
 			checkAndModify(field, modifier, checker, defaultColor, warning);
 		} else {
 			field.setEnabled(false);

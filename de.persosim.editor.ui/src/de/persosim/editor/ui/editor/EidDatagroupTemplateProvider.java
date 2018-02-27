@@ -113,10 +113,6 @@ public class EidDatagroupTemplateProvider implements DataGroupTemplateProvider {
 		return null;
 	}
 	
-	public ConstructedTlvDataObject getDefaultPlace(){
-		return (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("302CAA110C0F486569646573747261737365203137AB080C064265726C696EAC080C064265726C696EAD03130144");
-	}
-	
 	private ElementaryFile getDgWritable(byte number, byte[] content) {
 		return new ElementaryFile(new FileIdentifier(0x0100 + number),
 				new ShortFileIdentifier(number),
@@ -144,6 +140,14 @@ public class EidDatagroupTemplateProvider implements DataGroupTemplateProvider {
 		return new OrSecCondition(new TaSecurityCondition(TerminalType.IS, null),
 				new TaSecurityCondition(TerminalType.AT, 
 						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(dgNr + 7))));
+	}
+
+	public static ConstructedTlvDataObject getDefaultOptionalData() {
+		return (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("302C06072A8648CE3D0101022100A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377");
+	}
+	
+	public static ConstructedTlvDataObject getDefaultPlace(){
+		return (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("302CAA110C0F486569646573747261737365203137AB080C064265726C696EAC080C064265726C696EAD03130144");
 	}
 
 }

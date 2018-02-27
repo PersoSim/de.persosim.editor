@@ -62,4 +62,6 @@ public interface ObjectHandler {
 	 * @param item
 	 */
 	public void createMenu(Menu menu, TreeItem item);
+
+	public void removeItem(TreeItem item);
 }
