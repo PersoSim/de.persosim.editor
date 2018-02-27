@@ -7,7 +7,9 @@ import de.persosim.simulator.cardobjects.ElementaryFile;
 public interface DataGroupTemplateProvider {
 
 	public Collection<Integer> supportedDgNumbers();
+	
+	public ElementaryFile getDgForNumber(int number, String variant);
 
-	public ElementaryFile getDgForNumber(int number);
+	public Collection<String> getVariants(int number);
 
 }

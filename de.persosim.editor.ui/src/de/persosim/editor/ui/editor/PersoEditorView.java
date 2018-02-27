@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -41,7 +42,8 @@ import de.persosim.editor.ui.editor.handlers.ConstructedTlvHandler;
 import de.persosim.editor.ui.editor.handlers.DatagroupDumpHandler;
 import de.persosim.editor.ui.editor.handlers.DatagroupHandler;
 import de.persosim.editor.ui.editor.handlers.DefaultHandlerProvider;
-import de.persosim.editor.ui.editor.handlers.EidDatagroup17Handler;
+import de.persosim.editor.ui.editor.handlers.EidDatagroup17HandlerSingularGeneralPlace;
+import de.persosim.editor.ui.editor.handlers.EidDatagroup17SetOfGeneralPlaceHandler;
 import de.persosim.editor.ui.editor.handlers.EidDatagroup9Handler;
 import de.persosim.editor.ui.editor.handlers.EidDedicatedFileHandler;
 import de.persosim.editor.ui.editor.handlers.ObjectHandler;
@@ -126,7 +128,8 @@ public class PersoEditorView {
 
 		provider = new DefaultHandlerProvider(objectHandlers);
 		objectHandlers.add(new EidDatagroup9Handler(dgMapping));
-		objectHandlers.add(new EidDatagroup17Handler(dgMapping));
+		objectHandlers.add(new EidDatagroup17HandlerSingularGeneralPlace(dgMapping));
+		objectHandlers.add(new EidDatagroup17SetOfGeneralPlaceHandler(dgMapping, new EidDatagroupTemplateProvider(Collections.emptySet())));
 		objectHandlers.add(new DatagroupHandler(dgMapping));
 		objectHandlers.add(new EidDedicatedFileHandler(df, provider));
 		objectHandlers.add(new ConstructedTlvHandler(true));

@@ -1,7 +1,11 @@
 package de.persosim.editor.ui.editor;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 import de.persosim.simulator.cardobjects.ElementaryFile;
@@ -13,33 +17,52 @@ import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.seccondition.OrSecCondition;
 import de.persosim.simulator.seccondition.SecCondition;
 import de.persosim.simulator.seccondition.TaSecurityCondition;
+import de.persosim.simulator.tlv.ConstructedTlvDataObject;
+import de.persosim.simulator.tlv.TlvDataObjectFactory;
 import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 
 public class EidDatagroupTemplateProvider implements DataGroupTemplateProvider {
 	
-	private LinkedList<Integer> numbers;
+	private Map<Integer, Set<String>> dgVariants;
 
 	public EidDatagroupTemplateProvider(Set<Integer> dgNumbersToFilter) {
-		numbers = new LinkedList<Integer>();
+		dgVariants = new HashMap<Integer, Set<String>>();
+		
 		for (int i = 1; i <= 14; i++){
-			numbers.add(i);
+			dgVariants.put(i, new HashSet<>());
+			dgVariants.get(i).add("Default");
 		}
-		for (int i = 17; i <= 22; i++){
-			numbers.add(i);
+		for (int i = 18; i <= 22; i++){
+			dgVariants.put(i, new HashSet<>());
+			dgVariants.get(i).add("Default");
 		}
 
-		numbers.removeAll(dgNumbersToFilter);
+		dgVariants.put(17, new HashSet<>());
+		dgVariants.get(17).add("Residence");
+		dgVariants.get(17).add("Multi residence");
+
+		for (Integer current : dgNumbersToFilter){
+			dgVariants.remove(current);
+		}
 	}
 	
 	@Override
 	public Collection<Integer> supportedDgNumbers() {
-		return new LinkedList<Integer>(numbers);
+		return new LinkedList<Integer>(dgVariants.keySet());
 	}
-
+	
 	@Override
-	public ElementaryFile getDgForNumber(int number) {
-		if (!numbers.contains(number)){
+	public Collection<String> getVariants(int number){
+		if (dgVariants.containsKey(number)){
+			return new LinkedList<>(dgVariants.get(number));	
+		}
+		return Collections.emptyList();
+	}
+	
+	@Override
+	public ElementaryFile getDgForNumber(int number, String variant) {
+		if (!dgVariants.keySet().contains(number)){
 			return null;
 		}
 		
@@ -79,7 +102,12 @@ public class EidDatagroupTemplateProvider implements DataGroupTemplateProvider {
 			//return getDg((byte)number, HexString.toByteArray(""));
 			return null;
 		case 17:
-			return getDgWritable((byte)number, HexString.toByteArray("712E302CAA110C0F486569646573747261737365203137AB080C064265726C696EAC080C064265726C696EAD03130144"));
+			if (variant == null || "Residence".equals(variant)){
+				return getDgWritable((byte)number, HexString.toByteArray("712E302CAA110C0F486569646573747261737365203137AB080C064265726C696EAC080C064265726C696EAD03130144"));
+			} else if ("Multi residence".equals(variant)){
+				return getDgWritable((byte)number, HexString.toByteArray("7130312E302CAA110C0F486569646573747261737365203137AB080C064265726C696EAC080C064265726C696EAD03130144"));
+			}
+			return null;
 		case 18:
 			return getDgWritable((byte)number, HexString.toByteArray("7209040702761100000000"));
 		case 19:
@@ -92,6 +120,10 @@ public class EidDatagroupTemplateProvider implements DataGroupTemplateProvider {
 			return getDgWritable((byte)number, HexString.toByteArray("77021600"));
 		}
 		return null;
+	}
+	
+	public ConstructedTlvDataObject getDefaultPlace(){
+		return (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("302CAA110C0F486569646573747261737365203137AB080C064265726C696EAC080C064265726C696EAD03130144");
 	}
 	
 	private ElementaryFile getDgWritable(byte number, byte[] content) {
