@@ -1,4 +1,4 @@
-package de.persosim.editor.ui.editor.handlers;
+package de.persosim.editor.ui.editor.checker;
 
 import org.eclipse.swt.widgets.Text;
 

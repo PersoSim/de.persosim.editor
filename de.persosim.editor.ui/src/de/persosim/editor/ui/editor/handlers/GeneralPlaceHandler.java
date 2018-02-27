@@ -9,6 +9,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
 
+import de.persosim.editor.ui.editor.checker.IcaoCountryChecker;
+import de.persosim.editor.ui.editor.checker.TextFieldChecker;
+import de.persosim.editor.ui.editor.checker.UpperCaseTextFieldChecker;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;

@@ -38,16 +38,19 @@ import org.eclipse.swt.widgets.TabItem;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 
+import de.persosim.editor.ui.editor.checker.UpperCaseTextFieldChecker;
 import de.persosim.editor.ui.editor.handlers.ConstructedTlvHandler;
 import de.persosim.editor.ui.editor.handlers.DatagroupDumpHandler;
 import de.persosim.editor.ui.editor.handlers.DatagroupHandler;
 import de.persosim.editor.ui.editor.handlers.DefaultHandlerProvider;
 import de.persosim.editor.ui.editor.handlers.EidDatagroup17HandlerSingularGeneralPlace;
 import de.persosim.editor.ui.editor.handlers.EidDatagroup17SetOfGeneralPlaceHandler;
+import de.persosim.editor.ui.editor.handlers.EidDatagroup1Handler;
 import de.persosim.editor.ui.editor.handlers.EidDatagroup9Handler;
 import de.persosim.editor.ui.editor.handlers.EidDedicatedFileHandler;
 import de.persosim.editor.ui.editor.handlers.ObjectHandler;
 import de.persosim.editor.ui.editor.handlers.PrimitiveTlvHandler;
+import de.persosim.editor.ui.editor.handlers.StringTlvHandler;
 import de.persosim.editor.ui.editor.signing.SecInfoCmsBuilder;
 import de.persosim.editor.ui.editor.signing.SecInfoFileUpdater;
 import de.persosim.editor.ui.editor.signing.SignedSecInfoFileUpdater;
@@ -127,12 +130,14 @@ public class PersoEditorView {
 		objectHandlers = new LinkedList<>();
 
 		provider = new DefaultHandlerProvider(objectHandlers);
+		objectHandlers.add(new EidDatagroup1Handler(dgMapping));
 		objectHandlers.add(new EidDatagroup9Handler(dgMapping));
 		objectHandlers.add(new EidDatagroup17HandlerSingularGeneralPlace(dgMapping));
 		objectHandlers.add(new EidDatagroup17SetOfGeneralPlaceHandler(dgMapping, new EidDatagroupTemplateProvider(Collections.emptySet())));
 		objectHandlers.add(new DatagroupHandler(dgMapping));
 		objectHandlers.add(new EidDedicatedFileHandler(df, provider));
 		objectHandlers.add(new ConstructedTlvHandler(true));
+		objectHandlers.add(new StringTlvHandler(true, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new PrimitiveTlvHandler(true));
 
 		tbtmmf = new TabItem(tabFolder, SWT.NONE);

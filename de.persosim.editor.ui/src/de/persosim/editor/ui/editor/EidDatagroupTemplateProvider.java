@@ -33,14 +33,10 @@ public class EidDatagroupTemplateProvider implements DataGroupTemplateProvider {
 			dgVariants.put(i, new HashSet<>());
 			dgVariants.get(i).add("Default");
 		}
-		for (int i = 18; i <= 22; i++){
+		for (int i = 17; i <= 22; i++){
 			dgVariants.put(i, new HashSet<>());
 			dgVariants.get(i).add("Default");
 		}
-
-		dgVariants.put(17, new HashSet<>());
-		dgVariants.get(17).add("Residence");
-		dgVariants.get(17).add("Multi residence");
 
 		for (Integer current : dgNumbersToFilter){
 			dgVariants.remove(current);
@@ -102,12 +98,7 @@ public class EidDatagroupTemplateProvider implements DataGroupTemplateProvider {
 			//return getDg((byte)number, HexString.toByteArray(""));
 			return null;
 		case 17:
-			if (variant == null || "Residence".equals(variant)){
-				return getDgWritable((byte)number, HexString.toByteArray("712E302CAA110C0F486569646573747261737365203137AB080C064265726C696EAC080C064265726C696EAD03130144"));
-			} else if ("Multi residence".equals(variant)){
-				return getDgWritable((byte)number, HexString.toByteArray("7130312E302CAA110C0F486569646573747261737365203137AB080C064265726C696EAC080C064265726C696EAD03130144"));
-			}
-			return null;
+			return getDgWritable((byte)number, HexString.toByteArray("712E302CAA110C0F486569646573747261737365203137AB080C064265726C696EAC080C064265726C696EAD03130144"));
 		case 18:
 			return getDgWritable((byte)number, HexString.toByteArray("7209040702761100000000"));
 		case 19:

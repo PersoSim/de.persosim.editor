@@ -16,6 +16,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 
+import de.persosim.editor.ui.editor.checker.TextFieldChecker;
+
 public class EditorFieldHelper {
 	
 	/**
