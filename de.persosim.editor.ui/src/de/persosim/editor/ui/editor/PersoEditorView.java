@@ -156,7 +156,7 @@ public class PersoEditorView {
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 6, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 7, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 8,
-				new AndChecker(new LengthChecker(8, 8), new NumberChecker())));
+				new AndChecker(new LengthChecker(8, 8), new NumberChecker(true))));
 		objectHandlers.add(new EidDatagroup9Handler(dgMapping));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 10, new AndChecker(
 				new OrChecker(new LengthChecker(1, 1), new LengthChecker(3, 3)), new IcaoStringChecker())));
