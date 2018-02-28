@@ -51,6 +51,7 @@ public class EidOptionalDataDatagroupHandler extends DatagroupHandler {
 	
 	@Override
 	public void createMenu(Menu menu, TreeItem item) {
+		super.createMenu(menu, item);
 		MenuItem mitem = new MenuItem(menu, SWT.NONE);
 		mitem.setText("Add new optional data");
 		mitem.addSelectionListener(new SelectionListener() {
