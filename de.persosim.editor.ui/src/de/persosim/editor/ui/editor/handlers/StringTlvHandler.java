@@ -114,7 +114,7 @@ public class StringTlvHandler extends PrimitiveTlvHandler {
 			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_NUMERIC_STRING)) {
 				createSimpleField(item, true, composite, tlv, StandardCharsets.US_ASCII, "NUMERIC string");
 			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_UTF8_STRING)) {
-				createSimpleField(item, true, composite, tlv, StandardCharsets.US_ASCII, "UTF8 string");
+				createSimpleField(item, true, composite, tlv, StandardCharsets.UTF_8, "UTF8 string");
 			}
 			composite.pack();
 		}
