@@ -59,11 +59,15 @@ import de.persosim.editor.ui.editor.handlers.StringTlvHandler;
 import de.persosim.editor.ui.editor.signing.SecInfoCmsBuilder;
 import de.persosim.editor.ui.editor.signing.SecInfoFileUpdater;
 import de.persosim.editor.ui.editor.signing.SignedSecInfoFileUpdater;
+import de.persosim.simulator.cardobjects.CardFile;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.DedicatedFileIdentifier;
+import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
+import de.persosim.simulator.cardobjects.ShortFileIdentifier;
+import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
@@ -71,6 +75,15 @@ import de.persosim.simulator.platform.CommandProcessor;
 import de.persosim.simulator.platform.PersonalizationHelper;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 import de.persosim.simulator.protocols.SecInfoPublicity;
+import de.persosim.simulator.protocols.ta.CertificateRole;
+import de.persosim.simulator.protocols.ta.RelativeAuthorization;
+import de.persosim.simulator.protocols.ta.TerminalType;
+import de.persosim.simulator.seccondition.OrSecCondition;
+import de.persosim.simulator.seccondition.SecCondition;
+import de.persosim.simulator.seccondition.TaSecurityCondition;
+import de.persosim.simulator.tlv.TlvDataObject;
+import de.persosim.simulator.tlv.TlvDataObjectFactory;
+import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 
 public class PersoEditorView {
@@ -124,33 +137,42 @@ public class PersoEditorView {
 		objectHandlers.add(new DatagroupDumpHandler(dgMapping));
 
 		DefaultHandlerProvider provider = new DefaultHandlerProvider(objectHandlers);
-		
+
 		toBePersisted.add(DatagroupEditorBuilder.build(editor, perso, getMf(), provider));
 		tbtmmf.setControl(editor);
 
 		dgMapping = EidDgMapping.getMapping();
 
 		DedicatedFile df = getDf(HexString.toByteArray(DefaultPersonalization.AID_EID));
-		
+
 		objectHandlers = new LinkedList<>();
 
 		provider = new DefaultHandlerProvider(objectHandlers);
-		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 1, new AndChecker(new LengthChecker(2,2), new UpperCaseTextFieldChecker())));
-		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 2, new AndChecker(new OrChecker(new LengthChecker(1,1), new LengthChecker(3,3)), new UpperCaseTextFieldChecker())));
-		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 3, new AndChecker(new LengthChecker(8,8), new NumberChecker())));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 1,
+				new AndChecker(new LengthChecker(2, 2), new UpperCaseTextFieldChecker())));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 2, new AndChecker(
+				new OrChecker(new LengthChecker(1, 1), new LengthChecker(3, 3)), new UpperCaseTextFieldChecker())));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 3,
+				new AndChecker(new LengthChecker(8, 8), new NumberChecker())));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 4, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 5, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 6, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 7, new UpperCaseTextFieldChecker()));
-		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 8, new AndChecker(new LengthChecker(8,8), new NumberChecker())));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 8,
+				new AndChecker(new LengthChecker(8, 8), new NumberChecker())));
 		objectHandlers.add(new EidDatagroup9Handler(dgMapping));
-		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 10, new AndChecker(new OrChecker(new LengthChecker(1,1), new LengthChecker(3, 3)), new UpperCaseTextFieldChecker())));
-		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 11, new AndChecker(new LengthChecker(1,1), new UpperCaseTextFieldChecker())));
-		objectHandlers.add(new EidOptionalDataDatagroupHandler(dgMapping, 12, new EidDataTemplateProvider(Collections.emptySet())));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 10, new AndChecker(
+				new OrChecker(new LengthChecker(1, 1), new LengthChecker(3, 3)), new UpperCaseTextFieldChecker())));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 11,
+				new AndChecker(new LengthChecker(1, 1), new UpperCaseTextFieldChecker())));
+		objectHandlers.add(new EidOptionalDataDatagroupHandler(dgMapping, 12,
+				new EidDataTemplateProvider(Collections.emptySet())));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 13, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new EidDatagroup17HandlerSingularGeneralPlace(dgMapping));
-		objectHandlers.add(new EidDatagroup17SetOfGeneralPlaceHandler(dgMapping, new EidDataTemplateProvider(Collections.emptySet())));
-		objectHandlers.add(new EidOptionalDataDatagroupHandler(dgMapping, 21, new EidDataTemplateProvider(Collections.emptySet())));
+		objectHandlers.add(new EidDatagroup17SetOfGeneralPlaceHandler(dgMapping,
+				new EidDataTemplateProvider(Collections.emptySet())));
+		objectHandlers.add(new EidOptionalDataDatagroupHandler(dgMapping, 21,
+				new EidDataTemplateProvider(Collections.emptySet())));
 		objectHandlers.add(new DatagroupHandler(dgMapping));
 		objectHandlers.add(new EidDedicatedFileHandler(df, provider));
 		objectHandlers.add(new ConstructedTlvHandler(true));
@@ -166,18 +188,19 @@ public class PersoEditorView {
 
 	private DedicatedFile getDf(byte[] aid) {
 		MasterFile mf = getMf();
-		
+
 		Collection<CardObject> currentDfCandidates = mf.findChildren(new DedicatedFileIdentifier(aid));
-		
+
 		if (currentDfCandidates.isEmpty()) {
 			return null;
 		}
-		
+
 		return (DedicatedFile) currentDfCandidates.iterator().next();
 	}
 
 	private MasterFile getMf() {
-		return PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class).getObjectTree();
+		return PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class)
+				.getObjectTree();
 	}
 
 	@PostConstruct
@@ -239,7 +262,7 @@ public class PersoEditorView {
 					persoFile = Paths.get(selection);
 					doSave(null);
 				}
-				
+
 			}
 
 			@Override
@@ -287,9 +310,25 @@ public class PersoEditorView {
 	protected void updateSignedFiles() {
 		if (Boolean.parseBoolean(
 				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS))) {
+
+			if (getMf().findChildren(new FileIdentifier(0x011c)).isEmpty()) {
+				try {
+					TlvDataObject efCardAccessTlv = TlvDataObjectFactory
+							.createTLVDataObject(HexString.toByteArray("3000"));
+
+					CardFile eidDgCardAccess = new ElementaryFile(new FileIdentifier(0x011C),
+							new ShortFileIdentifier(0x1C), efCardAccessTlv.toByteArray(), SecCondition.ALLOWED,
+							SecCondition.DENIED, SecCondition.DENIED);
+					getMf().addChild(eidDgCardAccess);
+				} catch (AccessDeniedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
 			new SecInfoFileUpdater(null, new FileIdentifier(0x011c), SecInfoPublicity.PUBLIC).execute(perso);
 		}
-		
+
 		String dscert = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSCERT);
 		String dskey = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSKEY);
 
@@ -307,6 +346,18 @@ public class PersoEditorView {
 
 		if (updateEfCardSecurity) {
 			try {
+				if (getMf().findChildren(new FileIdentifier(0x011D)).isEmpty()) {
+					try {
+						CardFile eidDgCardSecurity = new ElementaryFile(new FileIdentifier(0x011D),
+								new ShortFileIdentifier(0x1D), HexString.toByteArray("3100"), new TaSecurityCondition(),
+								SecCondition.DENIED, SecCondition.DENIED);
+						getMf().addChild(eidDgCardSecurity);
+					} catch (AccessDeniedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+
 				SecInfoCmsBuilder builder = new SecInfoCmsBuilder(Files.readAllBytes(Paths.get(dscert)),
 						Files.readAllBytes(Paths.get(dskey)));
 				new SignedSecInfoFileUpdater(null, new FileIdentifier(0x011d), SecInfoPublicity.PRIVILEGED, builder)
@@ -320,6 +371,24 @@ public class PersoEditorView {
 
 		if (updateEfChipSecurity) {
 			try {
+				if (getMf().findChildren(new FileIdentifier(0x011B)).isEmpty()) {
+					try {
+						SecCondition taWithIs = new TaSecurityCondition(TerminalType.IS, null);
+						SecCondition taWithAtPrivileged = new TaSecurityCondition(TerminalType.AT,
+								new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(3)));
+
+						CardFile eidDgChipSecurity = new ElementaryFile(new FileIdentifier(0x011B),
+								new ShortFileIdentifier(0x1B), HexString.toByteArray("3100"),
+								new OrSecCondition(taWithIs, taWithAtPrivileged), SecCondition.DENIED,
+								SecCondition.DENIED);
+
+						getMf().addChild(eidDgChipSecurity);
+					} catch (AccessDeniedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+
 				SecInfoCmsBuilder builder = new SecInfoCmsBuilder(Files.readAllBytes(Paths.get(dscert)),
 						Files.readAllBytes(Paths.get(dskey)));
 				new SignedSecInfoFileUpdater(null, new FileIdentifier(0x011b), SecInfoPublicity.AUTHENTICATED, builder)
@@ -331,7 +400,6 @@ public class PersoEditorView {
 			}
 		}
 
-		
 	}
 
 	@Focus
