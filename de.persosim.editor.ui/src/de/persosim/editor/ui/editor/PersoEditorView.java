@@ -229,7 +229,34 @@ public class PersoEditorView {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				doSave(null);
+				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
+				fd.setText("Save");
+				fd.setFilterPath("C:/");
+				String[] filterExt = { "*.perso", "*.*" };
+				fd.setFilterExtensions(filterExt);
+				String selection = fd.open();
+				if (selection != null) {
+					persoFile = Paths.get(selection);
+					doSave(null);
+				}
+				
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		Button btnUpdateSignatures = new Button(grpControl, SWT.NONE);
+		btnUpdateSignatures.setText("Update signed files");
+		btnUpdateSignatures.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				updateSignedFiles();
+				updateContent(perso);
 			}
 
 			@Override
@@ -257,21 +284,12 @@ public class PersoEditorView {
 		});
 	}
 
-	@Focus
-	public void setFocus() {
-	}
-
-	@Persist
-	void doSave(@Optional IProgressMonitor monitor) {
-		for (DfEditor editor : toBePersisted) {
-			editor.persist();
-		}
-
+	protected void updateSignedFiles() {
 		if (Boolean.parseBoolean(
 				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS))) {
 			new SecInfoFileUpdater(null, new FileIdentifier(0x011c), SecInfoPublicity.PUBLIC).execute(perso);
 		}
-
+		
 		String dscert = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSCERT);
 		String dskey = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSKEY);
 
@@ -312,6 +330,21 @@ public class PersoEditorView {
 						"Please check the document signer certificate settings.");
 			}
 		}
+
+		
+	}
+
+	@Focus
+	public void setFocus() {
+	}
+
+	@Persist
+	void doSave(@Optional IProgressMonitor monitor) {
+		for (DfEditor editor : toBePersisted) {
+			editor.persist();
+		}
+
+		updateSignedFiles();
 
 		if (perso != null && persoFile != null) {
 			PersonalizationFactory.marshal(perso, persoFile.toAbsolutePath().toString());
