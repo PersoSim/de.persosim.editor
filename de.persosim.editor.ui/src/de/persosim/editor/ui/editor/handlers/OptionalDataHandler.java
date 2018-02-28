@@ -78,7 +78,7 @@ public class OptionalDataHandler extends AbstractObjectHandler {
 
 		ConstructedTlvDataObject ctlv = (ConstructedTlvDataObject) item.getData();
 
-		EditorFieldHelper.createField(item, false, composite, new TlvModifier() {
+		EditorFieldHelper.createBinaryField(item, false, composite, new TlvModifier() {
 
 			@Override
 			public void setValue(String value) {

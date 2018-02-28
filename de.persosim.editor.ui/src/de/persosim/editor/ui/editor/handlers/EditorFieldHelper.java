@@ -1,7 +1,11 @@
 package de.persosim.editor.ui.editor.handlers;
 
 import java.awt.GridLayout;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -9,17 +13,99 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.persosim.editor.ui.editor.checker.FieldCheckResult;
 import de.persosim.editor.ui.editor.checker.TextFieldChecker;
+import de.persosim.simulator.utils.HexString;
 
 public class EditorFieldHelper {
+	
+	public static void createBinaryField(TreeItem item, boolean mandatory, Composite composite, TlvModifier modifier, TextFieldChecker checker, String infoText){
+		
+		Text field = createField(item, mandatory, composite, modifier, checker, infoText);
+		
+		//dummy to fill empty cell
+		new Label(composite, SWT.NONE);
+		
+		Composite buttons = new Composite(composite, SWT.NONE);
+		buttons.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		buttons.setLayout(new RowLayout());
+		
+		Button replace = new Button(buttons, SWT.PUSH);
+		replace.setText("Browse for Replacement");
+		replace.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
+				fd.setText("Open");
+				fd.setFilterPath("C:/");
+				String[] filterExt = { "*.bin", "*.*" };
+				fd.setFilterExtensions(filterExt);
+				String selection = fd.open();
+				if (selection != null) {
+					try {
+						modifier.setValue(HexString.encode(Files.readAllBytes(Paths.get(selection))));
+						ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
+						if (handler != null) {
+							handler.updateTextRecursively(item);
+						}
+						field.setText(modifier.getValue());
+						for (Control control : composite.getChildren()){
+							control.notifyListeners(SWT.Modify, new Event());
+						}
+					} catch (IOException e1) {
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "File could not be read.");
+					}
+				}
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		Button save = new Button(buttons, SWT.PUSH);
+		save.setText("Save data");
+		save.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
+				fd.setText("Save");
+				fd.setFilterPath("C:/");
+				String[] filterExt = { "*.bin", "*.*" };
+				fd.setFilterExtensions(filterExt);
+				String selection = fd.open();
+				if (selection != null) {
+					try {
+						Files.write(Paths.get(selection), HexString.toByteArray(modifier.getValue()));
+					} catch (IOException e1) {
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "File could not be read.");
+					}
+				}
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		composite.pack();
+	}
 	
 	/**
 	 * @param item
