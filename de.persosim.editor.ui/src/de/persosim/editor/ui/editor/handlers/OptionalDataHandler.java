@@ -3,8 +3,8 @@ package de.persosim.editor.ui.editor.handlers;
 import java.util.Arrays;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
@@ -116,17 +116,11 @@ public class OptionalDataHandler extends AbstractObjectHandler {
 	public void createMenu(Menu menu, TreeItem item) {
 		MenuItem mitem = new MenuItem(menu, SWT.NONE);
 		mitem.setText("Remove optional data");
-		mitem.addSelectionListener(new SelectionListener() {
+		mitem.addSelectionListener(new SelectionAdapter() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				((ObjectHandler)item.getParentItem().getData(HANDLER)).removeItem(item);
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 	}

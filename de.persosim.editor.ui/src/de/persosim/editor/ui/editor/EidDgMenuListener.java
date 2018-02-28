@@ -5,12 +5,14 @@ import java.util.HashSet;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Tree;
+import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.editor.ui.editor.handlers.HandlerProvider;
 import de.persosim.simulator.cardobjects.CardObject;
@@ -36,7 +38,7 @@ public class EidDgMenuListener extends DefaultMenuListener {
 	protected void addAddtionalEntries(Menu menu) {
 		MenuItem item = new MenuItem(menu, SWT.NONE);
 		item.setText("Add datagroup");
-		item.addSelectionListener(new SelectionListener() {
+		item.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -60,16 +62,9 @@ public class EidDgMenuListener extends DefaultMenuListener {
 						df.addChild(ef);
 						provider.get(ef).createItem(dfTree, ef, provider);
 					} catch (AccessDeniedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+						BasicLogger.logException(getClass(), e1, LogLevel.WARN);
 					}
 				}
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-
 			}
 		});
 

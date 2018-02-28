@@ -22,8 +22,8 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -225,7 +225,7 @@ public class PersoEditorView {
 
 		Button btnOpen = new Button(grpControl, SWT.NONE);
 		btnOpen.setText("Open");
-		btnOpen.addSelectionListener(new SelectionListener() {
+		btnOpen.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -239,17 +239,11 @@ public class PersoEditorView {
 					updateContent(Paths.get(selection));
 				}
 			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-
-			}
 		});
 
 		Button btnSave = new Button(grpControl, SWT.NONE);
 		btnSave.setText("Save");
-		btnSave.addSelectionListener(new SelectionListener() {
+		btnSave.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -265,45 +259,27 @@ public class PersoEditorView {
 				}
 
 			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-
-			}
 		});
 
 		Button btnUpdateSignatures = new Button(grpControl, SWT.NONE);
 		btnUpdateSignatures.setText("Update signed files");
-		btnUpdateSignatures.addSelectionListener(new SelectionListener() {
+		btnUpdateSignatures.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				updateSignedFiles();
 				updateContent(perso);
 			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-
-			}
 		});
 
 		Button btnSignatureSettings = new Button(grpControl, SWT.NONE);
 		btnSignatureSettings.setText("Signature Settings");
 
-		btnSignatureSettings.addSelectionListener(new SelectionListener() {
+		btnSignatureSettings.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				new SignatureSettingsDialog(Display.getCurrent().getActiveShell()).open();
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-
 			}
 		});
 	}
@@ -322,8 +298,7 @@ public class PersoEditorView {
 							SecCondition.DENIED, SecCondition.DENIED);
 					getMf().addChild(eidDgCardAccess);
 				} catch (AccessDeniedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					BasicLogger.logException(getClass(), e, LogLevel.WARN);
 				}
 			}
 
@@ -354,8 +329,7 @@ public class PersoEditorView {
 								SecCondition.DENIED, SecCondition.DENIED);
 						getMf().addChild(eidDgCardSecurity);
 					} catch (AccessDeniedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						BasicLogger.logException(getClass(), e, LogLevel.WARN);
 					}
 				}
 
@@ -385,8 +359,7 @@ public class PersoEditorView {
 
 						getMf().addChild(eidDgChipSecurity);
 					} catch (AccessDeniedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						BasicLogger.logException(getClass(), e, LogLevel.WARN);
 					}
 				}
 

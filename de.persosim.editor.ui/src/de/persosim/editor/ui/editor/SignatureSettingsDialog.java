@@ -2,8 +2,8 @@ package de.persosim.editor.ui.editor;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -39,17 +39,11 @@ public class SignatureSettingsDialog extends Dialog{
 		btnEfCardAccess.setText("EF.CardAccess");
 		btnEfCardAccess.setSelection(Boolean.parseBoolean(PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS)));
 		
-		btnEfCardAccess.addSelectionListener(new SelectionListener() {
+		btnEfCardAccess.addSelectionListener(new SelectionAdapter() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 		        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS, Boolean.toString(((Button)e.getSource()).getSelection()));				
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 		
@@ -58,17 +52,11 @@ public class SignatureSettingsDialog extends Dialog{
 		
 		btnEfCardSecurity.setSelection(Boolean.parseBoolean(PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY)));
 		
-		btnEfCardSecurity.addSelectionListener(new SelectionListener() {
+		btnEfCardSecurity.addSelectionListener(new SelectionAdapter() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 		        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY, Boolean.toString(((Button)e.getSource()).getSelection()));				
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 		
@@ -77,17 +65,11 @@ public class SignatureSettingsDialog extends Dialog{
 
 		btnEfChipSecurity.setSelection(Boolean.parseBoolean(PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY)));
 		
-		btnEfChipSecurity.addSelectionListener(new SelectionListener() {
+		btnEfChipSecurity.addSelectionListener(new SelectionAdapter() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 		        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY, Boolean.toString(((Button)e.getSource()).getSelection()));				
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 		
@@ -106,7 +88,7 @@ public class SignatureSettingsDialog extends Dialog{
 		if (path != null) {
 			dsCertPath.setText(path);
 		}
-		dsCertBrowse.addSelectionListener(new SelectionListener() {
+		dsCertBrowse.addSelectionListener(new SelectionAdapter() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -120,12 +102,6 @@ public class SignatureSettingsDialog extends Dialog{
 		        if (selection != null){
 			        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_DSCERT, selection);	
 		        }
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 		
@@ -141,7 +117,7 @@ public class SignatureSettingsDialog extends Dialog{
 		if (path != null) {
 			dsKeyPath.setText(path);
 		}
-		dsKeyBrowse.addSelectionListener(new SelectionListener() {
+		dsKeyBrowse.addSelectionListener(new SelectionAdapter() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -155,12 +131,6 @@ public class SignatureSettingsDialog extends Dialog{
 		        if (selection != null){
 			        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_DSKEY, selection);	
 		        }
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 		

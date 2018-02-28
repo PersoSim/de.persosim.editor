@@ -3,6 +3,8 @@ package de.persosim.editor.ui.editor.handlers;
 import java.util.Map;
 
 import org.eclipse.swt.widgets.TreeItem;
+import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
@@ -31,8 +33,7 @@ public class EidDatagroup17HandlerSingularGeneralPlace extends DatagroupHandler 
 						return checkGeneralPlace(tlvObject);
 					}
 				} catch (AccessDeniedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					BasicLogger.logException(getClass(), e, LogLevel.WARN);
 				}
 			}
 		}

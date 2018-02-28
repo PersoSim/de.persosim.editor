@@ -1,10 +1,10 @@
 package de.persosim.editor.ui.editor;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MenuAdapter;
 import org.eclipse.swt.events.MenuEvent;
-import org.eclipse.swt.events.MenuListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -30,7 +30,7 @@ public class DfEditor {
 
 		dfTree = new Tree(viewer, SWT.NONE);
 
-		dfTree.addSelectionListener(new SelectionListener() {
+		dfTree.addSelectionListener(new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -57,12 +57,6 @@ public class DfEditor {
 				localEditor.requestLayout();
 				localEditor.redraw();
 			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-
-			}
 		});
 		
 		Menu menu = new Menu(dfTree);
@@ -75,17 +69,11 @@ public class DfEditor {
 			dummy.dispose();
 		}
 		
-		menu.addMenuListener(new MenuListener() {
+		menu.addMenuListener(new MenuAdapter() {
 			
 			@Override
 			public void menuShown(MenuEvent e) {
 				editor.getParent();
-			}
-			
-			@Override
-			public void menuHidden(MenuEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 

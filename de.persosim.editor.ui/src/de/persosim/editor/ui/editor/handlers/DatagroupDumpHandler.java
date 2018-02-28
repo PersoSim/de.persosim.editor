@@ -4,8 +4,8 @@ import java.util.Map;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -14,6 +14,8 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.ElementaryFile;
@@ -112,24 +114,17 @@ public class DatagroupDumpHandler extends AbstractObjectHandler {
 		super.createMenu(menu, item);
 		MenuItem mitem = new MenuItem(menu, SWT.NONE);
 		mitem.setText("Remove datagroup");
-		mitem.addSelectionListener(new SelectionListener() {
+		mitem.addSelectionListener(new SelectionAdapter() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				ElementaryFile ef = (ElementaryFile) item.getData();
 				try {
 					ef.getParent().removeChild(ef);
+					item.dispose();
 				} catch (AccessDeniedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					BasicLogger.logException(getClass(), e1, LogLevel.WARN);
 				}
-				item.dispose();
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 	}

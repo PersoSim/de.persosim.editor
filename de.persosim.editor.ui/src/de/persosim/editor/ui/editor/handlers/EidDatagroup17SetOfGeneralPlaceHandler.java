@@ -3,8 +3,8 @@ package de.persosim.editor.ui.editor.handlers;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TreeItem;
@@ -52,7 +52,7 @@ public class EidDatagroup17SetOfGeneralPlaceHandler extends EidDatagroup17Handle
 		super.createMenu(menu, item);
 		MenuItem mitem = new MenuItem(menu, SWT.NONE);
 		mitem.setText("Add Place");
-		mitem.addSelectionListener(new SelectionListener() {
+		mitem.addSelectionListener(new SelectionAdapter() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -61,12 +61,6 @@ public class EidDatagroup17SetOfGeneralPlaceHandler extends EidDatagroup17Handle
 					ConstructedTlvDataObject ctlv = ((ConstructedTlvDataObject) tlvObject);
 					ctlv.addTlvDataObject(templateProvider.getDefaultPlace());
 				}
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 	}

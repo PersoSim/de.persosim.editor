@@ -9,6 +9,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -43,7 +44,7 @@ public class EditorFieldHelper {
 		
 		Button replace = new Button(buttons, SWT.PUSH);
 		replace.setText("Browse for Replacement");
-		replace.addSelectionListener(new SelectionListener() {
+		replace.addSelectionListener(new SelectionAdapter() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -69,17 +70,11 @@ public class EditorFieldHelper {
 					}
 				}
 			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
 		});
 		
 		Button save = new Button(buttons, SWT.PUSH);
 		save.setText("Save data");
-		save.addSelectionListener(new SelectionListener() {
+		save.addSelectionListener(new SelectionAdapter() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -96,12 +91,6 @@ public class EditorFieldHelper {
 						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "File could not be read.");
 					}
 				}
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 		composite.pack();

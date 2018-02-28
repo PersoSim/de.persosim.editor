@@ -3,6 +3,8 @@ package de.persosim.editor.ui.editor.handlers;
 import java.util.Map;
 
 import org.eclipse.swt.widgets.TreeItem;
+import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.exception.AccessDeniedException;
@@ -35,8 +37,7 @@ public class DatagroupHandler extends DatagroupDumpHandler {
 			item.setData(EXTRACTED_TLV, tlvObject);
 			handleItem(provider, item, tlvObject);
 		} catch (AccessDeniedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			BasicLogger.logException(getClass(), e, LogLevel.WARN);
 		}
 	}
 
@@ -62,8 +63,7 @@ public class DatagroupHandler extends DatagroupDumpHandler {
 			try {
 				ef.setContent(tlv.toByteArray());
 			} catch (AccessDeniedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				BasicLogger.logException(getClass(), e, LogLevel.WARN);
 			}
 		}
 	}
