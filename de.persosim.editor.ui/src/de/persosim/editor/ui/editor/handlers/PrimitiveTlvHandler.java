@@ -71,7 +71,7 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 				}
 			} else {
 				if (text.length() > 32) {
-					text = text.substring(0, 31);
+					text = text.substring(0, 31) + "...";
 				}
 
 			}

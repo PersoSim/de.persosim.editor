@@ -88,9 +88,8 @@ public class StringTlvHandler extends PrimitiveTlvHandler {
 				}
 			} else {
 				if (text.length() > 32) {
-					text = text.substring(0, 31);
+					text = text.substring(0, 31) + "...";
 				}
-
 			}
 			item.setText(text);
 		}
