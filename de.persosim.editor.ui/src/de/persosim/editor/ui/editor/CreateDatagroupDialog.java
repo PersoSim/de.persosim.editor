@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -44,17 +46,19 @@ public class CreateDatagroupDialog extends Dialog {
 			Collection<String> variants = datagroupTemplates.getVariants(current);
 			variants.stream().forEach(variant -> {dgTypes.add(mapping.get(current) + " (" + variant + ")");});
 		});
+		
+		dgTypes.addMouseListener(new MouseAdapter() {
+			public void mouseDoubleClick(MouseEvent e) {
+				updateFromSelection(mappingToNumber);
+				close();
+			}
+		});
 
 		dgTypes.addSelectionListener(new SelectionListener() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (dgTypes.getSelectionIndex() >= 0) {
-					String selected = dgTypes.getSelection()[0];
-					String variant = selected.substring(selected.lastIndexOf('(') + 1, selected.lastIndexOf(')'));
-					Integer number = mappingToNumber.get(selected.substring(0, selected.lastIndexOf('(')).trim());
-					setSelected(number, variant);
-				}
+				updateFromSelection(mappingToNumber);
 			}
 
 			@Override
@@ -74,5 +78,14 @@ public class CreateDatagroupDialog extends Dialog {
 
 	public ElementaryFile getElementaryFile() {
 		return datagroupTemplates.getDgForNumber(lastSelected, lastSelectedVariant);
+	}
+
+	private void updateFromSelection(Map<String, Integer> mappingToNumber) {
+		if (dgTypes.getSelectionIndex() >= 0) {
+			String selected = dgTypes.getSelection()[0];
+			String variant = selected.substring(selected.lastIndexOf('(') + 1, selected.lastIndexOf(')'));
+			Integer number = mappingToNumber.get(selected.substring(0, selected.lastIndexOf('(')).trim());
+			setSelected(number, variant);
+		}
 	}
 }
