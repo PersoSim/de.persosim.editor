@@ -32,6 +32,9 @@ import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.editor.ui.editor.checker.AndChecker;
+import de.persosim.editor.ui.editor.checker.IcaoSexChecker;
+import de.persosim.editor.ui.editor.checker.IcaoStringChecker;
+import de.persosim.editor.ui.editor.checker.LengthChecker;
 import de.persosim.editor.ui.editor.checker.NullChecker;
 import de.persosim.editor.ui.editor.checker.NumberChecker;
 import de.persosim.editor.ui.editor.checker.OrChecker;
@@ -46,7 +49,6 @@ import de.persosim.editor.ui.editor.handlers.EidDatagroup9Handler;
 import de.persosim.editor.ui.editor.handlers.EidDedicatedFileHandler;
 import de.persosim.editor.ui.editor.handlers.EidOptionalDataDatagroupHandler;
 import de.persosim.editor.ui.editor.handlers.EidStringDatagroupHandler;
-import de.persosim.editor.ui.editor.handlers.LengthChecker;
 import de.persosim.editor.ui.editor.handlers.ObjectHandler;
 import de.persosim.editor.ui.editor.handlers.PrimitiveTlvHandler;
 import de.persosim.editor.ui.editor.handlers.StringTlvHandler;
@@ -144,9 +146,9 @@ public class PersoEditorView {
 
 		provider = new DefaultHandlerProvider(objectHandlers);
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 1,
-				new AndChecker(new LengthChecker(2, 2), new UpperCaseTextFieldChecker())));
+				new AndChecker(new LengthChecker(2, 2), new IcaoStringChecker())));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 2, new AndChecker(
-				new OrChecker(new LengthChecker(1, 1), new LengthChecker(3, 3)), new UpperCaseTextFieldChecker())));
+				new OrChecker(new LengthChecker(1, 1), new LengthChecker(3, 3)), new IcaoStringChecker())));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 3,
 				new AndChecker(new LengthChecker(8, 8), new NumberChecker(true))));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 4, new UpperCaseTextFieldChecker()));
@@ -157,9 +159,9 @@ public class PersoEditorView {
 				new AndChecker(new LengthChecker(8, 8), new NumberChecker())));
 		objectHandlers.add(new EidDatagroup9Handler(dgMapping));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 10, new AndChecker(
-				new OrChecker(new LengthChecker(1, 1), new LengthChecker(3, 3)), new UpperCaseTextFieldChecker())));
+				new OrChecker(new LengthChecker(1, 1), new LengthChecker(3, 3)), new IcaoStringChecker())));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 11,
-				new AndChecker(new LengthChecker(1, 1), new UpperCaseTextFieldChecker())));
+				new AndChecker(new LengthChecker(1, 1), new IcaoSexChecker())));
 		objectHandlers.add(new EidOptionalDataDatagroupHandler(dgMapping, 12,
 				new EidDataTemplateProvider(Collections.emptySet())));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 13, new UpperCaseTextFieldChecker()));

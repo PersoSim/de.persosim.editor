@@ -1,10 +1,8 @@
-package de.persosim.editor.ui.editor.handlers;
+package de.persosim.editor.ui.editor.checker;
 
 import org.eclipse.swt.widgets.Text;
 
-import de.persosim.editor.ui.editor.checker.FieldCheckResult;
 import de.persosim.editor.ui.editor.checker.FieldCheckResult.State;
-import de.persosim.editor.ui.editor.checker.TextFieldChecker;
 
 public class LengthChecker implements TextFieldChecker {
 

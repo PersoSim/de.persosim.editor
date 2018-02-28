@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.persosim.editor.ui.editor.checker.AndChecker;
+import de.persosim.editor.ui.editor.checker.LengthChecker;
 import de.persosim.editor.ui.editor.checker.OrChecker;
 import de.persosim.editor.ui.editor.checker.TextFieldChecker;
 import de.persosim.editor.ui.editor.checker.UpperCaseTextFieldChecker;
@@ -32,9 +33,6 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 			if (TlvConstants.TAG_SEQUENCE.equals(generalPlace.getTlvTag()) || TlvConstants.TAG_A1.equals(generalPlace.getTlvTag()) || TlvConstants.TAG_A2.equals(generalPlace.getTlvTag())) {
 				return true;
 			}
-
-			// XXX possible necessary to check deeper if it is used in a
-			// HandlerProvider
 		}
 		return false;
 	}
