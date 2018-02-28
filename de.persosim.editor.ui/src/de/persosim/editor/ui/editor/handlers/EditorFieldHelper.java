@@ -160,6 +160,7 @@ public class EditorFieldHelper {
 				ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
 				if (handler != null) {
 					handler.updateTextRecursively(item);
+					handler.persist(item);
 				}
 				warning.pack();
 				warning.requestLayout();
