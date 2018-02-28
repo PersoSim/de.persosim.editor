@@ -148,7 +148,7 @@ public class PersoEditorView {
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 2, new AndChecker(
 				new OrChecker(new LengthChecker(1, 1), new LengthChecker(3, 3)), new UpperCaseTextFieldChecker())));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 3,
-				new AndChecker(new LengthChecker(8, 8), new NumberChecker())));
+				new AndChecker(new LengthChecker(8, 8), new NumberChecker(true))));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 4, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 5, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 6, new UpperCaseTextFieldChecker()));
