@@ -78,7 +78,7 @@ public class EditorFieldHelper {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
+				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
 				fd.setText("Save");
 				fd.setFilterPath("C:/");
 				String[] filterExt = { "*.bin", "*.*" };
@@ -88,7 +88,7 @@ public class EditorFieldHelper {
 					try {
 						Files.write(Paths.get(selection), HexString.toByteArray(modifier.getValue()));
 					} catch (IOException e1) {
-						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "File could not be read.");
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "File could not be written.");
 					}
 				}
 			}
