@@ -39,6 +39,7 @@ import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.editor.ui.editor.checker.AndChecker;
+import de.persosim.editor.ui.editor.checker.NullChecker;
 import de.persosim.editor.ui.editor.checker.NumberChecker;
 import de.persosim.editor.ui.editor.checker.OrChecker;
 import de.persosim.editor.ui.editor.checker.UpperCaseTextFieldChecker;
@@ -171,8 +172,8 @@ public class PersoEditorView {
 		objectHandlers.add(new EidDatagroup17HandlerSingularGeneralPlace(dgMapping));
 		objectHandlers.add(new EidDatagroup17SetOfGeneralPlaceHandler(dgMapping,
 				new EidDataTemplateProvider(Collections.emptySet())));
-		objectHandlers.add(new EidOptionalDataDatagroupHandler(dgMapping, 21,
-				new EidDataTemplateProvider(Collections.emptySet())));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 21, new NullChecker()));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 22, new NullChecker()));
 		objectHandlers.add(new DatagroupHandler(dgMapping));
 		objectHandlers.add(new EidDedicatedFileHandler(df, provider));
 		objectHandlers.add(new ConstructedTlvHandler(true));
