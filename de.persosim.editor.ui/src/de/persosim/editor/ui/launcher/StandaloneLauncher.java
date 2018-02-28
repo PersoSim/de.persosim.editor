@@ -161,7 +161,7 @@ public class StandaloneLauncher {
 	private static void setDefault(String key) {
 		String updateDg = PersoSimPreferenceManager.getPreference(key);
 		if (updateDg == null) {
-			updateDg = Boolean.TRUE.toString();
+			updateDg = Boolean.FALSE.toString();
 		}
 		PersoSimPreferenceManager.storePreference(key, updateDg);
 	}
