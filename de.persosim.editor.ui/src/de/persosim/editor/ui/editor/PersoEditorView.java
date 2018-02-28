@@ -146,11 +146,11 @@ public class PersoEditorView {
 		objectHandlers.add(new EidDatagroup9Handler(dgMapping));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 10, new AndChecker(new OrChecker(new LengthChecker(1,1), new LengthChecker(3, 3)), new UpperCaseTextFieldChecker())));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 11, new AndChecker(new LengthChecker(1,1), new UpperCaseTextFieldChecker())));
-		objectHandlers.add(new EidOptionalDataDatagroupHandler(dgMapping, 12));
+		objectHandlers.add(new EidOptionalDataDatagroupHandler(dgMapping, 12, new EidDataTemplateProvider(Collections.emptySet())));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 13, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new EidDatagroup17HandlerSingularGeneralPlace(dgMapping));
-		objectHandlers.add(new EidDatagroup17SetOfGeneralPlaceHandler(dgMapping, new EidDatagroupTemplateProvider(Collections.emptySet())));
-		objectHandlers.add(new EidOptionalDataDatagroupHandler(dgMapping, 21));
+		objectHandlers.add(new EidDatagroup17SetOfGeneralPlaceHandler(dgMapping, new EidDataTemplateProvider(Collections.emptySet())));
+		objectHandlers.add(new EidOptionalDataDatagroupHandler(dgMapping, 21, new EidDataTemplateProvider(Collections.emptySet())));
 		objectHandlers.add(new DatagroupHandler(dgMapping));
 		objectHandlers.add(new EidDedicatedFileHandler(df, provider));
 		objectHandlers.add(new ConstructedTlvHandler(true));

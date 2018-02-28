@@ -22,11 +22,11 @@ import de.persosim.simulator.tlv.TlvDataObjectFactory;
 import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 
-public class EidDatagroupTemplateProvider implements DataGroupTemplateProvider {
+public class EidDataTemplateProvider implements DataGroupTemplateProvider {
 	
 	private Map<Integer, Set<String>> dgVariants;
 
-	public EidDatagroupTemplateProvider(Set<Integer> dgNumbersToFilter) {
+	public EidDataTemplateProvider(Set<Integer> dgNumbersToFilter) {
 		dgVariants = new HashMap<Integer, Set<String>>();
 		
 		for (int i = 1; i <= 14; i++){
@@ -142,11 +142,11 @@ public class EidDatagroupTemplateProvider implements DataGroupTemplateProvider {
 						new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(dgNr + 7))));
 	}
 
-	public static ConstructedTlvDataObject getDefaultOptionalData() {
+	public ConstructedTlvDataObject getDefaultOptionalData() {
 		return (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("302C06072A8648CE3D0101022100A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377");
 	}
 	
-	public static ConstructedTlvDataObject getDefaultPlace(){
+	public ConstructedTlvDataObject getDefaultPlace(){
 		return (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("302CAA110C0F486569646573747261737365203137AB080C064265726C696EAC080C064265726C696EAD03130144");
 	}
 

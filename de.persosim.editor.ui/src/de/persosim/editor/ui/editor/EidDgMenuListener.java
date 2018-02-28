@@ -53,7 +53,7 @@ public class EidDgMenuListener extends DefaultMenuListener {
 				}
 
 				CreateDatagroupDialog dialog = new CreateDatagroupDialog(Display.getCurrent().getActiveShell(),
-						new EidDatagroupTemplateProvider(toFilter));
+						new EidDataTemplateProvider(toFilter));
 				if (dialog.open() == Dialog.OK) {
 					ElementaryFile ef = dialog.getElementaryFile();
 					try {

@@ -9,16 +9,16 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.persosim.editor.ui.editor.EidDatagroupTemplateProvider;
+import de.persosim.editor.ui.editor.EidDataTemplateProvider;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
 import de.persosim.simulator.tlv.TlvDataObject;
 
 public class EidDatagroup17SetOfGeneralPlaceHandler extends EidDatagroup17HandlerSingularGeneralPlace {
 	
-	private EidDatagroupTemplateProvider templateProvider;
+	private EidDataTemplateProvider templateProvider;
 
-	public EidDatagroup17SetOfGeneralPlaceHandler(Map<Integer, String> dgMapping, EidDatagroupTemplateProvider templateProvider) {
+	public EidDatagroup17SetOfGeneralPlaceHandler(Map<Integer, String> dgMapping, EidDataTemplateProvider templateProvider) {
 		super(dgMapping);
 		this.templateProvider = templateProvider;
 	}

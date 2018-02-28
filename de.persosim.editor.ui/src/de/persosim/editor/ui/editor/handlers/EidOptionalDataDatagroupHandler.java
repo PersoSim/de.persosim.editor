@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TreeItem;
 
-import de.persosim.editor.ui.editor.EidDatagroupTemplateProvider;
+import de.persosim.editor.ui.editor.EidDataTemplateProvider;
 import de.persosim.simulator.cardobjects.ElementaryFile;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
@@ -19,10 +19,12 @@ import de.persosim.simulator.tlv.TlvDataObject;
 public class EidOptionalDataDatagroupHandler extends DatagroupHandler {
 	
 	private int dgNumber;
+	private EidDataTemplateProvider templateProvider;
 
-	public EidOptionalDataDatagroupHandler(Map<Integer, String> dgMapping, int dgNumber) {
+	public EidOptionalDataDatagroupHandler(Map<Integer, String> dgMapping, int dgNumber, EidDataTemplateProvider templateProvider) {
 		super(dgMapping);
 		this.dgNumber = dgNumber;
+		this.templateProvider = templateProvider;
 	}
 	
 	@Override
@@ -59,7 +61,7 @@ public class EidOptionalDataDatagroupHandler extends DatagroupHandler {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				ObjectHandler handler = new OptionalDataHandler();
-				ConstructedTlvDataObject defaultOptionalData = EidDatagroupTemplateProvider.getDefaultOptionalData();
+				ConstructedTlvDataObject defaultOptionalData = templateProvider.getDefaultOptionalData();
 				ConstructedTlvDataObject tlv = (ConstructedTlvDataObject) item.getData(EXTRACTED_TLV);
 				tlv.addTlvDataObject(defaultOptionalData);
 				TreeItem newItem = handler.createItem(item, defaultOptionalData, null);
