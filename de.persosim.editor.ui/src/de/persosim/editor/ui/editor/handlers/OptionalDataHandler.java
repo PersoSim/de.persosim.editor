@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.persosim.editor.ui.editor.checker.HexChecker;
+import de.persosim.simulator.protocols.GenericOid;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.tlv.TlvConstants;
@@ -31,11 +32,13 @@ public class OptionalDataHandler extends AbstractObjectHandler {
 	}
 
 	@Override
-	public void createItem(TreeItem parentItem, Object object, HandlerProvider provider) {
+	public TreeItem createItem(TreeItem parentItem, Object object, HandlerProvider provider) {
 		if (object instanceof ConstructedTlvDataObject) {
 			TreeItem item = getItem(parentItem);
 			handleItem((ConstructedTlvDataObject) object, provider, item);
+			return item;
 		}
+		return null;
 	}
 
 	private TreeItem getItem(TreeItem parentItem) {
@@ -58,7 +61,8 @@ public class OptionalDataHandler extends AbstractObjectHandler {
 
 	@Override
 	public void setText(TreeItem item) {
-		item.setText("Optional Data");
+		ConstructedTlvDataObject tlv = (ConstructedTlvDataObject) item.getData();
+		item.setText("OID: " + new GenericOid(tlv.getTlvDataObject(TlvConstants.TAG_06).getValueField()).toDotString());
 	}
 
 	@Override
@@ -105,7 +109,7 @@ public class OptionalDataHandler extends AbstractObjectHandler {
 				byte[] valueField = ctlv.getValueField();
 				return HexString.encode(Arrays.copyOfRange(valueField, ctlv.getTlvDataObject(TlvConstants.TAG_06).getLength(), valueField.length));
 			}
-		}, new HexChecker(), "Content as defined by above OID");
+		}, new TlvContainerChecker(), "Content as defined by above OID");
 	}
 
 	@Override

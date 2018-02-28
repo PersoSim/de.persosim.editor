@@ -39,11 +39,13 @@ public class StringTlvHandler extends PrimitiveTlvHandler {
 	}
 
 	@Override
-	public void createItem(TreeItem parentItem, Object object, HandlerProvider provider) {
+	public TreeItem createItem(TreeItem parentItem, Object object, HandlerProvider provider) {
 		if (object instanceof PrimitiveTlvDataObject) {
 			TreeItem item = new TreeItem(parentItem, SWT.NONE);
 			handleItem((PrimitiveTlvDataObject) object, provider, item);
+			return item;
 		}
+		return null;
 	}
 
 	@Override

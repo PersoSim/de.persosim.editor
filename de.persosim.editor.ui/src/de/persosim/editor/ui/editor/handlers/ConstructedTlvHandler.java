@@ -26,11 +26,13 @@ public class ConstructedTlvHandler extends AbstractObjectHandler {
 	}
 
 	@Override
-	public void createItem(TreeItem parentItem, Object object, HandlerProvider provider) {
+	public TreeItem createItem(TreeItem parentItem, Object object, HandlerProvider provider) {
 		if (object instanceof ConstructedTlvDataObject) {
 			TreeItem item = getItem(parentItem);
 			handleItem((ConstructedTlvDataObject) object, provider, item);
+			return item;
 		}
+		return null;
 	}
 
 	private TreeItem getItem(TreeItem parentItem) {

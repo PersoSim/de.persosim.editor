@@ -61,8 +61,10 @@ public class EidOptionalDataDatagroupHandler extends DatagroupHandler {
 				ConstructedTlvDataObject defaultOptionalData = EidDatagroupTemplateProvider.getDefaultOptionalData();
 				ConstructedTlvDataObject tlv = (ConstructedTlvDataObject) item.getData(EXTRACTED_TLV);
 				tlv.addTlvDataObject(defaultOptionalData);
-				handler.createItem(item, defaultOptionalData, null);
-				handler.updateTextRecursively(item);
+				TreeItem newItem = handler.createItem(item, defaultOptionalData, null);
+				if (newItem != null){
+					handler.updateTextRecursively(newItem);	
+				}
 				((ObjectHandler) item.getData(HANDLER)).persist(item);
 			}
 			
@@ -79,7 +81,7 @@ public class EidOptionalDataDatagroupHandler extends DatagroupHandler {
 		ConstructedTlvDataObject dgContent = (ConstructedTlvDataObject) item.getParentItem().getData(EXTRACTED_TLV);
 		ConstructedTlvDataObject set = (ConstructedTlvDataObject) dgContent.getTlvDataObject(TlvConstants.TAG_SET);
 		set.remove((TlvDataObject) item.getData());
-		((ObjectHandler) item.getParentItem().getData(HANDLER)).updateTextRecursively(item);
+		((ObjectHandler) item.getParentItem().getData(HANDLER)).updateTextRecursively(item.getParentItem());
 		((ObjectHandler) item.getParentItem().getData(HANDLER)).persist(item.getParentItem());
 		item.dispose();
 	}

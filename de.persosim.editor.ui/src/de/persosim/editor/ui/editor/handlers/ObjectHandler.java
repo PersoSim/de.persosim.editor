@@ -28,7 +28,7 @@ public interface ObjectHandler {
 	 * @param object
 	 * @param provider
 	 */
-	void createItem(TreeItem parentItem, Object object, HandlerProvider provider);
+	TreeItem createItem(TreeItem parentItem, Object object, HandlerProvider provider);
 
 	/**
 	 * Updates the text of the given item, using the object retrieved by
