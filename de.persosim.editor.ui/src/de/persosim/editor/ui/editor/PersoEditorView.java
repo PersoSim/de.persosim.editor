@@ -221,13 +221,13 @@ public class PersoEditorView {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				updateSignedFiles();
+				updateSignedFiles(false);
 				updateContent(perso);
 			}
 		});
 	}
 
-	protected void updateSignedFiles() {
+	protected void updateSignedFiles(boolean quiet) {
 		boolean updateEfCardAccess = Boolean.parseBoolean(
 				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS));
 		boolean updateEfCardSecurity = Boolean.parseBoolean(
@@ -238,7 +238,7 @@ public class PersoEditorView {
 		String dscert = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSCERT);
 		String dskey = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSKEY);
 		
-		if (!(updateEfCardAccess | updateEfCardSecurity | updateEfChipSecurity)){
+		if (!quiet && !(updateEfCardAccess | updateEfCardSecurity | updateEfChipSecurity)){
 			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Info", "No files are selected to be updated, please review signature settings.");
 		}
 		
@@ -328,7 +328,7 @@ public class PersoEditorView {
 			editor.persist();
 		}
 
-		updateSignedFiles();
+		updateSignedFiles(true);
 
 		if (perso != null) {
 			if (path != null){
