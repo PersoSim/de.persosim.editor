@@ -14,12 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -31,7 +25,6 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -112,6 +105,7 @@ public class PersoEditorView {
 	}
 
 	public void updateContent(Personalization perso) {
+		this.persoFile = null;
 		updateUi(perso);
 	}
 
@@ -204,62 +198,22 @@ public class PersoEditorView {
 				.getObjectTree();
 	}
 
-	@PostConstruct
-	public void createPartControl(Composite parent) {
+	public void createEditor(Composite parent) {
 		GridLayout gl_parent = new GridLayout(1, false);
 		gl_parent.horizontalSpacing = 0;
 		parent.setLayout(gl_parent);
 
-		Group grpData = new Group(parent, SWT.NONE);
-		grpData.setLayout(new FillLayout(SWT.HORIZONTAL));
-		grpData.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		grpData.setText("Data");
-		grpData.setBounds(0, 0, 66, 66);
+		Composite compositeData = new Composite(parent, SWT.NONE);
+		compositeData.setLayout(new FillLayout(SWT.HORIZONTAL));
+		compositeData.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		compositeData.setBounds(0, 0, 66, 66);
 
-		tabFolder = new TabFolder(grpData, SWT.NONE);
+		tabFolder = new TabFolder(compositeData, SWT.NONE);
 
 		Group grpControl = new Group(parent, SWT.NONE);
 		grpControl.setLayout(new RowLayout(SWT.HORIZONTAL));
 		grpControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		grpControl.setText("Actions");
-
-		Button btnOpen = new Button(grpControl, SWT.NONE);
-		btnOpen.setText("Open");
-		btnOpen.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
-				fd.setText("Open");
-				fd.setFilterPath("C:/");
-				String[] filterExt = { "*.perso", "*.*" };
-				fd.setFilterExtensions(filterExt);
-				String selection = fd.open();
-				if (selection != null) {
-					updateContent(Paths.get(selection));
-				}
-			}
-		});
-
-		Button btnSave = new Button(grpControl, SWT.NONE);
-		btnSave.setText("Save");
-		btnSave.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
-				fd.setText("Save");
-				fd.setFilterPath("C:/");
-				String[] filterExt = { "*.perso", "*.*" };
-				fd.setFilterExtensions(filterExt);
-				String selection = fd.open();
-				if (selection != null) {
-					persoFile = Paths.get(selection);
-					doSave(null);
-				}
-
-			}
-		});
 
 		Button btnUpdateSignatures = new Button(grpControl, SWT.NONE);
 		btnUpdateSignatures.setText("Update signed files");
@@ -271,23 +225,24 @@ public class PersoEditorView {
 				updateContent(perso);
 			}
 		});
-
-		Button btnSignatureSettings = new Button(grpControl, SWT.NONE);
-		btnSignatureSettings.setText("Signature Settings");
-
-		btnSignatureSettings.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				new SignatureSettingsDialog(Display.getCurrent().getActiveShell()).open();
-			}
-		});
 	}
 
 	protected void updateSignedFiles() {
-		if (Boolean.parseBoolean(
-				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS))) {
-
+		boolean updateEfCardAccess = Boolean.parseBoolean(
+				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS));
+		boolean updateEfCardSecurity = Boolean.parseBoolean(
+				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY));
+		boolean updateEfChipSecurity = Boolean.parseBoolean(
+				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY));
+		
+		String dscert = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSCERT);
+		String dskey = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSKEY);
+		
+		if (!(updateEfCardAccess | updateEfCardSecurity | updateEfChipSecurity)){
+			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Info", "No files are selected to be updated, please review signature settings.");
+		}
+		
+		if (updateEfCardAccess) {
 			if (getMf().findChildren(new FileIdentifier(0x011c)).isEmpty()) {
 				try {
 					TlvDataObject efCardAccessTlv = TlvDataObjectFactory
@@ -304,14 +259,6 @@ public class PersoEditorView {
 
 			new SecInfoFileUpdater(null, new FileIdentifier(0x011c), SecInfoPublicity.PUBLIC).execute(perso);
 		}
-
-		String dscert = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSCERT);
-		String dskey = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSKEY);
-
-		boolean updateEfCardSecurity = Boolean.parseBoolean(
-				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY));
-		boolean updateEfChipSecurity = Boolean.parseBoolean(
-				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY));
 
 		if (updateEfCardSecurity || updateEfChipSecurity) {
 			if (dscert == null || dskey == null) {
@@ -376,21 +323,24 @@ public class PersoEditorView {
 
 	}
 
-	@Focus
-	public void setFocus() {
-	}
-
-	@Persist
-	void doSave(@Optional IProgressMonitor monitor) {
+	public void save(Path path){
 		for (DfEditor editor : toBePersisted) {
 			editor.persist();
 		}
 
 		updateSignedFiles();
 
-		if (perso != null && persoFile != null) {
-			PersonalizationFactory.marshal(perso, persoFile.toAbsolutePath().toString());
-			updateContent(perso);
+		if (perso != null) {
+			if (path != null){
+				persoFile = path;
+				
+				PersonalizationFactory.marshal(perso, persoFile.toAbsolutePath().toString());
+				updateContent(perso);
+			}
 		}
+	}
+
+	public Path getPath() {
+		return persoFile;
 	}
 }
