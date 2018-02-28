@@ -2,6 +2,8 @@ package de.persosim.editor.ui.editor;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -20,6 +22,12 @@ import org.eclipse.swt.widgets.Text;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 
 public class SignatureSettingsDialog extends Dialog{
+
+	String dsCertPath;
+	String dsKeyPath;
+	boolean efCardAccess;
+	boolean efCardSecurity;
+	boolean efChipSecurity;
 
 	public SignatureSettingsDialog(Shell parent) {
 		super(parent);
@@ -43,7 +51,7 @@ public class SignatureSettingsDialog extends Dialog{
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-		        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS, Boolean.toString(((Button)e.getSource()).getSelection()));				
+		        			efCardAccess = btnEfCardAccess.getSelection();	
 			}
 		});
 		
@@ -56,7 +64,7 @@ public class SignatureSettingsDialog extends Dialog{
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-		        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY, Boolean.toString(((Button)e.getSource()).getSelection()));				
+		        efCardSecurity = btnEfCardAccess.getSelection();				
 			}
 		});
 		
@@ -69,7 +77,7 @@ public class SignatureSettingsDialog extends Dialog{
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-		        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY, Boolean.toString(((Button)e.getSource()).getSelection()));				
+		        efChipSecurity = btnEfChipSecurity.getSelection();				
 			}
 		});
 		
@@ -79,15 +87,24 @@ public class SignatureSettingsDialog extends Dialog{
 		certificates.setLayout(new GridLayout(3, false));
 		
 		new Label(certificates, SWT.NONE).setText("DS Cert:");
-		Text dsCertPath = new Text(certificates, SWT.NONE);
+		Text dsCertPathText = new Text(certificates, SWT.NONE);
 		Button dsCertBrowse = new Button(certificates, SWT.NONE);
 		dsCertBrowse.setText("Browse");
 		gd = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
-		dsCertPath.setLayoutData(gd);
+		dsCertPathText.setLayoutData(gd);
 		String path = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSCERT);
 		if (path != null) {
-			dsCertPath.setText(path);
+			dsCertPathText.setText(path);
 		}
+		
+		dsCertPathText.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
+				dsCertPath = dsCertPathText.getText();
+			}
+		});
+		
 		dsCertBrowse.addSelectionListener(new SelectionAdapter() {
 			
 			@Override
@@ -98,25 +115,34 @@ public class SignatureSettingsDialog extends Dialog{
 		        String[] filterExt = { "*.der", "*.*" };
 		        fd.setFilterExtensions(filterExt);
 		        String selection = fd.open();
-		        dsCertPath.setText(selection);
 		        if (selection != null){
-			        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_DSCERT, selection);	
+		        	dsCertPathText.setText(selection);
+		        	dsCertPath = selection;
 		        }
 			}
 		});
 		
 
 		new Label(certificates, SWT.NONE).setText("DS Key:");
-		Text dsKeyPath = new Text(certificates, SWT.NONE);
+		Text dsKeyPathText = new Text(certificates, SWT.NONE);
 		Button dsKeyBrowse = new Button(certificates, SWT.NONE);
 		dsKeyBrowse.setText("Browse");
 		gd = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
-		dsKeyPath.setLayoutData(gd);
+		dsKeyPathText.setLayoutData(gd);
 
 		path = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSKEY);
 		if (path != null) {
-			dsKeyPath.setText(path);
+			dsKeyPathText.setText(path);
 		}
+		
+		dsKeyPathText.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e) {
+				dsKeyPath = dsKeyPathText.getText();
+			}
+		});
+		
 		dsKeyBrowse.addSelectionListener(new SelectionAdapter() {
 			
 			@Override
@@ -127,14 +153,29 @@ public class SignatureSettingsDialog extends Dialog{
 		        String[] filterExt = { "*.pkcs8", "*.*" };
 		        fd.setFilterExtensions(filterExt);
 		        String selection = fd.open();
-		        dsKeyPath.setText(selection);
+		        dsKeyPathText.setText(selection);
 		        if (selection != null){
-			        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_DSKEY, selection);	
+		        	dsKeyPathText.setText(selection);
+		        	dsKeyPath = selection;
 		        }
 			}
 		});
 		
 		return settings;
+	}
+	
+	@Override
+	protected void okPressed() {
+		super.okPressed();
+		if (dsCertPath != null){
+			PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_DSCERT, dsCertPath);	
+		}
+		if (dsKeyPath != null){
+	        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_DSKEY, dsKeyPath);	
+		}
+        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS, Boolean.toString(efCardAccess));
+        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY, Boolean.toString(efCardSecurity));
+        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY, Boolean.toString(efChipSecurity));
 	}
 	
 }
