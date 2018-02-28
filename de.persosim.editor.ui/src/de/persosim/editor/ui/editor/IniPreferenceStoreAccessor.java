@@ -1,4 +1,4 @@
-package de.persosim.editor.ui.launcher;
+package de.persosim.editor.ui.editor;
 
 import java.io.IOException;
 import java.nio.file.Files;

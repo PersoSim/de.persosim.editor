@@ -8,6 +8,7 @@ import org.globaltester.cryptoprovider.Crypto;
 import org.globaltester.cryptoprovider.bc.ProviderBc;
 
 import de.persosim.editor.ui.editor.ConfigurationConstants;
+import de.persosim.editor.ui.editor.IniPreferenceStoreAccessor;
 import de.persosim.editor.ui.editor.PersoEditorView;
 import de.persosim.simulator.perso.Profile01;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
