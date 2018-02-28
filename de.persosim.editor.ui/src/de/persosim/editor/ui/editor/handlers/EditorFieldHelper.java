@@ -114,7 +114,7 @@ public class EditorFieldHelper {
 		Button fieldUsed = new Button(composite, SWT.CHECK);
 		fieldUsed.setEnabled(!mandatory);
 
-		Text field = new Text(composite, SWT.NONE);
+		Text field = new Text(composite, SWT.BORDER);
 		field.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		Color defaultColor = field.getBackground();
 
