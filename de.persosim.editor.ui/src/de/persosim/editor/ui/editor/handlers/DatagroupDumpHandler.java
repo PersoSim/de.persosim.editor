@@ -74,7 +74,7 @@ public class DatagroupDumpHandler extends AbstractObjectHandler {
 				}
 			}
 
-			if (dgMapping.get(sfid) != null) {
+			if (dgMapping.containsKey(sfid)) {
 				item.setText(dgMapping.get(sfid));
 			} else {
 				item.setText("DG " + sfid);
