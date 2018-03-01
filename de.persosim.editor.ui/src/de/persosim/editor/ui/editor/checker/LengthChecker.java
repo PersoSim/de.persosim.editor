@@ -17,7 +17,7 @@ public class LengthChecker implements TextFieldChecker {
 	@Override
 	public FieldCheckResult check(Text field) {
 		if (field.getText().length() > maxLength){
-			return new FieldCheckResult("To many characters", State.WARNING);
+			return new FieldCheckResult("Too many characters", State.WARNING);
 		} else if (field.getText().length() < minLength){
 			return new FieldCheckResult("Not enough characters", State.WARNING);
 		}
