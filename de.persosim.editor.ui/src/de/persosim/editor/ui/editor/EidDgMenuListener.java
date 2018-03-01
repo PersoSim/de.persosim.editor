@@ -59,8 +59,10 @@ public class EidDgMenuListener extends DefaultMenuListener {
 				if (dialog.open() == Dialog.OK) {
 					ElementaryFile ef = dialog.getElementaryFile();
 					try {
-						df.addChild(ef);
-						provider.get(ef).createItem(dfTree, ef, provider);
+						if (ef != null) {
+							df.addChild(ef);
+							provider.get(ef).createItem(dfTree, ef, provider);	
+						}
 					} catch (AccessDeniedException e1) {
 						BasicLogger.logException(getClass(), e1, LogLevel.WARN);
 					}
