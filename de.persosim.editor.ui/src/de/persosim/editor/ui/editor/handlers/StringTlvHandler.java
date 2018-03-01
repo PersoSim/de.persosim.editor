@@ -73,14 +73,8 @@ public class StringTlvHandler extends PrimitiveTlvHandler {
 				text = HexString.encode(tlv.getTlvTag().toByteArray()) + " "
 						+ HexString.encode(tlv.getTlvLength().toByteArray()) + " ";
 			}
-
-			if (tlv.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)
-					|| tlv.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING)
-					|| tlv.getTlvTag().equals(TlvConstants.TAG_NUMERIC_STRING)) {
-				text += new String(tlv.getValueField(), StandardCharsets.US_ASCII);
-			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_UTF8_STRING)) {
-				text += new String(tlv.getValueField(), StandardCharsets.UTF_8);
-			}
+			
+			text += getStringFromTlv(tlv);
 
 			if (text.isEmpty()) {
 				if (compress) {
@@ -93,6 +87,17 @@ public class StringTlvHandler extends PrimitiveTlvHandler {
 			}
 			item.setText(text);
 		}
+	}
+
+	public static String getStringFromTlv(PrimitiveTlvDataObject tlv) {
+		if (tlv.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)
+				|| tlv.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING)
+				|| tlv.getTlvTag().equals(TlvConstants.TAG_NUMERIC_STRING)) {
+			return new String(tlv.getValueField(), StandardCharsets.US_ASCII);
+		} else if (tlv.getTlvTag().equals(TlvConstants.TAG_UTF8_STRING)) {
+			return new String(tlv.getValueField(), StandardCharsets.UTF_8);
+		}
+		return new String(tlv.getValueField());
 	}
 
 	@Override

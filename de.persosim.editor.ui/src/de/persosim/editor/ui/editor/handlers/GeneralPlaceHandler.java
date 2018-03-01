@@ -39,20 +39,27 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 
 	@Override
 	public void setText(TreeItem item) {
-		StringJoiner joiner = new StringJoiner(",");
+		StringJoiner joiner = new StringJoiner(", ");
 		extractPrimitiveStrings(joiner, (TlvDataObject) item.getData());
 		item.setText(joiner.toString());
 	}
 
 	private void extractPrimitiveStrings(StringJoiner joiner, TlvDataObject data) {
 		if (data instanceof PrimitiveTlvDataObject) {
-			joiner.add(new String(data.getValueField()));
+			joiner.add(shorten(StringTlvHandler.getStringFromTlv((PrimitiveTlvDataObject) data)));
 		} else if (data instanceof ConstructedTlvDataObject) {
 			for (TlvDataObject current : ((ConstructedTlvDataObject) data).getTlvDataObjectContainer()
 					.getTlvObjects()) {
 				extractPrimitiveStrings(joiner, current);
 			}
 		}
+	}
+
+	private String shorten(String string) {
+		if (string.length() > 16) {
+			return string.substring(0, 15) + "...";
+		}
+		return string;
 	}
 
 	@Override
