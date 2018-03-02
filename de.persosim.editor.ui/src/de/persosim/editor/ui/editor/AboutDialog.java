@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class AboutDialog extends Dialog {
 
-	public static final String PERSOSIM_URL = "http://www.persosim.de";
+	public static final String PERSOSIM_URL = "https://persosim.secunet.com";
 
 	private static final String FONT_NAME = "Helvetica";
 
