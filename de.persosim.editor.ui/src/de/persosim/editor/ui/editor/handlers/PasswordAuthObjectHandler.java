@@ -61,6 +61,7 @@ public class PasswordAuthObjectHandler extends AbstractObjectHandler {
 	@Override
 	protected void createEditingComposite(Composite composite, TreeItem item) {
 		composite.setLayout(new GridLayout(2, false));
+		PasswordAuthObject data = (PasswordAuthObject) item.getData();
 		EditorFieldHelper.createField(item, true, false, composite, new TlvModifier() {
 			
 			@Override
@@ -75,8 +76,8 @@ public class PasswordAuthObjectHandler extends AbstractObjectHandler {
 			
 			@Override
 			public String getValue() {
-				return new String(((PasswordAuthObject) item.getData()).getPassword(), StandardCharsets.US_ASCII);
+				return new String(data.getPassword(), StandardCharsets.US_ASCII);
 			}
-		}, new NumberChecker(), "");
+		}, new NumberChecker(), data.getPasswordName() + " is not modifiable");
 	}
 }

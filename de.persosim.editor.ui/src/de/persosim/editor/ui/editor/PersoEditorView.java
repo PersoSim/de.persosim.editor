@@ -86,9 +86,9 @@ import de.persosim.simulator.utils.HexString;
 
 public class PersoEditorView {
 	public static final String ID = "de.persosim.editor.e4.ui.plugin.partdescriptor.persoeditor";
-	private TabFolder tabFolder;
-	private Collection<DfEditor> toBePersisted = new HashSet<>();
-	private Personalization perso;
+	protected TabFolder tabFolder;
+	protected Collection<DfEditor> toBePersisted = new HashSet<>();
+	protected Personalization perso;
 	private Path persoFile;
 
 	public void updateContent(Path personalizationFile) {
@@ -113,7 +113,7 @@ public class PersoEditorView {
 		updateUi(perso);
 	}
 
-	private void updateUi(Personalization perso) {
+	protected void updateUi(Personalization perso) {
 		this.perso = perso;
 
 		toBePersisted = new HashSet<>();
@@ -187,7 +187,7 @@ public class PersoEditorView {
 		tbtmmf.setControl(editor);
 	}
 
-	private DedicatedFile getDf(byte[] aid) {
+	protected DedicatedFile getDf(byte[] aid) {
 		MasterFile mf = getMf();
 
 		Collection<CardObject> currentDfCandidates = mf.findChildren(new DedicatedFileIdentifier(aid));
@@ -199,7 +199,7 @@ public class PersoEditorView {
 		return (DedicatedFile) currentDfCandidates.iterator().next();
 	}
 
-	private MasterFile getMf() {
+	protected MasterFile getMf() {
 		return PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class)
 				.getObjectTree();
 	}

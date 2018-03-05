@@ -22,4 +22,7 @@ Require-Bundle: org.globaltester.cryptoprovider,
  de.persosim.simulator,
  org.eclipse.jface,
  org.globaltester.cryptoprovider.bc
-Export-Package: de.persosim.editor.ui.editor
+Export-Package: de.persosim.editor.ui.editor,
+ de.persosim.editor.ui.editor.checker,
+ de.persosim.editor.ui.editor.handlers,
+ de.persosim.editor.ui.launcher
