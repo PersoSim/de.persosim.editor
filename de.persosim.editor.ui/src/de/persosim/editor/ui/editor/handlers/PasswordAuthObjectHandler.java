@@ -50,7 +50,14 @@ public class PasswordAuthObjectHandler extends AbstractObjectHandler {
 	@Override
 	public void setText(TreeItem item) {
 		PasswordAuthObject authObject = (PasswordAuthObject) item.getData();
-		item.setText(authObject.getPasswordName());
+
+		ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
+		String newText = authObject.getPasswordName();
+		
+		if (handler != null && handler.hasChanges(item)) {
+				newText += getChangedText(item);
+		}
+		item.setText(newText);
 	}
 
 	@Override

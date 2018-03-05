@@ -1,4 +1,4 @@
-package de.persosim.editor.ui.editor;
+package de.persosim.editor.ui.editor.handlers;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -9,13 +9,10 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 
+import de.persosim.editor.ui.editor.MaxValueChecker;
 import de.persosim.editor.ui.editor.checker.AndChecker;
 import de.persosim.editor.ui.editor.checker.LengthChecker;
 import de.persosim.editor.ui.editor.checker.NumberChecker;
-import de.persosim.editor.ui.editor.handlers.EditorFieldHelper;
-import de.persosim.editor.ui.editor.handlers.ObjectHandler;
-import de.persosim.editor.ui.editor.handlers.PasswordAuthObjectHandler;
-import de.persosim.editor.ui.editor.handlers.TlvModifier;
 import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
@@ -40,6 +37,10 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 				try {
 					authObject.updateLifeCycleState(Iso7816LifeCycleState.CREATION_OPERATIONAL_ACTIVATED);
 					authObject.setPassword(string.getBytes(StandardCharsets.US_ASCII));
+					ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
+					if (handler != null) {
+						handler.changed(item);
+					}
 				} catch (AccessDeniedException e) {
 					BasicLogger.logException(getClass(), e, LogLevel.WARN);
 				}
@@ -49,6 +50,10 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 			public void remove() {
 				try {
 					authObject.updateLifeCycleState(Iso7816LifeCycleState.CREATION_OPERATIONAL_DEACTIVATED);
+					ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
+					if (handler != null) {
+						handler.changed(item);
+					}
 				} catch (AccessDeniedException e) {
 					BasicLogger.logException(getClass(), e, LogLevel.WARN);
 				}
@@ -73,6 +78,10 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 							while (pwdWithRetryCounter.getRetryCounterCurrentValue() != Integer.parseInt(string)){
 								pwdWithRetryCounter.decrementRetryCounter();
 							}	
+							ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
+							if (handler != null) {
+								handler.changed(item);
+							}
 						}
 					} catch (AccessDeniedException | NumberFormatException e) {
 						BasicLogger.logException(getClass(), e, LogLevel.WARN);

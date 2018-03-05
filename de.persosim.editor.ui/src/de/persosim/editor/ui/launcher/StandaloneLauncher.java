@@ -7,7 +7,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -57,6 +59,12 @@ public class StandaloneLauncher {
 		open.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				if (editor.hasUnsavedChanges()) {
+					if (MessageDialog.openQuestion(shell, "Unsaved changes", "There are unsaved changes, do you want to save them now?")) {
+						openSaveDialog(editor);
+					}
+				}
+				
 				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
 				fd.setText("Open");
 				fd.setFilterPath("C:/");
@@ -137,6 +145,16 @@ public class StandaloneLauncher {
 
 		editor.updateContent(new DefaultPerso());
 				
+		
+		shell.addListener(SWT.CLOSE, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				if (editor.hasUnsavedChanges()) {
+					event.doit = MessageDialog.openQuestion(shell, "Unsaved changes", "There are unsaved changes, do you want to close the application?");
+				}
+			}
+		});
 		
 		shell.open();
 		while (!shell.isDisposed()) {

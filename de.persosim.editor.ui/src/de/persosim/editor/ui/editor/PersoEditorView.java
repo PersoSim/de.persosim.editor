@@ -40,6 +40,7 @@ import de.persosim.editor.ui.editor.checker.LengthChecker;
 import de.persosim.editor.ui.editor.checker.MultiLengthChecker;
 import de.persosim.editor.ui.editor.checker.NullChecker;
 import de.persosim.editor.ui.editor.checker.UpperCaseTextFieldChecker;
+import de.persosim.editor.ui.editor.handlers.ChangeablePasswortAuthObjectHandler;
 import de.persosim.editor.ui.editor.handlers.ConstructedTlvHandler;
 import de.persosim.editor.ui.editor.handlers.DatagroupDumpHandler;
 import de.persosim.editor.ui.editor.handlers.DatagroupHandler;
