@@ -11,7 +11,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
@@ -111,11 +110,21 @@ public class EditorFieldHelper {
 		gd.horizontalSpan = 2;
 		info.setLayoutData(gd);
 
-		Button fieldUsed = new Button(composite, SWT.CHECK);
-		fieldUsed.setEnabled(!mandatory);
+		Button fieldUsed = null;
+		
+		if (!mandatory){
+			fieldUsed = new Button(composite, SWT.CHECK);
+		}
 
 		Text field = new Text(composite, SWT.BORDER);
-		field.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		GridData layoutData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		
+		if (mandatory){
+			layoutData.horizontalSpan = 2;
+		}
+		
+		field.setLayoutData(layoutData);
+		
 		Color defaultColor = field.getBackground();
 
 
@@ -129,7 +138,9 @@ public class EditorFieldHelper {
 		String value = modifier.getValue();
 		
 		if (mandatory || value != null) {
-			fieldUsed.setSelection(true);
+			if (fieldUsed != null){
+				fieldUsed.setSelection(true);	
+			}
 			field.setEnabled(true);
 			if (value != null){
 				field.setText(value);
@@ -156,7 +167,15 @@ public class EditorFieldHelper {
 			}
 		});
 
-		fieldUsed.addSelectionListener(new SelectionListener() {
+		if (fieldUsed != null){
+			fieldUsed.addSelectionListener(getUsedSelectionAdapter(field, fieldUsed, modifier, item));	
+		}
+		
+		return field;
+	}
+	
+	private static SelectionAdapter getUsedSelectionAdapter(Text field, Button fieldUsed, TlvModifier modifier, TreeItem item){
+		return new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -172,12 +191,7 @@ public class EditorFieldHelper {
 					handler.updateTextRecursively(item);
 				}
 			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-		return field;
+		};
 	}
 
 	static void checkAndModify(Text field, TlvModifier modifier, TextFieldChecker checker, Color def, Label warning){
