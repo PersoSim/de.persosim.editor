@@ -29,22 +29,23 @@ import de.persosim.editor.ui.editor.checker.TextFieldChecker;
 import de.persosim.simulator.utils.HexString;
 
 public class EditorFieldHelper {
-	
-	public static void createBinaryField(TreeItem item, boolean mandatory, Composite composite, TlvModifier modifier, TextFieldChecker checker, String infoText){
-		
+
+	public static void createBinaryField(TreeItem item, boolean mandatory, Composite composite, TlvModifier modifier,
+			TextFieldChecker checker, String infoText) {
+
 		Text field = createField(item, mandatory, composite, modifier, checker, infoText);
-		
-		//dummy to fill empty cell
+
+		// dummy to fill empty cell
 		new Label(composite, SWT.NONE);
-		
+
 		Composite buttons = new Composite(composite, SWT.NONE);
 		buttons.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		buttons.setLayout(new RowLayout());
-		
+
 		Button replace = new Button(buttons, SWT.PUSH);
 		replace.setText("Browse for Replacement");
 		replace.addSelectionListener(new SelectionAdapter() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
@@ -61,20 +62,21 @@ public class EditorFieldHelper {
 							handler.updateTextRecursively(item);
 						}
 						field.setText(modifier.getValue());
-						for (Control control : composite.getChildren()){
+						for (Control control : composite.getChildren()) {
 							control.notifyListeners(SWT.Modify, new Event());
 						}
 					} catch (IOException e1) {
-						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "File could not be read.");
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error",
+								"File could not be read.");
 					}
 				}
 			}
 		});
-		
+
 		Button save = new Button(buttons, SWT.PUSH);
 		save.setText("Save data");
 		save.addSelectionListener(new SelectionAdapter() {
-			
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
@@ -87,27 +89,31 @@ public class EditorFieldHelper {
 					try {
 						Files.write(Paths.get(selection), HexString.toByteArray(modifier.getValue()));
 					} catch (IOException e1) {
-						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "File could not be written.");
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error",
+								"File could not be written.");
 					}
 				}
 			}
 		});
 		composite.pack();
 	}
-	
-	public static Text createField(TreeItem item, boolean mandatory, Composite composite, TlvModifier modifier, TextFieldChecker checker, String infoText) {
+
+	public static Text createField(TreeItem item, boolean mandatory, Composite composite, TlvModifier modifier,
+			TextFieldChecker checker, String infoText) {
 		return createField(item, mandatory, true, composite, modifier, checker, infoText);
 	}
-	
+
 	/**
 	 * @param item
 	 * @param mandatory
-	 * @param composite Expected to have a {@link GridLayout} with 2 columns
+	 * @param composite
+	 *            Expected to have a {@link GridLayout} with 2 columns
 	 * @param modifier
 	 * @param charset
 	 * @param infoText
 	 */
-	public static Text createField(TreeItem item, boolean mandatory, boolean editable, Composite composite, TlvModifier modifier, TextFieldChecker checker, String infoText) {
+	public static Text createField(TreeItem item, boolean mandatory, boolean editable, Composite composite,
+			TlvModifier modifier, TextFieldChecker checker, String infoText) {
 		Label info = new Label(composite, SWT.NONE);
 		info.setText(infoText);
 		GridData gd = new GridData();
@@ -115,22 +121,21 @@ public class EditorFieldHelper {
 		info.setLayoutData(gd);
 
 		Button fieldUsed = null;
-		
-		if (!mandatory){
+
+		if (!mandatory) {
 			fieldUsed = new Button(composite, SWT.CHECK);
 		}
 
 		Text field = new Text(composite, SWT.BORDER);
 		GridData layoutData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		
-		if (mandatory){
+
+		if (mandatory) {
 			layoutData.horizontalSpan = 2;
 		}
-		
-		field.setLayoutData(layoutData);
-		
-		Color defaultColor = field.getBackground();
 
+		field.setLayoutData(layoutData);
+
+		Color defaultColor = field.getBackground();
 
 		Label warning = new Label(composite, SWT.NONE);
 		warning.setText(infoText);
@@ -140,14 +145,14 @@ public class EditorFieldHelper {
 		warning.setText("");
 
 		String value = modifier.getValue();
-		
-		if (value != null){
+
+		if (value != null) {
 			field.setText(value);
 		}
-		
+
 		if (editable && (mandatory || value != null)) {
-			if (fieldUsed != null){
-				fieldUsed.setSelection(true);	
+			if (fieldUsed != null) {
+				fieldUsed.setSelection(true);
 			}
 			field.setEnabled(true);
 			checkAndModify(field, modifier, checker, defaultColor, warning);
@@ -160,28 +165,31 @@ public class EditorFieldHelper {
 
 				@Override
 				public void modifyText(ModifyEvent e) {
-
-					checkAndModify(field, modifier, checker, defaultColor, warning);
-
 					ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
+
+					if (checkAndModify(field, modifier, checker, defaultColor, warning)) {
+						if (handler != null) {
+							handler.changed(item);
+						}
+					}
+
 					if (handler != null) {
 						handler.updateTextRecursively(item);
 						handler.persist(item);
 					}
-					warning.pack();
-					warning.requestLayout();
 				}
 			});
 		}
 
-		if (fieldUsed != null){
-			fieldUsed.addSelectionListener(getUsedSelectionAdapter(field, fieldUsed, modifier, item));	
+		if (fieldUsed != null) {
+			fieldUsed.addSelectionListener(getUsedSelectionAdapter(field, fieldUsed, modifier, item));
 		}
-		
+
 		return field;
 	}
-	
-	private static SelectionAdapter getUsedSelectionAdapter(Text field, Button fieldUsed, TlvModifier modifier, TreeItem item){
+
+	private static SelectionAdapter getUsedSelectionAdapter(Text field, Button fieldUsed, TlvModifier modifier,
+			TreeItem item) {
 		return new SelectionAdapter() {
 
 			@Override
@@ -195,29 +203,31 @@ public class EditorFieldHelper {
 
 				ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
 				if (handler != null) {
+					handler.changed(item);
 					handler.updateTextRecursively(item);
 				}
 			}
 		};
 	}
 
-	static void checkAndModify(Text field, TlvModifier modifier, TextFieldChecker checker, Color def, Label warning){
+	static boolean checkAndModify(Text field, TlvModifier modifier, TextFieldChecker checker, Color def,
+			Label warning) {
 		FieldCheckResult check = checker.check(field);
 		warning.setText(check.getReason());
-		switch (check.getState()){
+		switch (check.getState()) {
 		case OK:
 			field.setBackground(def);
 			modifier.setValue(field.getText());
-			break;
+			return true;
 		case ERROR:
 			field.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
-			break;
+			return false;
 		case WARNING:
 			field.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_YELLOW));
 			modifier.setValue(field.getText());
-			break;
+			return true;
 		default:
-			break;
+			return false;
 		}
 	}
 }

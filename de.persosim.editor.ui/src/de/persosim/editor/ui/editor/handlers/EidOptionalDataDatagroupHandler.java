@@ -65,6 +65,7 @@ public class EidOptionalDataDatagroupHandler extends DatagroupHandler {
 				ConstructedTlvDataObject tlv = (ConstructedTlvDataObject) item.getData(EXTRACTED_TLV);
 				tlv.addTlvDataObject(defaultOptionalData);
 				TreeItem newItem = handler.createItem(item, defaultOptionalData, null);
+				handler.changed(newItem);
 				if (newItem != null){
 					handler.updateTextRecursively(newItem);	
 				}

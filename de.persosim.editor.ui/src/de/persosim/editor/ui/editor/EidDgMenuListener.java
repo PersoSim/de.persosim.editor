@@ -11,10 +11,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.editor.ui.editor.handlers.HandlerProvider;
+import de.persosim.editor.ui.editor.handlers.ObjectHandler;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.CardObjectIdentifier;
 import de.persosim.simulator.cardobjects.DedicatedFile;
@@ -61,7 +63,10 @@ public class EidDgMenuListener extends DefaultMenuListener {
 					try {
 						if (ef != null) {
 							df.addChild(ef);
-							provider.get(ef).createItem(dfTree, ef, provider);	
+							ObjectHandler handler = provider.get(ef); 
+							TreeItem item = handler.createItem(dfTree, ef, provider);
+							handler.changed(item);
+							handler.setText(item);
 						}
 					} catch (AccessDeniedException e1) {
 						BasicLogger.logException(getClass(), e1, LogLevel.WARN);

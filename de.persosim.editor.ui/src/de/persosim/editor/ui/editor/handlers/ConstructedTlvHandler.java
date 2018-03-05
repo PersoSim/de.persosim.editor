@@ -43,11 +43,13 @@ public class ConstructedTlvHandler extends AbstractObjectHandler {
 	}
 
 	@Override
-	public void createItem(Tree parentTree, Object object, HandlerProvider provider) {
+	public TreeItem createItem(Tree parentTree, Object object, HandlerProvider provider) {
 		if (object instanceof ConstructedTlvDataObject) {
 			TreeItem item = new TreeItem(parentTree, SWT.NONE);
 			handleItem((ConstructedTlvDataObject) object, provider, item);
+			return item;
 		}
+		return null;
 	}
 
 	protected void handleItem(ConstructedTlvDataObject tlv, HandlerProvider provider, TreeItem item) {
@@ -68,8 +70,16 @@ public class ConstructedTlvHandler extends AbstractObjectHandler {
 	public void setText(TreeItem item) {
 		if (item.getData() instanceof ConstructedTlvDataObject) {
 			ConstructedTlvDataObject tlv = (ConstructedTlvDataObject) item.getData();
-			item.setText(HexString.encode(tlv.getTlvTag().toByteArray()) + " "
-					+ HexString.encode(tlv.getTlvLength().toByteArray()));
+			
+			String newText = HexString.encode(tlv.getTlvTag().toByteArray()) + " "
+					+ HexString.encode(tlv.getTlvLength().toByteArray());
+			
+			ObjectHandler handler = (ObjectHandler) item.getData(HANDLER);
+			if (handler != null) {
+				newText += getChangedText(item);
+			}
+			
+			item.setText(newText);
 		}
 	}
 

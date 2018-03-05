@@ -51,11 +51,13 @@ public class DatagroupDumpHandler extends AbstractObjectHandler {
 	}
 
 	@Override
-	public void createItem(Tree parentTree, Object object, HandlerProvider provider) {
+	public TreeItem createItem(Tree parentTree, Object object, HandlerProvider provider) {
 		if (object instanceof ElementaryFile) {
 			TreeItem item = new TreeItem(parentTree, SWT.NONE);
 			handleItem((ElementaryFile) object, provider, item);
+			return item;
 		}
+		return null;
 	}
 
 	protected void handleItem(ElementaryFile ef, HandlerProvider provider, TreeItem item) {
@@ -76,11 +78,14 @@ public class DatagroupDumpHandler extends AbstractObjectHandler {
 				}
 			}
 
+			String newText = "";
 			if (dgMapping.containsKey(sfid)) {
-				item.setText(dgMapping.get(sfid));
+				newText = dgMapping.get(sfid);
 			} else {
-				item.setText("DG " + sfid);
+				newText = "DG " + sfid;
 			}
+			
+			item.setText(newText + getChangedText(item));
 		}
 	}
 

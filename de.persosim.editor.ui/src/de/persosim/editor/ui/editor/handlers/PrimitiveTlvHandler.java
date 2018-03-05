@@ -38,11 +38,13 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 	}
 
 	@Override
-	public void createItem(Tree parentTree, Object object, HandlerProvider provider) {
+	public TreeItem createItem(Tree parentTree, Object object, HandlerProvider provider) {
 		if (object instanceof PrimitiveTlvDataObject) {
 			TreeItem item = new TreeItem(parentTree, SWT.NONE);
 			handleItem((PrimitiveTlvDataObject) object, provider, item);
+			return item;
 		}
+		return null;
 	}
 
 	private void handleItem(PrimitiveTlvDataObject tlv, HandlerProvider provider, TreeItem item) {
@@ -75,6 +77,13 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 				}
 
 			}
+			
+			
+			ObjectHandler handler = (ObjectHandler) item.getData(HANDLER);
+			if (handler != null) {
+				text += getChangedText(item);
+			}
+			
 			item.setText(text);
 		}
 	}

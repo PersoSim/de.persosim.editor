@@ -349,4 +349,13 @@ public class PersoEditorView {
 	public Path getPath() {
 		return persoFile;
 	}
+
+	public boolean hasUnsavedChanges() {
+		for (DfEditor editor : toBePersisted) {
+			if (editor.hasChanges()){
+				return true;
+			}
+		}
+		return false;
+	}
 }

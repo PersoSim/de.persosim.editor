@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.TreeItem;
 
 public interface ObjectHandler {
 	public static final String HANDLER = "HANDLER";
+	public static final String CHANGED = "CHANGED";
 
 	public boolean canHandle(Object object);
 
@@ -19,7 +20,7 @@ public interface ObjectHandler {
 	 * @param object
 	 * @param provider
 	 */
-	void createItem(Tree parentTree, Object object, HandlerProvider provider);
+	TreeItem createItem(Tree parentTree, Object object, HandlerProvider provider);
 
 	/**
 	 * Creates a new item describing the given object.
@@ -64,4 +65,8 @@ public interface ObjectHandler {
 	public void createMenu(Menu menu, TreeItem item);
 
 	public void removeItem(TreeItem item);
+
+	public boolean hasChanges(TreeItem item);
+
+	public void changed(TreeItem item);
 }

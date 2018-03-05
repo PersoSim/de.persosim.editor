@@ -132,4 +132,32 @@ public class DfEditor {
 			persist(current.getItems());
 		}
 	}
+
+	public boolean hasChanges() {
+		for (TreeItem current : dfTree.getItems()) {
+			if (hasChanges(current)) {
+				return true;
+			}			
+		}
+		return false;
+	}
+
+	public boolean hasChanges(TreeItem item) {
+		ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
+		if (handler != null) {
+			if (handler.hasChanges(item)) {
+				return true;
+			}
+		}
+		for (TreeItem current : item.getItems()) {
+			handler = (ObjectHandler) current.getData(ObjectHandler.HANDLER);
+			if (handler != null) {
+				if (handler.hasChanges(current)) {
+					return true;
+				}
+			}
+			
+		}
+		return false;
+	}
 }

@@ -41,7 +41,15 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 	public void setText(TreeItem item) {
 		StringJoiner joiner = new StringJoiner(", ");
 		extractPrimitiveStrings(joiner, (TlvDataObject) item.getData());
-		item.setText(joiner.toString());
+		String newText = joiner.toString();
+		
+		ObjectHandler handler = (ObjectHandler) item.getData(HANDLER);
+		if (handler != null) {
+			newText += getChangedText(item);
+		}
+
+		item.setText(newText);
+		
 	}
 
 	private void extractPrimitiveStrings(StringJoiner joiner, TlvDataObject data) {
@@ -102,6 +110,10 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 				public void setValue(String value) {
 					PrimitiveTlvDataObject ptlv = (PrimitiveTlvDataObject) wrapper.getTlvDataObjectContainer().iterator().next();
 					ptlv.setValue(value.getBytes(charset));
+					ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
+					if (handler != null){
+						handler.changed(item);
+					}
 				}
 				
 				@Override
@@ -141,12 +153,20 @@ private void createField(TreeItem item, boolean mandatory, Composite composite, 
 						return o1.getTagNo() - o2.getTagNo();
 					}
 				});
+				ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
+				if (handler != null){
+					handler.changed(item);
+				}
 			}
 			
 			@Override
 			public void remove() {
 				if (generalPlaceSequence.containsTlvDataObject(tlvTag)){
 					generalPlaceSequence.removeTlvDataObject(tlvTag);
+				}
+				ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
+				if (handler != null){
+					handler.changed(item);
 				}
 			}
 			

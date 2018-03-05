@@ -10,6 +10,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TreeItem;
 
 public abstract class AbstractObjectHandler implements ObjectHandler{
+	
+	private static final String CHANGED_MARKER= " *";
 
 	@Override
 	public void updateTextRecursively(TreeItem item) {
@@ -43,6 +45,29 @@ public abstract class AbstractObjectHandler implements ObjectHandler{
 	@Override
 	public void removeItem(TreeItem item) {
 		//Intentionally do nothing
+	}
+	
+	@Override
+	public boolean hasChanges(TreeItem item) {
+		return item.getData(ObjectHandler.CHANGED) != null;
+	}
+
+	protected String getChangedText(TreeItem item) {
+		if (hasChanges(item)) {
+			return CHANGED_MARKER;
+		}
+		for (TreeItem current : item.getItems()) {
+			ObjectHandler handler = (ObjectHandler) current.getData(HANDLER);
+			if (handler != null && handler.hasChanges(current)) {
+				return CHANGED_MARKER;
+			}
+		}
+		return "";
+	}
+	
+	@Override
+	public void changed(TreeItem item) {
+		item.setData(ObjectHandler.CHANGED, "");
 	}
 	
 	abstract protected String getType();

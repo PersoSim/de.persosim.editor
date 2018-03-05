@@ -31,8 +31,8 @@ public class PasswordAuthObjectHandler extends AbstractObjectHandler {
 	}
 
 	@Override
-	public void createItem(Tree parentTree, Object object, HandlerProvider provider) {
-		handleItem(new TreeItem(parentTree, SWT.NONE), object, provider);
+	public TreeItem createItem(Tree parentTree, Object object, HandlerProvider provider) {
+		return handleItem(new TreeItem(parentTree, SWT.NONE), object, provider);
 	}
 
 	@Override

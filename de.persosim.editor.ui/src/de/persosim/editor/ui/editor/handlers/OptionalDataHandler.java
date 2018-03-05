@@ -52,17 +52,27 @@ public class OptionalDataHandler extends AbstractObjectHandler {
 	}
 
 	@Override
-	public void createItem(Tree parentTree, Object object, HandlerProvider provider) {
+	public TreeItem createItem(Tree parentTree, Object object, HandlerProvider provider) {
 		if (object instanceof ConstructedTlvDataObject) {
 			TreeItem item = new TreeItem(parentTree, SWT.NONE);
 			handleItem((ConstructedTlvDataObject) object, provider, item);
+			return item;
 		}
+		return null;
 	}
 
 	@Override
 	public void setText(TreeItem item) {
 		ConstructedTlvDataObject tlv = (ConstructedTlvDataObject) item.getData();
-		item.setText("OID: " + new GenericOid(tlv.getTlvDataObject(TlvConstants.TAG_06).getValueField()).toDotString());
+
+		String newText = "OID: " + new GenericOid(tlv.getTlvDataObject(TlvConstants.TAG_06).getValueField()).toDotString();
+		
+		ObjectHandler handler = (ObjectHandler) item.getData(HANDLER);
+		if (handler != null) {
+			newText += getChangedText(item);
+		}
+
+		item.setText(newText);
 	}
 
 	@Override

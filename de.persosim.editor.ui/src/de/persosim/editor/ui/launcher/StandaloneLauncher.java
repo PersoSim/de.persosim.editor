@@ -1,10 +1,8 @@
 package de.persosim.editor.ui.launcher;
 
-import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Paths;
-import java.util.Enumeration;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -76,15 +74,21 @@ public class StandaloneLauncher {
 		saveas.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
-				fd.setText("Open");
-				fd.setFilterPath(editor.getPath() == null ? "C:/" : editor.getPath().toString());
-				String[] filterExt = { "*.perso", "*.*" };
-				fd.setFilterExtensions(filterExt);
-				String selection = fd.open();
-				if (selection != null) {
-					editor.save(Paths.get(selection));
+				openSaveDialog(editor);
+			}
+		});
+		
+		MenuItem exit = new MenuItem(fileMenu, SWT.NONE);
+		exit.setText("Exit");
+		exit.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (editor.hasUnsavedChanges()) {
+					if (MessageDialog.openQuestion(shell, "Unsaved changes", "There are unsaved changes, do you want to save them now?")) {
+						openSaveDialog(editor);
+					}
 				}
+				shell.close();
 			}
 		});
 
@@ -102,8 +106,6 @@ public class StandaloneLauncher {
 
 		Menu profilesMenu = new Menu(topLevelMenu);
 		profilesItem.setMenu(profilesMenu);
-		
-		getPersoFiles();
 		
 		for (Personalization perso : new Personalization [] {new Persos.Profile01(), new Persos.Profile02(), new Persos.Profile03(), new Persos.Profile04(), new Persos.Profile05(), new Persos.Profile06(), new Persos.Profile07(), new Persos.Profile08(), new Persos.Profile09(), new Persos.Profile10()}){
 			
@@ -143,18 +145,16 @@ public class StandaloneLauncher {
 			}
 		}
 	}
-	
-	public static void getPersoFiles(){
-		Enumeration<URL> resources;
-		try {
-			resources = StandaloneLauncher.class.getClassLoader()
-					  .getResources("personalization/profiles/Profile01.perso");
-			while (resources.hasMoreElements()) {
-				System.out.println(resources.nextElement());
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+	protected static void openSaveDialog(PersoEditorView editor) {
+		FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
+		fd.setText("Open");
+		fd.setFilterPath(editor.getPath() == null ? "C:/" : editor.getPath().toString());
+		String[] filterExt = { "*.perso", "*.*" };
+		fd.setFilterExtensions(filterExt);
+		String selection = fd.open();
+		if (selection != null) {
+			editor.save(Paths.get(selection));
 		}
 	}
 

@@ -19,8 +19,8 @@ public class DedicatedFileHandler extends AbstractObjectHandler {
 	}
 
 	@Override
-	public void createItem(Tree parentTree, Object object, HandlerProvider provider) {
-		// do nothing
+	public TreeItem createItem(Tree parentTree, Object object, HandlerProvider provider) {
+		return null;
 	}
 
 	@Override
