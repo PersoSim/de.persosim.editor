@@ -151,7 +151,7 @@ public class PersoEditorView {
 
 		provider = new DefaultHandlerProvider(objectHandlers);
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 1,
-				new AndChecker(new LengthChecker(2, 2), new IcaoStringChecker())));
+				new AndChecker(new LengthChecker(2, 2), new IcaoStringChecker()), "nPA: ID, Residence Permit: AR or AS"));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 2, new AndChecker(
 				new MultiLengthChecker(1, 3), new IcaoStringChecker())));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 3,

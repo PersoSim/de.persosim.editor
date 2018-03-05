@@ -14,11 +14,17 @@ public class EidStringDatagroupHandler extends DatagroupHandler {
 	
 	private int shortFileId;
 	private TextFieldChecker checker;
+	private String hint;
 	
-	public EidStringDatagroupHandler(Map<Integer, String> dgMapping, int shortFileID, TextFieldChecker checker) {
+	public EidStringDatagroupHandler(Map<Integer, String> dgMapping, int shortFileID, TextFieldChecker checker, String hint) {
 		super(dgMapping);
 		this.shortFileId = shortFileID;
 		this.checker = checker;
+		this.hint = hint;
+	}
+	
+	public EidStringDatagroupHandler(Map<Integer, String> dgMapping, int shortFileID, TextFieldChecker checker) {
+		this(dgMapping, shortFileID, checker, null);
 	}
 	
 	@Override
@@ -35,7 +41,7 @@ public class EidStringDatagroupHandler extends DatagroupHandler {
 	protected void handleItem(HandlerProvider provider, TreeItem item, TlvDataObject tlvObject) {
 		if (tlvObject instanceof ConstructedTlvDataObject){
 			tlvObject = ((ConstructedTlvDataObject) tlvObject).getTlvDataObjectContainer().getTlvObjects().get(0);
-			StringTlvHandler handler = new StringTlvHandler(true, checker);
+			StringTlvHandler handler = new StringTlvHandler(true, checker, hint);
 			handler.createItem(item, tlvObject, provider);
 		}
 	}

@@ -149,15 +149,14 @@ public class EditorFieldHelper {
 		if (value != null) {
 			field.setText(value);
 		}
+		
+		field.setEnabled(editable);
 
 		if (editable && (mandatory || value != null)) {
 			if (fieldUsed != null) {
 				fieldUsed.setSelection(true);
 			}
-			field.setEnabled(true);
 			checkAndModify(field, modifier, checker, defaultColor, warning);
-		} else {
-			field.setEnabled(false);
 		}
 
 		if (editable) {
@@ -214,6 +213,8 @@ public class EditorFieldHelper {
 			Label warning) {
 		FieldCheckResult check = checker.check(field);
 		warning.setText(check.getReason());
+		warning.getParent().requestLayout();
+		warning.getParent().pack();
 		switch (check.getState()) {
 		case OK:
 			field.setBackground(def);

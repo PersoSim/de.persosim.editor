@@ -17,12 +17,18 @@ import de.persosim.simulator.utils.HexString;
 public class StringTlvHandler extends PrimitiveTlvHandler {
 
 	private TextFieldChecker checker;
+	private String hint;
 
-	public StringTlvHandler(boolean compress, TextFieldChecker checker) {
+	public StringTlvHandler(boolean compress, TextFieldChecker checker, String hint) {
 		super(compress);
 		this.checker = checker;
+		this.hint = hint;
 	}
 
+	public StringTlvHandler(boolean compress, TextFieldChecker checker) {
+		this(compress, checker, null);
+	}
+	
 	@Override
 	public boolean canHandle(Object object) {
 		if (object instanceof PrimitiveTlvDataObject) {
@@ -118,15 +124,15 @@ public class StringTlvHandler extends PrimitiveTlvHandler {
 		if (item.getData() instanceof PrimitiveTlvDataObject) {
 			composite.setLayout(new GridLayout(2, false));
 			PrimitiveTlvDataObject tlv = (PrimitiveTlvDataObject) item.getData();
-
+			
 			if (tlv.getTlvTag().equals(TlvConstants.TAG_IA5_STRING)) {
-				createSimpleField(item, true, composite, tlv, StandardCharsets.US_ASCII, "IA5 string");
+				createSimpleField(item, true, composite, tlv, StandardCharsets.US_ASCII, hint != null ? hint : "IA5 string");
 			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_PRINTABLE_STRING)) {
-				createSimpleField(item, true, composite, tlv, StandardCharsets.US_ASCII, "PRINTABLE string");
+				createSimpleField(item, true, composite, tlv, StandardCharsets.US_ASCII, hint != null ? hint : "PRINTABLE string");
 			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_NUMERIC_STRING)) {
-				createSimpleField(item, true, composite, tlv, StandardCharsets.US_ASCII, "NUMERIC string");
+				createSimpleField(item, true, composite, tlv, StandardCharsets.US_ASCII, hint != null ? hint : "NUMERIC string");
 			} else if (tlv.getTlvTag().equals(TlvConstants.TAG_UTF8_STRING)) {
-				createSimpleField(item, true, composite, tlv, StandardCharsets.UTF_8, "UTF8 string");
+				createSimpleField(item, true, composite, tlv, StandardCharsets.UTF_8, hint != null ? hint : "UTF8 string");
 			}
 			composite.pack();
 		}
