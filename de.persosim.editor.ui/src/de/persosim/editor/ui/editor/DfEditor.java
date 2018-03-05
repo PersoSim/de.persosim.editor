@@ -17,6 +17,7 @@ import de.persosim.editor.ui.editor.handlers.ObjectHandler;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DedicatedFile;
 import de.persosim.simulator.cardobjects.ElementaryFile;
+import de.persosim.simulator.cardobjects.PasswordAuthObject;
 import de.persosim.simulator.cardobjects.TypeIdentifier;
 
 public class DfEditor {
@@ -77,8 +78,18 @@ public class DfEditor {
 			}
 		});
 
+		for (CardObject authObject : df.findChildren(new TypeIdentifier(PasswordAuthObject.class))) {
+			ObjectHandler objectHandler = provider.get(authObject);
+			if (objectHandler != null){
+				objectHandler.createItem(dfTree, authObject, provider);	
+			}
+		}
+
 		for (CardObject elementaryFile : df.findChildren(new TypeIdentifier(ElementaryFile.class))) {
-			provider.get(elementaryFile).createItem(dfTree, elementaryFile, provider);
+			ObjectHandler objectHandler = provider.get(elementaryFile);
+			if (objectHandler != null){
+				objectHandler.createItem(dfTree, elementaryFile, provider);	
+			}
 		}
 		
 		show();

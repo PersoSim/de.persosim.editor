@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ import de.persosim.editor.ui.editor.handlers.EidDedicatedFileHandler;
 import de.persosim.editor.ui.editor.handlers.EidOptionalDataDatagroupHandler;
 import de.persosim.editor.ui.editor.handlers.EidStringDatagroupHandler;
 import de.persosim.editor.ui.editor.handlers.ObjectHandler;
+import de.persosim.editor.ui.editor.handlers.PasswordAuthObjectHandler;
 import de.persosim.editor.ui.editor.handlers.PrimitiveTlvHandler;
 import de.persosim.editor.ui.editor.handlers.StringTlvHandler;
 import de.persosim.editor.ui.editor.signing.SecInfoCmsBuilder;
@@ -131,6 +133,8 @@ public class PersoEditorView {
 		dgMapping.put((Integer) 0x1E, "EF.DIR");
 
 		List<ObjectHandler> objectHandlers = new LinkedList<>();
+		objectHandlers.add(new PasswordAuthObjectHandler(Arrays.asList(new Integer [] {2,4})));
+		objectHandlers.add(new ChangeablePasswortAuthObjectHandler(Arrays.asList(new Integer[] {3})));
 		objectHandlers.add(new DatagroupDumpHandler(dgMapping));
 
 		DefaultHandlerProvider provider = new DefaultHandlerProvider(objectHandlers);

@@ -95,6 +95,10 @@ public class EditorFieldHelper {
 		composite.pack();
 	}
 	
+	public static Text createField(TreeItem item, boolean mandatory, Composite composite, TlvModifier modifier, TextFieldChecker checker, String infoText) {
+		return createField(item, mandatory, true, composite, modifier, checker, infoText);
+	}
+	
 	/**
 	 * @param item
 	 * @param mandatory
@@ -103,7 +107,7 @@ public class EditorFieldHelper {
 	 * @param charset
 	 * @param infoText
 	 */
-	public static Text createField(TreeItem item, boolean mandatory, Composite composite, TlvModifier modifier, TextFieldChecker checker, String infoText) {
+	public static Text createField(TreeItem item, boolean mandatory, boolean editable, Composite composite, TlvModifier modifier, TextFieldChecker checker, String infoText) {
 		Label info = new Label(composite, SWT.NONE);
 		info.setText(infoText);
 		GridData gd = new GridData();
@@ -137,35 +141,38 @@ public class EditorFieldHelper {
 
 		String value = modifier.getValue();
 		
-		if (mandatory || value != null) {
+		if (value != null){
+			field.setText(value);
+		}
+		
+		if (editable && (mandatory || value != null)) {
 			if (fieldUsed != null){
 				fieldUsed.setSelection(true);	
 			}
 			field.setEnabled(true);
-			if (value != null){
-				field.setText(value);
-			}
 			checkAndModify(field, modifier, checker, defaultColor, warning);
 		} else {
 			field.setEnabled(false);
 		}
 
-		field.addModifyListener(new ModifyListener() {
-			
-			@Override
-			public void modifyText(ModifyEvent e) {
-		
-				checkAndModify(field, modifier, checker, defaultColor, warning);
-				
-				ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
-				if (handler != null) {
-					handler.updateTextRecursively(item);
-					handler.persist(item);
+		if (editable) {
+			field.addModifyListener(new ModifyListener() {
+
+				@Override
+				public void modifyText(ModifyEvent e) {
+
+					checkAndModify(field, modifier, checker, defaultColor, warning);
+
+					ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
+					if (handler != null) {
+						handler.updateTextRecursively(item);
+						handler.persist(item);
+					}
+					warning.pack();
+					warning.requestLayout();
 				}
-				warning.pack();
-				warning.requestLayout();
-			}
-		});
+			});
+		}
 
 		if (fieldUsed != null){
 			fieldUsed.addSelectionListener(getUsedSelectionAdapter(field, fieldUsed, modifier, item));	
