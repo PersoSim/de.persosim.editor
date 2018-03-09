@@ -146,8 +146,7 @@ public class StandaloneLauncher {
 		editor.updateContent(new DefaultPerso());
 				
 		
-		shell.addListener(SWT.CLOSE, new Listener() {
-			
+		shell.addListener(SWT.Close, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
 				if (editor.hasUnsavedChanges()) {
