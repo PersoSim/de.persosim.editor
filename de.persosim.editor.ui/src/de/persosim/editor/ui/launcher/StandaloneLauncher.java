@@ -22,7 +22,6 @@ import de.persosim.editor.ui.editor.IniPreferenceStoreAccessor;
 import de.persosim.editor.ui.editor.PersoEditorView;
 import de.persosim.editor.ui.editor.SignatureSettingsDialog;
 import de.persosim.editor.ui.launcher.Persos.DefaultPerso;
-import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 
 public class StandaloneLauncher {
@@ -115,14 +114,19 @@ public class StandaloneLauncher {
 		Menu profilesMenu = new Menu(topLevelMenu);
 		profilesItem.setMenu(profilesMenu);
 		
-		for (Personalization perso : new Personalization [] {new Persos.Profile01(), new Persos.Profile02(), new Persos.Profile03(), new Persos.Profile04(), new Persos.Profile05(), new Persos.Profile06(), new Persos.Profile07(), new Persos.Profile08(), new Persos.Profile09(), new Persos.Profile10()}){
-			
+		for (int i = 1; i <= 10; i++){
+			int currentNumber = i;
 			MenuItem profileItem = new MenuItem(profilesMenu, SWT.NONE);
-			profileItem.setText(perso.getClass().getSimpleName());
+			profileItem.setText("Profile " + i);
 			profileItem.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					editor.updateContent(perso);
+					editor.updateContent(Persos.getPerso(currentNumber));
+					if (editor.hasUnsavedChanges()) {
+						if (MessageDialog.openQuestion(shell, "Unsaved changes", "There are unsaved changes, do you want to save them now?")) {
+							openSaveDialog(editor);
+						}
+					}
 				}
 			});
 		}

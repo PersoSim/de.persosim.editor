@@ -9,6 +9,7 @@ import de.persosim.simulator.crypto.certificates.CardVerifiableCertificate;
 import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.perso.DefaultPersonalization;
+import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.utils.HexString;
@@ -113,6 +114,31 @@ public class Persos {
 		}
 	}
 	
+	public static Personalization getPerso(int number) {
+		switch(number) {
+		case 1:
+			return new Profile01();
+		case 2:
+			return new Profile02();
+		case 3:
+			return new Profile03();
+		case 4:
+			return new Profile04();
+		case 5:
+			return new Profile05();
+		case 6:
+			return new Profile06();
+		case 7:
+			return new Profile07();
+		case 8:
+			return new Profile08();
+		case 9:
+			return new Profile09();
+		case 10:
+			return new Profile10();
+		}
+		throw new IllegalArgumentException("Only numbers from 1-10 are allowed");
+	}
 
 	private static void setAtCert(MasterFile mf) throws CertificateNotParseableException, AccessDeniedException {
 		// use BSI Test-PKI CVCA root certificate
