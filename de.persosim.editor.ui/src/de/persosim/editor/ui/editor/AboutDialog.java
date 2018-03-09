@@ -58,7 +58,7 @@ public class AboutDialog extends Dialog {
 	 * @return version
 	 */
 	public String getProductVersion() {
-		return "Beta 4";
+		return "Beta 5";
 	}
 
 	@Override
