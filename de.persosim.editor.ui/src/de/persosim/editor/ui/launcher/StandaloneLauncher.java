@@ -90,11 +90,6 @@ public class StandaloneLauncher {
 		exit.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (editor.hasUnsavedChanges()) {
-					if (MessageDialog.openQuestion(shell, "Unsaved changes", "There are unsaved changes, do you want to save them now?")) {
-						openSaveDialog(editor);
-					}
-				}
 				shell.close();
 			}
 		});
@@ -154,7 +149,12 @@ public class StandaloneLauncher {
 			@Override
 			public void handleEvent(Event event) {
 				if (editor.hasUnsavedChanges()) {
-					event.doit = MessageDialog.openQuestion(shell, "Unsaved changes", "There are unsaved changes, do you want to close the application?");
+					if (MessageDialog.openQuestion(shell, "Unsaved changes", "There are unsaved changes, do you want to save them now?")) {
+						openSaveDialog(editor);
+						event.doit = false;
+					} else {
+						event.doit = true;
+					}
 				}
 			}
 		});
