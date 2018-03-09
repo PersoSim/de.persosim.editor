@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.persosim.editor.ui.editor.checker.NumberChecker;
+import de.persosim.editor.ui.editor.checker.FieldCheckResult.State;
 import de.persosim.simulator.cardobjects.PasswordAuthObject;
 
 public class PasswordAuthObjectHandler extends AbstractObjectHandler {
@@ -85,6 +86,6 @@ public class PasswordAuthObjectHandler extends AbstractObjectHandler {
 			public String getValue() {
 				return new String(data.getPassword(), StandardCharsets.US_ASCII);
 			}
-		}, new NumberChecker(), data.getPasswordName() + " is not modifiable");
+		}, new NumberChecker(State.ERROR), data.getPasswordName() + " is not modifiable");
 	}
 }

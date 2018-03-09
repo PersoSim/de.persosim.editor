@@ -8,18 +8,24 @@ public class LengthChecker implements TextFieldChecker {
 
 	private int minLength;
 	private int maxLength;
+	private State state;
 
-	public LengthChecker(int minLength, int maxLength) {
+	public LengthChecker(int minLength, int maxLength, State stateOnMismatch) {
 		this.minLength = minLength;
 		this.maxLength = maxLength;
+		this.state = stateOnMismatch;
+	}
+	
+	public LengthChecker(int minLength, int maxLength) {
+		this(minLength, maxLength, State.WARNING);
 	}
 	
 	@Override
 	public FieldCheckResult check(Text field) {
 		if (field.getText().length() > maxLength){
-			return new FieldCheckResult("Too many characters", State.WARNING);
+			return new FieldCheckResult("Too many characters", state);
 		} else if (field.getText().length() < minLength){
-			return new FieldCheckResult("Not enough characters", State.WARNING);
+			return new FieldCheckResult("Not enough characters", state);
 		}
 		return FieldCheckResult.OK;
 	}

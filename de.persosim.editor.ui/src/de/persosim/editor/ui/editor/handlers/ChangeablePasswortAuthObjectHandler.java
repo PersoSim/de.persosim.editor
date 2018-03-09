@@ -13,6 +13,7 @@ import de.persosim.editor.ui.editor.MaxValueChecker;
 import de.persosim.editor.ui.editor.checker.AndChecker;
 import de.persosim.editor.ui.editor.checker.LengthChecker;
 import de.persosim.editor.ui.editor.checker.NumberChecker;
+import de.persosim.editor.ui.editor.checker.FieldCheckResult.State;
 import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
@@ -63,7 +64,7 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 			public String getValue() {
 				return new String(authObject.getPassword(), StandardCharsets.US_ASCII);
 			}
-		}, new AndChecker(new NumberChecker(), new LengthChecker(5,6)), authObject.getPasswordName() + ", possible lengths are 5 or 6 characters");
+		}, new AndChecker(new NumberChecker(), new LengthChecker(5,6,State.ERROR)), authObject.getPasswordName() + ", possible lengths are 5 or 6 characters");
 		
 		if (authObject instanceof PasswordAuthObjectWithRetryCounter){
 			PasswordAuthObjectWithRetryCounter pwdWithRetryCounter = (PasswordAuthObjectWithRetryCounter) authObject;
@@ -72,7 +73,13 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 				@Override
 				public void setValue(String string) {
 					try {
+						int initialValue = Integer.parseInt(getValue());
 						int newValue = Integer.parseInt(string);
+						
+						if (initialValue == newValue) {
+							return;
+						}
+						
 						if (newValue >= 0 && newValue <= pwdWithRetryCounter.getRetryCounterDefaultValue()){
 							pwdWithRetryCounter.resetRetryCounterToDefault();
 							while (pwdWithRetryCounter.getRetryCounterCurrentValue() != Integer.parseInt(string)){
@@ -98,7 +105,7 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 					return Integer.toString(pwdWithRetryCounter.getRetryCounterCurrentValue());
 				}
 				
-			}, new AndChecker(new NumberChecker(), new MaxValueChecker(pwdWithRetryCounter.getRetryCounterDefaultValue())), "Retry counter, max. value value is " + pwdWithRetryCounter.getRetryCounterDefaultValue());
+			}, new AndChecker(new NumberChecker(State.ERROR), new MaxValueChecker(pwdWithRetryCounter.getRetryCounterDefaultValue())), "Retry counter, max. value value is " + pwdWithRetryCounter.getRetryCounterDefaultValue());
 		}
 	}
 	
