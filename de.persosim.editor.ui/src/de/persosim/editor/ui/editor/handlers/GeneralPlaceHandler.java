@@ -94,17 +94,17 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 			createField(item, true, composite, tlv, TlvConstants.TAG_AD, TlvConstants.TAG_PRINTABLE_STRING,	StandardCharsets.US_ASCII, "Country code", new AndChecker(new OrChecker(new LengthChecker(1, 1), new LengthChecker(3, 3), new UpperCaseTextFieldChecker())));
 			createField(item, false, composite, tlv, TlvConstants.TAG_AE, TlvConstants.TAG_PRINTABLE_STRING, StandardCharsets.US_ASCII, "Zipcode", new UpperCaseTextFieldChecker());
 		} else if (TlvConstants.TAG_A1.equals(tlv.getTlvTag())){
-			createSimpleField(item, true, composite, tlv, StandardCharsets.UTF_8, "Freetext Place", new UpperCaseTextFieldChecker());
+			createSimpleField(item, composite, tlv, StandardCharsets.UTF_8, "Freetext Place", new UpperCaseTextFieldChecker());
 		} else if (TlvConstants.TAG_A2.equals(tlv.getTlvTag())){
-			createSimpleField(item, true, composite, tlv, StandardCharsets.UTF_8, "NoPlaceInfo", new UpperCaseTextFieldChecker());
+			createSimpleField(item, composite, tlv, StandardCharsets.UTF_8, "NoPlaceInfo", new UpperCaseTextFieldChecker());
 		}
 		
 
 	}
 
-	private void createSimpleField(TreeItem item, boolean mandatory, Composite composite, ConstructedTlvDataObject wrapper, Charset charset, String infoText, TextFieldChecker checker) {
+	private void createSimpleField(TreeItem item, Composite composite, ConstructedTlvDataObject wrapper, Charset charset, String infoText, TextFieldChecker checker) {
 
-			EditorFieldHelper.createField(item, mandatory, composite, new AbstractObjectModifier() {
+			EditorFieldHelper.createField(item, true, composite, new AbstractObjectModifier() {
 				
 				@Override
 				public void setValue(String value) {
@@ -129,7 +129,7 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 
 	}
 
-private void createField(TreeItem item, boolean mandatory, Composite composite, ConstructedTlvDataObject generalPlaceSequence,
+	private void createField(TreeItem item, boolean mandatory, Composite composite, ConstructedTlvDataObject generalPlaceSequence,
 		TlvTag tlvTag, TlvTag typeTag, Charset charset, String infoText, TextFieldChecker checker) {
 
 		EditorFieldHelper.createField(item, mandatory, composite, new AbstractObjectModifier() {
@@ -179,6 +179,38 @@ private void createField(TreeItem item, boolean mandatory, Composite composite, 
 					}
 				}
 				return null;
+			}
+			
+			@Override
+			public void setActivationState(boolean active) {
+				if (active) {
+					if (!generalPlaceSequence.containsTlvDataObject(tlvTag)) {
+						generalPlaceSequence.addTlvDataObject(new ConstructedTlvDataObject(tlvTag));
+					}
+					ConstructedTlvDataObject ctlv = (ConstructedTlvDataObject) generalPlaceSequence
+							.getTlvDataObject(tlvTag);
+					if (!ctlv.containsTlvDataObject(typeTag)) {
+						ctlv.addTlvDataObject(new PrimitiveTlvDataObject(typeTag));
+						ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
+						if (handler != null){
+							handler.changed(item);
+						}
+					}	
+				} else {
+					remove();
+				}
+			}
+
+			@Override
+			public boolean getActivationState() {
+				if (!generalPlaceSequence.containsTlvDataObject(tlvTag)){
+					return false;
+				}
+				ConstructedTlvDataObject ctlv = (ConstructedTlvDataObject) generalPlaceSequence.getTlvDataObject(tlvTag);
+				if (!ctlv.containsTlvDataObject(typeTag)){
+					return false;
+				}
+				return true;
 			}
 		}, checker, infoText);
 	

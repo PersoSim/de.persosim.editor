@@ -20,7 +20,7 @@ public interface ObjectModifier {
 	/**
 	 * Modifies the objects activation state, i.e. if it is considered active or "usable"
 	 */
-	void setActivationState();
+	void setActivationState(boolean active);
 
 	/**
 	 * Sets the objects value by conversion from the {@link String} representation

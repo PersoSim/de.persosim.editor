@@ -194,9 +194,8 @@ public class EditorFieldHelper {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				field.setEnabled(fieldUsed.getSelection());
-				if (!fieldUsed.getSelection()) {
-					modifier.remove();
-				} else {
+				modifier.setActivationState(fieldUsed.getSelection());
+				if (fieldUsed.getSelection()) {
 					modifier.setValue(field.getText());
 				}
 

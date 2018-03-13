@@ -8,7 +8,7 @@ public abstract class AbstractObjectModifier implements ObjectModifier {
 	}
 
 	@Override
-	public void setActivationState() {
+	public void setActivationState(boolean active) {
 		//do nothing
 	}
 	

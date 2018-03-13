@@ -92,7 +92,7 @@ public class OptionalDataHandler extends AbstractObjectHandler {
 
 		ConstructedTlvDataObject ctlv = (ConstructedTlvDataObject) item.getData();
 
-		EditorFieldHelper.createBinaryField(item, false, composite, new AbstractObjectModifier() {
+		EditorFieldHelper.createBinaryField(item, true, composite, new AbstractObjectModifier() {
 
 			@Override
 			public void setValue(String value) {
@@ -119,6 +119,7 @@ public class OptionalDataHandler extends AbstractObjectHandler {
 				byte[] valueField = ctlv.getValueField();
 				return HexString.encode(Arrays.copyOfRange(valueField, ctlv.getTlvDataObject(TlvConstants.TAG_06).getLength(), valueField.length));
 			}
+			
 		}, new TlvContainerChecker(), "Content as defined by above OID");
 	}
 

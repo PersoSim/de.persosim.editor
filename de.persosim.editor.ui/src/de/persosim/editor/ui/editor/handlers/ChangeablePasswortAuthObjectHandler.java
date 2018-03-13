@@ -59,21 +59,19 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 			}
 			
 			@Override
-			public void setActivationState() {
+			public void setActivationState(boolean active) {
 				try {
 					ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
-					switch (authObject.getLifeCycleState()) {
-					case CREATION_OPERATIONAL_ACTIVATED:
-					case CREATION:
-					case OPERATIONAL_ACTIVATED:
-						authObject.updateLifeCycleState(Iso7816LifeCycleState.CREATION_OPERATIONAL_DEACTIVATED);
+					
+					Iso7816LifeCycleState newState = active ? Iso7816LifeCycleState.CREATION_OPERATIONAL_ACTIVATED : Iso7816LifeCycleState.CREATION_OPERATIONAL_DEACTIVATED;
+
+					if (!newState.equals(authObject.getLifeCycleState())) {
+						authObject.updateLifeCycleState(newState);
 						if (handler != null) {
 							handler.changed(item);
 						}
-						break;
-					default:
-						break;
 					}
+							
 				} catch (AccessDeniedException e) {
 					BasicLogger.logException(getClass(), e, LogLevel.WARN);
 				}
