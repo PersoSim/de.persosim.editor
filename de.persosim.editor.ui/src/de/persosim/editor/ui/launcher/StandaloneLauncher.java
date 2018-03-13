@@ -108,10 +108,24 @@ public class StandaloneLauncher {
 
 		Menu profilesMenu = new Menu(topLevelMenu);
 		profilesItem.setMenu(profilesMenu);
+
+		MenuItem profileItem = new MenuItem(profilesMenu, SWT.NONE);
+		profileItem.setText("Default Profile");
+		profileItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				editor.updateContent(Persos.getPerso(0));
+				if (editor.hasUnsavedChanges()) {
+					if (MessageDialog.openQuestion(shell, "Unsaved changes", "There are unsaved changes, do you want to save them now?")) {
+						openSaveDialog(editor);
+					}
+				}
+			}
+		});
 		
 		for (int i = 1; i <= 10; i++){
 			int currentNumber = i;
-			MenuItem profileItem = new MenuItem(profilesMenu, SWT.NONE);
+			profileItem = new MenuItem(profilesMenu, SWT.NONE);
 			profileItem.setText("Profile " + i);
 			profileItem.addSelectionListener(new SelectionAdapter() {
 				@Override

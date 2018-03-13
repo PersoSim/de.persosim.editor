@@ -116,6 +116,8 @@ public class Persos {
 	
 	public static Personalization getPerso(int number) {
 		switch(number) {
+		case 0:
+			return new DefaultPerso();
 		case 1:
 			return new Profile01();
 		case 2:
