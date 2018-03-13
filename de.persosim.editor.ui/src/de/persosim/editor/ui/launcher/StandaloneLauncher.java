@@ -1,5 +1,6 @@
 package de.persosim.editor.ui.launcher;
 
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -39,7 +40,7 @@ public class StandaloneLauncher {
 		shell.setText("PersoSim Editor");
 
 		PersoEditorView editor = new PersoEditorView();
-		
+
 		Menu topLevelMenu = new Menu(shell, SWT.BAR);
 		MenuItem fileItem = new MenuItem(topLevelMenu, SWT.CASCADE);
 		fileItem.setText("File");
@@ -49,7 +50,7 @@ public class StandaloneLauncher {
 		profilesItem.setText("Profiles");
 		MenuItem aboutItem = new MenuItem(topLevelMenu, SWT.CASCADE);
 		aboutItem.setText("About");
-		
+
 		Menu fileMenu = new Menu(topLevelMenu);
 		fileItem.setMenu(fileMenu);
 
@@ -58,12 +59,8 @@ public class StandaloneLauncher {
 		open.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (editor.hasUnsavedChanges()) {
-					if (MessageDialog.openQuestion(shell, "Unsaved changes", "There are unsaved changes, do you want to save them now?")) {
-						openSaveDialog(editor);
-					}
-				}
-				
+				checkAndSave(shell, editor);
+
 				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
 				fd.setText("Open");
 				fd.setFilterPath("C:/");
@@ -75,7 +72,7 @@ public class StandaloneLauncher {
 				}
 			}
 		});
-		
+
 		MenuItem saveas = new MenuItem(fileMenu, SWT.NONE);
 		saveas.setText("Save as...");
 		saveas.addSelectionListener(new SelectionAdapter() {
@@ -84,7 +81,7 @@ public class StandaloneLauncher {
 				openSaveDialog(editor);
 			}
 		});
-		
+
 		MenuItem exit = new MenuItem(fileMenu, SWT.NONE);
 		exit.setText("Exit");
 		exit.addSelectionListener(new SelectionAdapter() {
@@ -96,7 +93,7 @@ public class StandaloneLauncher {
 
 		Menu settingsMenu = new Menu(topLevelMenu);
 		settingsItem.setMenu(settingsMenu);
-		
+
 		MenuItem signingItem = new MenuItem(settingsMenu, SWT.NONE);
 		signingItem.setText("Signature settings");
 		signingItem.addSelectionListener(new SelectionAdapter() {
@@ -114,35 +111,27 @@ public class StandaloneLauncher {
 		profileItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				checkAndSave(shell, editor);
 				editor.updateContent(Persos.getPerso(0));
-				if (editor.hasUnsavedChanges()) {
-					if (MessageDialog.openQuestion(shell, "Unsaved changes", "There are unsaved changes, do you want to save them now?")) {
-						openSaveDialog(editor);
-					}
-				}
 			}
 		});
-		
-		for (int i = 1; i <= 10; i++){
+
+		for (int i = 1; i <= 10; i++) {
 			int currentNumber = i;
 			profileItem = new MenuItem(profilesMenu, SWT.NONE);
 			profileItem.setText("Profile " + i);
 			profileItem.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
+					checkAndSave(shell, editor);
 					editor.updateContent(Persos.getPerso(currentNumber));
-					if (editor.hasUnsavedChanges()) {
-						if (MessageDialog.openQuestion(shell, "Unsaved changes", "There are unsaved changes, do you want to save them now?")) {
-							openSaveDialog(editor);
-						}
-					}
 				}
 			});
 		}
 
 		Menu aboutMenu = new Menu(topLevelMenu);
 		aboutItem.setMenu(aboutMenu);
-		
+
 		MenuItem aboutItem2 = new MenuItem(aboutMenu, SWT.NONE);
 		aboutItem2.setText("About");
 		aboutItem2.addSelectionListener(new SelectionAdapter() {
@@ -151,28 +140,20 @@ public class StandaloneLauncher {
 				new AboutDialog(shell).open();
 			}
 		});
-		
+
 		shell.setMenuBar(topLevelMenu);
-		
+
 		editor.createEditor(shell);
 
 		editor.updateContent(new DefaultPerso());
-				
-		
+
 		shell.addListener(SWT.Close, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
-				if (editor.hasUnsavedChanges()) {
-					if (MessageDialog.openQuestion(shell, "Unsaved changes", "There are unsaved changes, do you want to save them now?")) {
-						openSaveDialog(editor);
-						event.doit = false;
-					} else {
-						event.doit = true;
-					}
-				}
+				checkAndSave(shell, editor);
 			}
 		});
-		
+
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
@@ -189,7 +170,14 @@ public class StandaloneLauncher {
 		fd.setFilterExtensions(filterExt);
 		String selection = fd.open();
 		if (selection != null) {
-			editor.save(Paths.get(selection));
+			boolean write = true;
+			if (Files.exists(Paths.get(selection))) {
+				write = MessageDialog.openQuestion(Display.getDefault().getActiveShell(), "File exists",
+						"Do you want to overwrite the file at " + selection + "?");
+			}
+			if (write) {
+				editor.save(Paths.get(selection));
+			}
 		}
 	}
 
@@ -199,6 +187,20 @@ public class StandaloneLauncher {
 			updateDg = Boolean.FALSE.toString();
 		}
 		PersoSimPreferenceManager.storePreference(key, updateDg);
+	}
+
+	/**
+	 * Check if there are unsaved changes and allow to save if needed.
+	 * @param shell
+	 * @param editor
+	 */
+	private static void checkAndSave(Shell shell, PersoEditorView editor) {
+		if (editor.hasUnsavedChanges()) {
+			if (MessageDialog.openQuestion(shell, "Unsaved changes",
+					"There are unsaved changes, do you want to save them now?")) {
+				openSaveDialog(editor);
+			}
+		}
 	}
 
 }
