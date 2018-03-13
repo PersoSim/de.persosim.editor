@@ -151,11 +151,14 @@ public class EditorFieldHelper {
 		}
 		
 		field.setEnabled(editable);
+		
+		if (fieldUsed != null) {
+			boolean activationState = modifier.getActivationState();
+			fieldUsed.setSelection(activationState);
+			field.setEnabled(activationState);
+		}
 
 		if (editable && (mandatory || value != null)) {
-			if (fieldUsed != null) {
-				fieldUsed.setSelection(modifier.getActivationState());
-			}
 			checkAndModify(field, modifier, checker, defaultColor, warning);
 		}
 
