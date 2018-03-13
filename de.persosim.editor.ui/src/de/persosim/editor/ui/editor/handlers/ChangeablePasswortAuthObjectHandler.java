@@ -126,7 +126,7 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 					return Integer.toString(pwdWithRetryCounter.getRetryCounterCurrentValue());
 				}
 				
-			}, new AndChecker(new NumberChecker(State.ERROR), new MaxValueChecker(pwdWithRetryCounter.getRetryCounterDefaultValue())), "Retry counter, max. value value is " + pwdWithRetryCounter.getRetryCounterDefaultValue());
+			}, new AndChecker(new NumberChecker(State.ERROR), new MaxValueChecker(pwdWithRetryCounter.getRetryCounterDefaultValue())), "Retry counter, max. value is " + pwdWithRetryCounter.getRetryCounterDefaultValue());
 		}
 	}
 	
