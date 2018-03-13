@@ -84,7 +84,7 @@ public class OptionalDataHandler extends AbstractObjectHandler {
 	protected void createEditingComposite(Composite composite, TreeItem item) {
 		composite.setLayout(new GridLayout(2, false));
 
-		TlvModifier modifier = new HexStringTlvModifier(
+		ObjectModifier modifier = new HexStringTlvModifier(
 				(PrimitiveTlvDataObject) ((ConstructedTlvDataObject) item.getData())
 						.getTlvDataObject(TlvConstants.TAG_OID));
 
@@ -92,7 +92,7 @@ public class OptionalDataHandler extends AbstractObjectHandler {
 
 		ConstructedTlvDataObject ctlv = (ConstructedTlvDataObject) item.getData();
 
-		EditorFieldHelper.createBinaryField(item, false, composite, new TlvModifier() {
+		EditorFieldHelper.createBinaryField(item, false, composite, new AbstractObjectModifier() {
 
 			@Override
 			public void setValue(String value) {

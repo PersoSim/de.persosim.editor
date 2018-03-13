@@ -31,26 +31,12 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 		
 		ChangeablePasswordAuthObject authObject = ((ChangeablePasswordAuthObject)item.getData());
 		
-		EditorFieldHelper.createField(item, false, composite, new TlvModifier() {
+		EditorFieldHelper.createField(item, false, composite, new AbstractObjectModifier() {
 			
 			@Override
 			public void setValue(String string) {
 				try {
 					ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
-					
-					switch (authObject.getLifeCycleState()) {
-					case CREATION_OPERATIONAL_ACTIVATED:
-					case CREATION:
-					case OPERATIONAL_ACTIVATED:
-						break;
-					default:
-						authObject.updateLifeCycleState(Iso7816LifeCycleState.CREATION_OPERATIONAL_ACTIVATED);
-						if (handler != null) {
-							handler.changed(item);
-						}
-						break;
-					}
-					
 					if (!new String(authObject.getPassword(), StandardCharsets.US_ASCII).equals(string)) {
 						authObject.setPassword(string.getBytes(StandardCharsets.US_ASCII));
 						if (handler != null) {
@@ -64,6 +50,16 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 			
 			@Override
 			public void remove() {
+				//Not intended
+			}
+			
+			@Override
+			public String getValue() {
+				return new String(authObject.getPassword(), StandardCharsets.US_ASCII);
+			}
+			
+			@Override
+			public void setActivationState() {
 				try {
 					ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
 					switch (authObject.getLifeCycleState()) {
@@ -82,23 +78,23 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 					BasicLogger.logException(getClass(), e, LogLevel.WARN);
 				}
 			}
-			
+
 			@Override
-			public String getValue() {
+			public boolean getActivationState() {
 				switch (authObject.getLifeCycleState()) {
 				case CREATION_OPERATIONAL_ACTIVATED:
 				case CREATION:
 				case OPERATIONAL_ACTIVATED:
-					return new String(authObject.getPassword(), StandardCharsets.US_ASCII);
+					return true;
 				default:
-					return null;
+					return false;
 				}
 			}
 		}, new AndChecker(new NumberChecker(), new LengthChecker(5,6,State.ERROR)), authObject.getPasswordName() + ", possible lengths are 5 or 6 characters");
 		
 		if (authObject instanceof PasswordAuthObjectWithRetryCounter){
 			PasswordAuthObjectWithRetryCounter pwdWithRetryCounter = (PasswordAuthObjectWithRetryCounter) authObject;
-			EditorFieldHelper.createField(item, true, composite, new TlvModifier() {
+			EditorFieldHelper.createField(item, true, composite, new AbstractObjectModifier() {
 				
 				@Override
 				public void setValue(String string) {
@@ -123,11 +119,6 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 					} catch (AccessDeniedException | NumberFormatException e) {
 						BasicLogger.logException(getClass(), e, LogLevel.WARN);
 					}
-				}
-				
-				@Override
-				public void remove() {
-					// not intended
 				}
 				
 				@Override

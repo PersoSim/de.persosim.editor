@@ -104,7 +104,7 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 
 	private void createSimpleField(TreeItem item, boolean mandatory, Composite composite, ConstructedTlvDataObject wrapper, Charset charset, String infoText, TextFieldChecker checker) {
 
-			EditorFieldHelper.createField(item, mandatory, composite, new TlvModifier() {
+			EditorFieldHelper.createField(item, mandatory, composite, new AbstractObjectModifier() {
 				
 				@Override
 				public void setValue(String value) {
@@ -132,7 +132,7 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 private void createField(TreeItem item, boolean mandatory, Composite composite, ConstructedTlvDataObject generalPlaceSequence,
 		TlvTag tlvTag, TlvTag typeTag, Charset charset, String infoText, TextFieldChecker checker) {
 
-		EditorFieldHelper.createField(item, mandatory, composite, new TlvModifier() {
+		EditorFieldHelper.createField(item, mandatory, composite, new AbstractObjectModifier() {
 			
 			@Override
 			public void setValue(String value) {

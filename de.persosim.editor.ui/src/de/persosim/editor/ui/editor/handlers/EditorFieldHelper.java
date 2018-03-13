@@ -30,7 +30,7 @@ import de.persosim.simulator.utils.HexString;
 
 public class EditorFieldHelper {
 
-	public static void createBinaryField(TreeItem item, boolean mandatory, Composite composite, TlvModifier modifier,
+	public static void createBinaryField(TreeItem item, boolean mandatory, Composite composite, ObjectModifier modifier,
 			TextFieldChecker checker, String infoText) {
 
 		Text field = createField(item, mandatory, composite, modifier, checker, infoText);
@@ -98,7 +98,7 @@ public class EditorFieldHelper {
 		composite.pack();
 	}
 
-	public static Text createField(TreeItem item, boolean mandatory, Composite composite, TlvModifier modifier,
+	public static Text createField(TreeItem item, boolean mandatory, Composite composite, ObjectModifier modifier,
 			TextFieldChecker checker, String infoText) {
 		return createField(item, mandatory, true, composite, modifier, checker, infoText);
 	}
@@ -113,7 +113,7 @@ public class EditorFieldHelper {
 	 * @param infoText
 	 */
 	public static Text createField(TreeItem item, boolean mandatory, boolean editable, Composite composite,
-			TlvModifier modifier, TextFieldChecker checker, String infoText) {
+			ObjectModifier modifier, TextFieldChecker checker, String infoText) {
 		Label info = new Label(composite, SWT.NONE);
 		info.setText(infoText);
 		GridData gd = new GridData();
@@ -154,7 +154,7 @@ public class EditorFieldHelper {
 
 		if (editable && (mandatory || value != null)) {
 			if (fieldUsed != null) {
-				fieldUsed.setSelection(true);
+				fieldUsed.setSelection(modifier.getActivationState());
 			}
 			checkAndModify(field, modifier, checker, defaultColor, warning);
 		}
@@ -187,7 +187,7 @@ public class EditorFieldHelper {
 		return field;
 	}
 
-	private static SelectionAdapter getUsedSelectionAdapter(Text field, Button fieldUsed, TlvModifier modifier,
+	private static SelectionAdapter getUsedSelectionAdapter(Text field, Button fieldUsed, ObjectModifier modifier,
 			TreeItem item) {
 		return new SelectionAdapter() {
 
@@ -209,7 +209,7 @@ public class EditorFieldHelper {
 		};
 	}
 
-	static boolean checkAndModify(Text field, TlvModifier modifier, TextFieldChecker checker, Color def,
+	static boolean checkAndModify(Text field, ObjectModifier modifier, TextFieldChecker checker, Color def,
 			Label warning) {
 		FieldCheckResult check = checker.check(field);
 		warning.setText(check.getReason());

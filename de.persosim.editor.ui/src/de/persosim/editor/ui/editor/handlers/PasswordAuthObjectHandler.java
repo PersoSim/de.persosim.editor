@@ -70,7 +70,7 @@ public class PasswordAuthObjectHandler extends AbstractObjectHandler {
 	protected void createEditingComposite(Composite composite, TreeItem item) {
 		composite.setLayout(new GridLayout(2, false));
 		PasswordAuthObject data = (PasswordAuthObject) item.getData();
-		EditorFieldHelper.createField(item, true, false, composite, new TlvModifier() {
+		EditorFieldHelper.createField(item, true, false, composite, new AbstractObjectModifier() {
 			
 			@Override
 			public void setValue(String string) {

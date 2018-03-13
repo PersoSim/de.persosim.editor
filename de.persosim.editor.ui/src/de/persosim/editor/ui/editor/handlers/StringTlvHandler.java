@@ -141,7 +141,7 @@ public class StringTlvHandler extends PrimitiveTlvHandler {
 	private void createSimpleField(TreeItem item, boolean mandatory, Composite composite, PrimitiveTlvDataObject tlv,
 			Charset charset, String infoText) {
 
-		EditorFieldHelper.createField(item, mandatory, composite, new TlvModifier() {
+		EditorFieldHelper.createField(item, mandatory, composite, new AbstractObjectModifier() {
 
 			@Override
 			public String getValue() {

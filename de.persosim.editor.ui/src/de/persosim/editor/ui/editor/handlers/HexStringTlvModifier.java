@@ -3,7 +3,7 @@ package de.persosim.editor.ui.editor.handlers;
 import de.persosim.simulator.tlv.PrimitiveTlvDataObject;
 import de.persosim.simulator.utils.HexString;
 
-public class HexStringTlvModifier implements TlvModifier {
+public class HexStringTlvModifier extends AbstractObjectModifier {
 
 	private PrimitiveTlvDataObject tlv;
 

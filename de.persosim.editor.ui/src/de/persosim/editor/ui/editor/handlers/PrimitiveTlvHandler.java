@@ -99,7 +99,7 @@ public class PrimitiveTlvHandler extends AbstractObjectHandler {
 			composite.setLayout(new GridLayout(2, false));
 			PrimitiveTlvDataObject tlv = (PrimitiveTlvDataObject) item.getData();
 
-			TlvModifier modifier = new HexStringTlvModifier(tlv);
+			ObjectModifier modifier = new HexStringTlvModifier(tlv);
 			
 			EditorFieldHelper.createBinaryField(item, true, composite, modifier, new HexChecker(), "binary data as hexadecimal string");
 
