@@ -11,9 +11,9 @@ import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.editor.ui.editor.MaxValueChecker;
 import de.persosim.editor.ui.editor.checker.AndChecker;
+import de.persosim.editor.ui.editor.checker.FieldCheckResult.State;
 import de.persosim.editor.ui.editor.checker.LengthChecker;
 import de.persosim.editor.ui.editor.checker.NumberChecker;
-import de.persosim.editor.ui.editor.checker.FieldCheckResult.State;
 import de.persosim.simulator.cardobjects.ChangeablePasswordAuthObject;
 import de.persosim.simulator.cardobjects.Iso7816LifeCycleState;
 import de.persosim.simulator.cardobjects.PasswordAuthObjectWithRetryCounter;
@@ -36,11 +36,26 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 			@Override
 			public void setValue(String string) {
 				try {
-					authObject.updateLifeCycleState(Iso7816LifeCycleState.CREATION_OPERATIONAL_ACTIVATED);
-					authObject.setPassword(string.getBytes(StandardCharsets.US_ASCII));
 					ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
-					if (handler != null) {
-						handler.changed(item);
+					
+					switch (authObject.getLifeCycleState()) {
+					case CREATION_OPERATIONAL_ACTIVATED:
+					case CREATION:
+					case OPERATIONAL_ACTIVATED:
+						break;
+					default:
+						authObject.updateLifeCycleState(Iso7816LifeCycleState.CREATION_OPERATIONAL_ACTIVATED);
+						if (handler != null) {
+							handler.changed(item);
+						}
+						break;
+					}
+					
+					if (!new String(authObject.getPassword(), StandardCharsets.US_ASCII).equals(string)) {
+						authObject.setPassword(string.getBytes(StandardCharsets.US_ASCII));
+						if (handler != null) {
+							handler.changed(item);
+						}
 					}
 				} catch (AccessDeniedException e) {
 					BasicLogger.logException(getClass(), e, LogLevel.WARN);
@@ -50,10 +65,18 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 			@Override
 			public void remove() {
 				try {
-					authObject.updateLifeCycleState(Iso7816LifeCycleState.CREATION_OPERATIONAL_DEACTIVATED);
 					ObjectHandler handler = (ObjectHandler) item.getData(ObjectHandler.HANDLER);
-					if (handler != null) {
-						handler.changed(item);
+					switch (authObject.getLifeCycleState()) {
+					case CREATION_OPERATIONAL_ACTIVATED:
+					case CREATION:
+					case OPERATIONAL_ACTIVATED:
+						authObject.updateLifeCycleState(Iso7816LifeCycleState.CREATION_OPERATIONAL_DEACTIVATED);
+						if (handler != null) {
+							handler.changed(item);
+						}
+						break;
+					default:
+						break;
 					}
 				} catch (AccessDeniedException e) {
 					BasicLogger.logException(getClass(), e, LogLevel.WARN);
@@ -62,7 +85,14 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 			
 			@Override
 			public String getValue() {
-				return new String(authObject.getPassword(), StandardCharsets.US_ASCII);
+				switch (authObject.getLifeCycleState()) {
+				case CREATION_OPERATIONAL_ACTIVATED:
+				case CREATION:
+				case OPERATIONAL_ACTIVATED:
+					return new String(authObject.getPassword(), StandardCharsets.US_ASCII);
+				default:
+					return null;
+				}
 			}
 		}, new AndChecker(new NumberChecker(), new LengthChecker(5,6,State.ERROR)), authObject.getPasswordName() + ", possible lengths are 5 or 6 characters");
 		
