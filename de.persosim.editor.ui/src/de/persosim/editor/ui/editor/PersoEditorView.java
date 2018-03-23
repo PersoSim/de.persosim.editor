@@ -91,7 +91,7 @@ public class PersoEditorView {
 	protected Collection<DfEditor> toBePersisted = new HashSet<>();
 	protected Personalization perso;
 	private Path persoFile;
-
+	
 	public void updateContent(Path personalizationFile) {
 		if (!Files.exists(personalizationFile)) {
 			throw new IllegalArgumentException("Personalization file does not exist");

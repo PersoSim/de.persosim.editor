@@ -3,10 +3,13 @@ package de.persosim.editor.ui.launcher;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import javax.annotation.PostConstruct;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
@@ -34,14 +37,17 @@ public class StandaloneLauncher {
 		setDefault(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS);
 		setDefault(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY);
 		setDefault(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY);
-
+		
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setText("PersoSim Editor");
-
+	}
+	
+	@PostConstruct
+	private static void createGui(Composite parent) {
 		PersoEditorView editor = new PersoEditorView();
 
-		Menu topLevelMenu = new Menu(shell, SWT.BAR);
+		Menu topLevelMenu = new Menu(parent.getShell(), SWT.BAR);
 		MenuItem fileItem = new MenuItem(topLevelMenu, SWT.CASCADE);
 		fileItem.setText("File");
 		MenuItem settingsItem = new MenuItem(topLevelMenu, SWT.CASCADE);
@@ -59,7 +65,7 @@ public class StandaloneLauncher {
 		open.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				checkAndSave(shell, editor);
+				checkAndSave(parent.getShell(), editor);
 
 				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
 				fd.setText("Open");
@@ -87,7 +93,7 @@ public class StandaloneLauncher {
 		exit.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				shell.close();
+				parent.getShell().close();
 			}
 		});
 
@@ -99,7 +105,7 @@ public class StandaloneLauncher {
 		signingItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				new SignatureSettingsDialog(shell).open();
+				new SignatureSettingsDialog(parent.getShell()).open();
 			}
 		});
 
@@ -111,7 +117,7 @@ public class StandaloneLauncher {
 		profileItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				checkAndSave(shell, editor);
+				checkAndSave(parent.getShell(), editor);
 				editor.updateContent(Persos.getPerso(0));
 			}
 		});
@@ -123,7 +129,7 @@ public class StandaloneLauncher {
 			profileItem.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					checkAndSave(shell, editor);
+					checkAndSave(parent.getShell(), editor);
 					editor.updateContent(Persos.getPerso(currentNumber));
 				}
 			});
@@ -137,27 +143,27 @@ public class StandaloneLauncher {
 		aboutItem2.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				new AboutDialog(shell).open();
+				new AboutDialog(parent.getShell()).open();
 			}
 		});
 
-		shell.setMenuBar(topLevelMenu);
+		parent.getShell().setMenuBar(topLevelMenu);
 
-		editor.createEditor(shell);
+		editor.createEditor(parent);
 
 		editor.updateContent(new DefaultPerso());
 
-		shell.addListener(SWT.Close, new Listener() {
+		parent.addListener(SWT.Close, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
-				checkAndSave(shell, editor);
+				checkAndSave(parent.getShell(), editor);
 			}
 		});
 
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) {
-				display.sleep();
+		parent.getShell().open();
+		while (!parent.isDisposed()) {
+			if (!parent.getShell().getDisplay().readAndDispatch()) {
+				parent.getShell().getDisplay().sleep();
 			}
 		}
 	}
