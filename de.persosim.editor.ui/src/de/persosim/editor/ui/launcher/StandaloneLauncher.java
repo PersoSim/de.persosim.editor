@@ -28,7 +28,7 @@ import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 public class StandaloneLauncher {
 
 	public static void main(String[] args) {
-		Crypto.setCryptoProvider(new ProviderBc().getCryptoProviderObject());
+		Crypto.setCryptoProvider(ProviderBc.getInstance().getCryptoProviderObject());
 		PersoSimPreferenceManager.setPreferenceAccessor(new IniPreferenceStoreAccessor(Paths.get("config.properties")));
 
 		setDefault(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS);
