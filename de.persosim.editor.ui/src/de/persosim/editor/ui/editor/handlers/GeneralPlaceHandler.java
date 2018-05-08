@@ -96,7 +96,7 @@ public class GeneralPlaceHandler extends ConstructedTlvHandler {
 		} else if (TlvConstants.TAG_A1.equals(tlv.getTlvTag())){
 			createSimpleField(item, composite, tlv, StandardCharsets.UTF_8, "Freetext Place", new UpperCaseTextFieldChecker());
 		} else if (TlvConstants.TAG_A2.equals(tlv.getTlvTag())){
-			createSimpleField(item, composite, tlv, StandardCharsets.UTF_8, "NoPlaceInfo", new UpperCaseTextFieldChecker());
+			createSimpleField(item, composite, tlv, StandardCharsets.UTF_8, "No Place Info", new UpperCaseTextFieldChecker());
 		}
 		
 

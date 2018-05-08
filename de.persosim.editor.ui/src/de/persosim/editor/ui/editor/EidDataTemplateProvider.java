@@ -29,11 +29,27 @@ public class EidDataTemplateProvider implements DataGroupTemplateProvider {
 	public EidDataTemplateProvider(Set<Integer> dgNumbersToFilter) {
 		dgVariants = new HashMap<Integer, Set<String>>();
 		
-		for (int i = 1; i <= 14; i++){
+		for (int i = 1; i <= 8; i++){
 			dgVariants.put(i, new HashSet<>());
 			dgVariants.get(i).add("Default");
 		}
-		for (int i = 17; i <= 22; i++){
+		
+		dgVariants.put(9, new HashSet<>());
+		dgVariants.get(9).add("StructuredPlace");
+		dgVariants.get(9).add("FreetextPlace");
+		dgVariants.get(9).add("NoPlaceInfo");
+		
+		for (int i = 10; i <= 14; i++){
+			dgVariants.put(i, new HashSet<>());
+			dgVariants.get(i).add("Default");
+		}
+
+		dgVariants.put(17, new HashSet<>());
+		dgVariants.get(17).add("StructuredPlace");
+		dgVariants.get(17).add("FreetextPlace");
+		dgVariants.get(17).add("NoPlaceInfo");
+		
+		for (int i = 18; i <= 22; i++){
 			dgVariants.put(i, new HashSet<>());
 			dgVariants.get(i).add("Default");
 		}
@@ -80,7 +96,14 @@ public class EidDataTemplateProvider implements DataGroupTemplateProvider {
 		case 8:
 			return getDg((byte)number,HexString.toByteArray("680A12083139363430383132"));
 		case 9:
-			return getDg((byte)number,HexString.toByteArray("691B3019AB080C064245524C494EAC080C064245524C494EAD03130144"));
+			switch (variant) {
+			case "FreetextPlace":
+				return getDg((byte)number,HexString.toByteArray("69" + HexString.hexifyByte(getDefaultFreeTextPlace().getLength()) + HexString.encode(getDefaultFreeTextPlace().toByteArray())));
+			case "NoPlaceInfo":
+				return getDg((byte)number,HexString.toByteArray("69" + HexString.hexifyByte(getDefaultNoPlaceInfo().getLength()) + HexString.encode(getDefaultNoPlaceInfo().toByteArray())));
+			case "StructuredPlace":
+				return getDg((byte)number,HexString.toByteArray("691B3019AB080C064245524C494EAC080C064245524C494EAD03130144"));	
+			}
 		case 10:
 			return getDg((byte)number,HexString.toByteArray("6A03130144"));
 		case 11:
@@ -96,7 +119,14 @@ public class EidDataTemplateProvider implements DataGroupTemplateProvider {
 		case 16:
 			return null;
 		case 17:
-			return getDgWritable((byte)number,HexString.toByteArray("712E302CAA110C0F484549444553545241C39F45203137AB080C064245524C494EAC080C064245524C494EAD03130144"));
+			switch (variant) {
+			case "FreetextPlace":
+				return getDgWritable((byte)number,HexString.toByteArray("71" + HexString.hexifyByte(getDefaultFreeTextPlace().getLength()) + HexString.encode(getDefaultFreeTextPlace().toByteArray())));
+			case "NoPlaceInfo":
+				return getDgWritable((byte)number,HexString.toByteArray("71" + HexString.hexifyByte(getDefaultNoPlaceInfo().getLength()) + HexString.encode(getDefaultNoPlaceInfo().toByteArray())));
+			case "StructuredPlace":
+				return getDgWritable((byte)number,HexString.toByteArray("712E302CAA110C0F484549444553545241C39F45203137AB080C064245524C494EAC080C064245524C494EAD03130144"));	
+			}
 		case 18:
 			return getDgWritable((byte)number,HexString.toByteArray("7209040702761100000000"));
 		case 19:
@@ -144,8 +174,16 @@ public class EidDataTemplateProvider implements DataGroupTemplateProvider {
 		return (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("302C06072A8648CE3D0101022100A9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377");
 	}
 	
-	public ConstructedTlvDataObject getDefaultPlace(){
+	public ConstructedTlvDataObject getDefaultGeneralPlace(){
 		return (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("302CAA110C0F486569646573747261737365203137AB080C064265726C696EAC080C064265726C696EAD03130144");
+	}
+	
+	public ConstructedTlvDataObject getDefaultFreeTextPlace(){
+		return (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("A1190C17484549444553545241C39F452031372C204245524C494E");
+	}
+	
+	public ConstructedTlvDataObject getDefaultNoPlaceInfo(){
+		return (ConstructedTlvDataObject) TlvDataObjectFactory.createTLVDataObject("A20F0C0D4E4F20504C41434520494E464F");
 	}
 
 }

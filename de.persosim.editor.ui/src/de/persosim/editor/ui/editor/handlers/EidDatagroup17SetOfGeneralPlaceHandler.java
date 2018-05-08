@@ -51,7 +51,7 @@ public class EidDatagroup17SetOfGeneralPlaceHandler extends EidDatagroup17Handle
 	public void createMenu(Menu menu, TreeItem item) {
 		super.createMenu(menu, item);
 		MenuItem mitem = new MenuItem(menu, SWT.NONE);
-		mitem.setText("Add Place");
+		mitem.setText("Add General Place");
 		mitem.addSelectionListener(new SelectionAdapter() {
 			
 			@Override
@@ -59,7 +59,33 @@ public class EidDatagroup17SetOfGeneralPlaceHandler extends EidDatagroup17Handle
 				TlvDataObject tlvObject = (TlvDataObject) item.getData(DatagroupHandler.EXTRACTED_TLV);
 				if (tlvObject instanceof ConstructedTlvDataObject){
 					ConstructedTlvDataObject ctlv = ((ConstructedTlvDataObject) tlvObject);
-					ctlv.addTlvDataObject(templateProvider.getDefaultPlace());
+					ctlv.addTlvDataObject(templateProvider.getDefaultGeneralPlace());
+				}
+			}
+		});
+		mitem = new MenuItem(menu, SWT.NONE);
+		mitem.setText("Add Freetext Place");
+		mitem.addSelectionListener(new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TlvDataObject tlvObject = (TlvDataObject) item.getData(DatagroupHandler.EXTRACTED_TLV);
+				if (tlvObject instanceof ConstructedTlvDataObject){
+					ConstructedTlvDataObject ctlv = ((ConstructedTlvDataObject) tlvObject);
+					ctlv.addTlvDataObject(templateProvider.getDefaultFreeTextPlace());
+				}
+			}
+		});
+		mitem = new MenuItem(menu, SWT.NONE);
+		mitem.setText("Add No Place Info");
+		mitem.addSelectionListener(new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				TlvDataObject tlvObject = (TlvDataObject) item.getData(DatagroupHandler.EXTRACTED_TLV);
+				if (tlvObject instanceof ConstructedTlvDataObject){
+					ConstructedTlvDataObject ctlv = ((ConstructedTlvDataObject) tlvObject);
+					ctlv.addTlvDataObject(templateProvider.getDefaultNoPlaceInfo());
 				}
 			}
 		});
