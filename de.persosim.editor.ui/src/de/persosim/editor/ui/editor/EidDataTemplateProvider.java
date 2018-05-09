@@ -102,7 +102,9 @@ public class EidDataTemplateProvider implements DataGroupTemplateProvider {
 			case "NoPlaceInfo":
 				return getDg((byte)number,HexString.toByteArray("69" + HexString.hexifyByte(getDefaultNoPlaceInfo().getLength()) + HexString.encode(getDefaultNoPlaceInfo().toByteArray())));
 			case "StructuredPlace":
-				return getDg((byte)number,HexString.toByteArray("691B3019AB080C064245524C494EAC080C064245524C494EAD03130144"));	
+				return getDg((byte)number,HexString.toByteArray("691B3019AB080C064245524C494EAC080C064245524C494EAD03130144"));
+			default:
+				return null;
 			}
 		case 10:
 			return getDg((byte)number,HexString.toByteArray("6A03130144"));
@@ -125,7 +127,9 @@ public class EidDataTemplateProvider implements DataGroupTemplateProvider {
 			case "NoPlaceInfo":
 				return getDgWritable((byte)number,HexString.toByteArray("71" + HexString.hexifyByte(getDefaultNoPlaceInfo().getLength()) + HexString.encode(getDefaultNoPlaceInfo().toByteArray())));
 			case "StructuredPlace":
-				return getDgWritable((byte)number,HexString.toByteArray("712E302CAA110C0F484549444553545241C39F45203137AB080C064245524C494EAC080C064245524C494EAD03130144"));	
+				return getDgWritable((byte)number,HexString.toByteArray("712E302CAA110C0F484549444553545241C39F45203137AB080C064245524C494EAC080C064245524C494EAD03130144"));
+			default:
+				return null;	
 			}
 		case 18:
 			return getDgWritable((byte)number,HexString.toByteArray("7209040702761100000000"));
