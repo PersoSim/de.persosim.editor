@@ -1,5 +1,7 @@
 package de.persosim.editor.ui.editor;
 
+import org.eclipse.core.runtime.IProduct;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
@@ -10,6 +12,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.Version;
 
 public class AboutDialog extends Dialog {
 
@@ -51,15 +55,17 @@ public class AboutDialog extends Dialog {
 		super.configureShell(newShell);
 		newShell.setText("About PersoSim Editor");
 	}
-
+	
 	/**
-	 * This method returns the version as a String
-	 * 
+	 * This method returns the bundleversion as a String
 	 * @return version
 	 */
-	public String getProductVersion() {
-		return "Beta 6";
-	}
+	public static String getProductVersion() {
+        final IProduct product = Platform.getProduct();
+        final Bundle bundle = product.getDefiningBundle();
+        final Version version = bundle.getVersion();
+        return version.toString();
+    }
 
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
