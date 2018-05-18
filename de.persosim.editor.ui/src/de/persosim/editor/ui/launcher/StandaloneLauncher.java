@@ -7,13 +7,13 @@ import javax.annotation.PostConstruct;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -41,6 +41,15 @@ public class StandaloneLauncher {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setText("PersoSim Editor");
+
+		createGui(shell);
+		
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!shell.getDisplay().readAndDispatch()) {
+				shell.getDisplay().sleep();
+			}
+		}
 	}
 	
 	@PostConstruct
@@ -153,19 +162,13 @@ public class StandaloneLauncher {
 
 		editor.updateContent(new DefaultPerso());
 
-		parent.addListener(SWT.Close, new Listener() {
+		parent.addDisposeListener(new DisposeListener() {
+			
 			@Override
-			public void handleEvent(Event event) {
+			public void widgetDisposed(DisposeEvent e) {
 				checkAndSave(parent.getShell(), editor);
 			}
 		});
-
-		parent.getShell().open();
-		while (!parent.isDisposed()) {
-			if (!parent.getShell().getDisplay().readAndDispatch()) {
-				parent.getShell().getDisplay().sleep();
-			}
-		}
 	}
 
 	protected static void openSaveDialog(PersoEditorView editor) {
