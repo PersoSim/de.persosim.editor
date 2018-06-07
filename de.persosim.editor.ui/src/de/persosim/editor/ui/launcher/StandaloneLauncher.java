@@ -1,14 +1,11 @@
 package de.persosim.editor.ui.launcher;
 
-import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import javax.annotation.PostConstruct;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
@@ -162,13 +159,7 @@ public class StandaloneLauncher {
 
 		editor.updateContent(new DefaultPerso());
 
-		parent.addDisposeListener(new DisposeListener() {
-			
-			@Override
-			public void widgetDisposed(DisposeEvent e) {
-				checkAndSave(parent.getShell(), editor);
-			}
-		});
+		parent.addDisposeListener(e -> checkAndSave(parent.getShell(), editor));
 	}
 
 	protected static void openSaveDialog(PersoEditorView editor) {
@@ -180,7 +171,7 @@ public class StandaloneLauncher {
 		String selection = fd.open();
 		if (selection != null) {
 			boolean write = true;
-			if (Files.exists(Paths.get(selection))) {
+			if (Paths.get(selection).toFile().exists()) {
 				write = MessageDialog.openQuestion(Display.getDefault().getActiveShell(), "File exists",
 						"Do you want to overwrite the file at " + selection + "?");
 			}
@@ -204,11 +195,9 @@ public class StandaloneLauncher {
 	 * @param editor
 	 */
 	private static void checkAndSave(Shell shell, PersoEditorView editor) {
-		if (editor.hasUnsavedChanges()) {
-			if (MessageDialog.openQuestion(shell, "Unsaved changes",
-					"There are unsaved changes, do you want to save them now?")) {
-				openSaveDialog(editor);
-			}
+		if (editor.hasUnsavedChanges() && MessageDialog.openQuestion(shell, "Unsaved changes",
+				"There are unsaved changes, do you want to save them now?")) {
+			openSaveDialog(editor);
 		}
 	}
 
