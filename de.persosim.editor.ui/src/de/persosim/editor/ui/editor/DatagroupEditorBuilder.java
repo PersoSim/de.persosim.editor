@@ -2,6 +2,7 @@ package de.persosim.editor.ui.editor;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -26,7 +27,7 @@ public class DatagroupEditorBuilder{
 		
 		overview.setLayout(new GridLayout(2, false));
 		
-		Composite editor = new Composite(sashForm, SWT.NONE);
+		ScrolledComposite editor = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
 		
 		editor.setLayout(new FillLayout());
 		
@@ -38,7 +39,9 @@ public class DatagroupEditorBuilder{
 					current.dispose();
 				}
 				
-				return new Composite(editor, SWT.NONE);
+				Composite composite = new Composite(editor, SWT.NONE);
+				editor.setContent(composite);
+				return composite;
 			}
 
 			@Override

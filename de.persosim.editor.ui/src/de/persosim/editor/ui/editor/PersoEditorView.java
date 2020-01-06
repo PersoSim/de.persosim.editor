@@ -54,6 +54,7 @@ import de.persosim.editor.ui.editor.handlers.EidStringDatagroupHandler;
 import de.persosim.editor.ui.editor.handlers.ObjectHandler;
 import de.persosim.editor.ui.editor.handlers.PasswordAuthObjectHandler;
 import de.persosim.editor.ui.editor.handlers.PrimitiveTlvHandler;
+import de.persosim.editor.ui.editor.handlers.RiKeyHandler;
 import de.persosim.editor.ui.editor.handlers.StringTlvHandler;
 import de.persosim.editor.ui.editor.signing.SecInfoCmsBuilder;
 import de.persosim.editor.ui.editor.signing.SecInfoFileUpdater;
@@ -137,6 +138,7 @@ public class PersoEditorView {
 		objectHandlers.add(new PasswordAuthObjectHandler(Arrays.asList(new Integer [] {2,4})));
 		objectHandlers.add(new ChangeablePasswortAuthObjectHandler(Arrays.asList(new Integer[] {3})));
 		objectHandlers.add(new DatagroupDumpHandler(dgMapping));
+		objectHandlers.add(new RiKeyHandler());
 
 		DefaultHandlerProvider provider = new DefaultHandlerProvider(objectHandlers);
 
