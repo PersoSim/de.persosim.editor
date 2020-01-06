@@ -128,7 +128,7 @@ public class StandaloneLauncher {
 			}
 		});
 
-		for (int i = 1; i <= 10; i++) {
+		for (int i = 1; i <= 15; i++) {
 			int currentNumber = i;
 			profileItem = new MenuItem(profilesMenu, SWT.NONE);
 			profileItem.setText("Profile " + i);

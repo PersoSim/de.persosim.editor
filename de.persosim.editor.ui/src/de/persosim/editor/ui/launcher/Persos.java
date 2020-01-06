@@ -10,6 +10,11 @@ import de.persosim.simulator.exception.AccessDeniedException;
 import de.persosim.simulator.exception.CertificateNotParseableException;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
+import de.persosim.simulator.perso.ProfileUB01;
+import de.persosim.simulator.perso.ProfileUB02;
+import de.persosim.simulator.perso.ProfileUB03;
+import de.persosim.simulator.perso.ProfileUB04;
+import de.persosim.simulator.perso.ProfileUB05;
 import de.persosim.simulator.protocols.ta.TerminalType;
 import de.persosim.simulator.tlv.ConstructedTlvDataObject;
 import de.persosim.simulator.utils.HexString;
@@ -138,8 +143,18 @@ public class Persos {
 			return new Profile09();
 		case 10:
 			return new Profile10();
+		case 11:
+			return new ProfileUB01();
+		case 12:
+			return new ProfileUB02();
+		case 13:
+			return new ProfileUB03();
+		case 14:
+			return new ProfileUB04();
+		case 15:
+			return new ProfileUB05();
 		}
-		throw new IllegalArgumentException("Only numbers from 1-10 are allowed");
+		throw new IllegalArgumentException("Only numbers from 1-15 are allowed");
 	}
 
 	private static void setAtCert(MasterFile mf) throws CertificateNotParseableException, AccessDeniedException {
