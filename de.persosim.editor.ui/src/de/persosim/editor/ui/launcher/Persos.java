@@ -119,6 +119,51 @@ public class Persos {
 		}
 	}
 	
+	@XStreamAlias("de.persosim.simulator.perso.DefaultPersoTestPki")
+	public static class ProfileUB01 extends de.persosim.simulator.perso.ProfileUB01 {
+		@Override
+		protected void addTaTrustPoints(MasterFile mf)
+				throws CertificateNotParseableException, AccessDeniedException {
+			setAtCert(mf);
+		}
+	}
+	
+	@XStreamAlias("de.persosim.simulator.perso.DefaultPersoTestPki")
+	public static class ProfileUB02 extends de.persosim.simulator.perso.ProfileUB02 {
+		@Override
+		protected void addTaTrustPoints(MasterFile mf)
+				throws CertificateNotParseableException, AccessDeniedException {
+			setAtCert(mf);
+		}
+	}
+	
+	@XStreamAlias("de.persosim.simulator.perso.DefaultPersoTestPki")
+	public static class ProfileUB03 extends de.persosim.simulator.perso.ProfileUB03 {
+		@Override
+		protected void addTaTrustPoints(MasterFile mf)
+				throws CertificateNotParseableException, AccessDeniedException {
+			setAtCert(mf);
+		}
+	}
+	
+	@XStreamAlias("de.persosim.simulator.perso.DefaultPersoTestPki")
+	public static class ProfileUB04 extends de.persosim.simulator.perso.ProfileUB04 {
+		@Override
+		protected void addTaTrustPoints(MasterFile mf)
+				throws CertificateNotParseableException, AccessDeniedException {
+			setAtCert(mf);
+		}
+	}
+	
+	@XStreamAlias("de.persosim.simulator.perso.DefaultPersoTestPki")
+	public static class ProfileUB05 extends de.persosim.simulator.perso.ProfileUB05 {
+		@Override
+		protected void addTaTrustPoints(MasterFile mf)
+				throws CertificateNotParseableException, AccessDeniedException {
+			setAtCert(mf);
+		}
+	}
+	
 	public static Personalization getPerso(int number) {
 		switch(number) {
 		case 0:

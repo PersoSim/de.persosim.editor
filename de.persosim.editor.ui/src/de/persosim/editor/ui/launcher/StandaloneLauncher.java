@@ -131,7 +131,11 @@ public class StandaloneLauncher {
 		for (int i = 1; i <= 15; i++) {
 			int currentNumber = i;
 			profileItem = new MenuItem(profilesMenu, SWT.NONE);
-			profileItem.setText("Profile " + i);
+			if (i <= 10) {
+				profileItem.setText("Profile " + i);
+			} else {
+				profileItem.setText("ProfileUB " + (i-10));
+			}
 			profileItem.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
