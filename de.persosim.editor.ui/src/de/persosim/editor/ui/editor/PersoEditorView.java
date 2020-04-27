@@ -44,6 +44,7 @@ import de.persosim.editor.ui.editor.handlers.ChangeablePasswortAuthObjectHandler
 import de.persosim.editor.ui.editor.handlers.ConstructedTlvHandler;
 import de.persosim.editor.ui.editor.handlers.DatagroupDumpHandler;
 import de.persosim.editor.ui.editor.handlers.DatagroupHandler;
+import de.persosim.editor.ui.editor.handlers.DateDatagroupHandler;
 import de.persosim.editor.ui.editor.handlers.DefaultHandlerProvider;
 import de.persosim.editor.ui.editor.handlers.EidDatagroup17HandlerSingularGeneralPlace;
 import de.persosim.editor.ui.editor.handlers.EidDatagroup17SetOfGeneralPlaceHandler;
@@ -75,6 +76,7 @@ import de.persosim.simulator.platform.CommandProcessor;
 import de.persosim.simulator.platform.PersonalizationHelper;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 import de.persosim.simulator.protocols.SecInfoPublicity;
+import de.persosim.simulator.protocols.auxVerification.AuxOid;
 import de.persosim.simulator.protocols.ta.CertificateRole;
 import de.persosim.simulator.protocols.ta.RelativeAuthorization;
 import de.persosim.simulator.protocols.ta.TerminalType;
@@ -156,14 +158,12 @@ public class PersoEditorView {
 				new AndChecker(new LengthChecker(2, 2), new IcaoStringChecker()), "nPA: ID, Residence Permit: AR or AS"));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 2, new AndChecker(
 				new MultiLengthChecker(1, 3), new IcaoStringChecker())));
-		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 3,
-				new AndChecker(new LengthChecker(8, 8), new IcaoDateChecker(false))));
+		objectHandlers.add(new DateDatagroupHandler(dgMapping, 3, AuxOid.id_DateOfExpiry));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 4, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 5, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 6, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 7, new UpperCaseTextFieldChecker()));
-		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 8,
-				new AndChecker(new LengthChecker(8, 8), new IcaoDateChecker(true))));
+		objectHandlers.add(new DateDatagroupHandler(dgMapping, 8, AuxOid.id_DateOfBirth));
 		objectHandlers.add(new EidDatagroup9Handler(dgMapping));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 10, new AndChecker(
 				new MultiLengthChecker(1, 3), new IcaoStringChecker())));

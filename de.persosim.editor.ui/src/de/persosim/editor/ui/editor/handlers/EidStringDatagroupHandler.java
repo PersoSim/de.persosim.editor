@@ -12,7 +12,7 @@ import de.persosim.simulator.tlv.TlvDataObject;
 
 public class EidStringDatagroupHandler extends DatagroupHandler {
 	
-	private int shortFileId;
+	protected int shortFileId;
 	private TextFieldChecker checker;
 	private String hint;
 	
