@@ -183,8 +183,14 @@ public class SecInfoCmsBuilder implements TlvConstants {
 			return "SHA256withRSA";
 		} else if (SignatureOids.id_rsassapss.equals(sigAlg)) {
 			return "SHA256withRSA/PSS";
+		} if (SignatureOids.id_ecdsawithSHA224.equals(sigAlg)) {
+			return "SHA224withECDSA";
 		} if (SignatureOids.id_ecdsawithSHA256.equals(sigAlg)) {
 			return "SHA256withECDSA";
+		} if (SignatureOids.id_ecdsawithSHA384.equals(sigAlg)) {
+			return "SHA384withECDSA";
+		} if (SignatureOids.id_ecdsawithSHA512.equals(sigAlg)) {
+			return "SHA512withECDSA";
 		} if (Tr03111.id_ecdsa_plain_SHA1.equals(sigAlg)) {
 			return "SHA1withECDSA";	
 		} if (Tr03111.id_ecdsa_plain_SHA224.equals(sigAlg)) {
