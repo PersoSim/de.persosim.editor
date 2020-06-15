@@ -33,7 +33,6 @@ import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.editor.ui.editor.checker.AndChecker;
-import de.persosim.editor.ui.editor.checker.IcaoDateChecker;
 import de.persosim.editor.ui.editor.checker.IcaoSexChecker;
 import de.persosim.editor.ui.editor.checker.IcaoStringChecker;
 import de.persosim.editor.ui.editor.checker.LengthChecker;
@@ -155,7 +154,7 @@ public class PersoEditorView {
 
 		provider = new DefaultHandlerProvider(objectHandlers);
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 1,
-				new AndChecker(new LengthChecker(2, 2), new IcaoStringChecker()), "nPA: ID, Residence Permit: AR or AS"));
+				new AndChecker(new LengthChecker(2, 2), new IcaoStringChecker()), "AR = Residence Permit\nAS = Residence Permit\nID = nPA\nUB = eID-card for union citizens"));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 2, new AndChecker(
 				new MultiLengthChecker(1, 3), new IcaoStringChecker())));
 		objectHandlers.add(new DateDatagroupHandler(dgMapping, 3, AuxOid.id_DateOfExpiry));
