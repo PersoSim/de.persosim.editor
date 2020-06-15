@@ -2,8 +2,6 @@ package de.persosim.editor.ui.editor;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -23,11 +21,11 @@ import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 
 public class SignatureSettingsDialog extends Dialog{
 
-	String dsCertPath;
-	String dsKeyPath;
-	boolean efCardAccess;
-	boolean efCardSecurity;
-	boolean efChipSecurity;
+	Text txtDsCertPath;
+	Text txtDsKeyPath;
+	Button btnEfCardAccess;
+	Button btnEfCardSecurity;
+	Button btnEfChipSecurity;
 
 	public SignatureSettingsDialog(Shell parent) {
 		super(parent);
@@ -43,43 +41,19 @@ public class SignatureSettingsDialog extends Dialog{
 		dgSelection.setLayoutData(gd);
 		dgSelection.setLayout(new RowLayout(SWT.VERTICAL));
 
-		Button btnEfCardAccess = new Button(dgSelection, SWT.CHECK);
+		btnEfCardAccess = new Button(dgSelection, SWT.CHECK);
 		btnEfCardAccess.setText("EF.CardAccess");
 		btnEfCardAccess.setSelection(Boolean.parseBoolean(PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS)));
 		
-		btnEfCardAccess.addSelectionListener(new SelectionAdapter() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-		        			efCardAccess = btnEfCardAccess.getSelection();	
-			}
-		});
-		
-		Button btnEfCardSecurity = new Button(dgSelection, SWT.CHECK);
+		btnEfCardSecurity = new Button(dgSelection, SWT.CHECK);
 		btnEfCardSecurity.setText("EF.CardSecurity");
-		
 		btnEfCardSecurity.setSelection(Boolean.parseBoolean(PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY)));
 		
-		btnEfCardSecurity.addSelectionListener(new SelectionAdapter() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-		        efCardSecurity = btnEfCardAccess.getSelection();				
-			}
-		});
 		
-		Button btnEfChipSecurity = new Button(dgSelection, SWT.CHECK);
+		btnEfChipSecurity = new Button(dgSelection, SWT.CHECK);
 		btnEfChipSecurity.setText("EF.ChipSecurity");
-
 		btnEfChipSecurity.setSelection(Boolean.parseBoolean(PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY)));
 		
-		btnEfChipSecurity.addSelectionListener(new SelectionAdapter() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-		        efChipSecurity = btnEfChipSecurity.getSelection();				
-			}
-		});
 		
 		Group certificates = new Group(settings, SWT.NONE);
 		certificates.setLayoutData(gd);
@@ -87,23 +61,15 @@ public class SignatureSettingsDialog extends Dialog{
 		certificates.setLayout(new GridLayout(3, false));
 		
 		new Label(certificates, SWT.NONE).setText("DS Cert:");
-		Text dsCertPathText = new Text(certificates, SWT.NONE);
+		txtDsCertPath = new Text(certificates, SWT.NONE);
 		Button dsCertBrowse = new Button(certificates, SWT.NONE);
 		dsCertBrowse.setText("Browse");
 		gd = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
-		dsCertPathText.setLayoutData(gd);
+		txtDsCertPath.setLayoutData(gd);
 		String path = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSCERT);
 		if (path != null) {
-			dsCertPathText.setText(path);
+			txtDsCertPath.setText(path);
 		}
-		
-		dsCertPathText.addModifyListener(new ModifyListener() {
-			
-			@Override
-			public void modifyText(ModifyEvent e) {
-				dsCertPath = dsCertPathText.getText();
-			}
-		});
 		
 		dsCertBrowse.addSelectionListener(new SelectionAdapter() {
 			
@@ -116,32 +82,23 @@ public class SignatureSettingsDialog extends Dialog{
 		        fd.setFilterExtensions(filterExt);
 		        String selection = fd.open();
 		        if (selection != null){
-		        	dsCertPathText.setText(selection);
-		        	dsCertPath = selection;
+		        	txtDsCertPath.setText(selection);
 		        }
 			}
 		});
 		
 
 		new Label(certificates, SWT.NONE).setText("DS Key:");
-		Text dsKeyPathText = new Text(certificates, SWT.NONE);
+		txtDsKeyPath = new Text(certificates, SWT.NONE);
 		Button dsKeyBrowse = new Button(certificates, SWT.NONE);
 		dsKeyBrowse.setText("Browse");
 		gd = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
-		dsKeyPathText.setLayoutData(gd);
+		txtDsKeyPath.setLayoutData(gd);
 
 		path = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSKEY);
 		if (path != null) {
-			dsKeyPathText.setText(path);
+			txtDsKeyPath.setText(path);
 		}
-		
-		dsKeyPathText.addModifyListener(new ModifyListener() {
-			
-			@Override
-			public void modifyText(ModifyEvent e) {
-				dsKeyPath = dsKeyPathText.getText();
-			}
-		});
 		
 		dsKeyBrowse.addSelectionListener(new SelectionAdapter() {
 			
@@ -153,10 +110,8 @@ public class SignatureSettingsDialog extends Dialog{
 		        String[] filterExt = { "*.pkcs8", "*.*" };
 		        fd.setFilterExtensions(filterExt);
 		        String selection = fd.open();
-		        dsKeyPathText.setText(selection);
 		        if (selection != null){
-		        	dsKeyPathText.setText(selection);
-		        	dsKeyPath = selection;
+		        	txtDsKeyPath.setText(selection);
 		        }
 			}
 		});
@@ -166,16 +121,14 @@ public class SignatureSettingsDialog extends Dialog{
 	
 	@Override
 	protected void okPressed() {
-		super.okPressed();
-		if (dsCertPath != null){
-			PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_DSCERT, dsCertPath);	
-		}
-		if (dsKeyPath != null){
-	        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_DSKEY, dsKeyPath);	
-		}
-        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS, Boolean.toString(efCardAccess));
-        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY, Boolean.toString(efCardSecurity));
-        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY, Boolean.toString(efChipSecurity));
+		PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS, Boolean.toString(btnEfCardAccess.getSelection()));
+        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY, Boolean.toString(btnEfCardSecurity.getSelection()));
+        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY, Boolean.toString(btnEfChipSecurity.getSelection()));
+
+        PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_DSCERT, txtDsCertPath.getText());	
+		PersoSimPreferenceManager.storePreference(ConfigurationConstants.CFG_DSKEY, txtDsKeyPath.getText());	
+		
+        super.okPressed();
 	}
 	
 }
