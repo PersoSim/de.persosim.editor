@@ -155,7 +155,7 @@ public class KeyPairObjectHandler extends AbstractObjectHandler {
 
 	private void generateNewKeyMaterial(KeyPairObject keyPairObject) {
 		try {
-			KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC");
+			KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH");
 		    AlgorithmParameterSpec params = ((ECPublicKey)keyPairObject.getKeyPair().getPublic()).getParams();
 		    kpg.initialize(params);
 		    KeyPair newKeyPair = kpg.generateKeyPair();
