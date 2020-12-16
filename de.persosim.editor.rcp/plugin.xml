@@ -11,6 +11,10 @@
                name="appName"
                value="PersoSim Editor RCP">
          </property>
+         <property
+               name="lifeCycleURI"
+               value="bundleclass://de.persosim.rcp/de.persosim.rcp.LifeCycle">
+         </property>
       </product>
    </extension>
 </plugin>
