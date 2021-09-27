@@ -159,6 +159,42 @@ public class Persos {
 		}
 	}
 	
+	@XStreamAlias("de.persosim.simulator.perso.DefaultPersoTestPki")
+	public static class ProfileOA01 extends de.persosim.simulator.perso.ProfileOA01 {
+		@Override
+		protected void addTaTrustPoints(MasterFile mf)
+				throws CertificateNotParseableException, AccessDeniedException {
+			setAtCert(mf);
+		}
+	}
+	
+	@XStreamAlias("de.persosim.simulator.perso.DefaultPersoTestPki")
+	public static class ProfileOA02 extends de.persosim.simulator.perso.ProfileOA02 {
+		@Override
+		protected void addTaTrustPoints(MasterFile mf)
+				throws CertificateNotParseableException, AccessDeniedException {
+			setAtCert(mf);
+		}
+	}
+	
+	@XStreamAlias("de.persosim.simulator.perso.DefaultPersoTestPki")
+	public static class ProfileOA03 extends de.persosim.simulator.perso.ProfileOA03 {
+		@Override
+		protected void addTaTrustPoints(MasterFile mf)
+				throws CertificateNotParseableException, AccessDeniedException {
+			setAtCert(mf);
+		}
+	}
+	
+	@XStreamAlias("de.persosim.simulator.perso.DefaultPersoTestPki")
+	public static class ProfileOA04 extends de.persosim.simulator.perso.ProfileOA04 {
+		@Override
+		protected void addTaTrustPoints(MasterFile mf)
+				throws CertificateNotParseableException, AccessDeniedException {
+			setAtCert(mf);
+		}
+	}
+	
 	public static Personalization getPerso(int number) {
 		switch(number) {
 		case 0:
@@ -193,8 +229,16 @@ public class Persos {
 			return new ProfileUB04();
 		case 15:
 			return new ProfileUB05();
+		case 16:
+			return new ProfileOA01();
+		case 17:
+			return new ProfileOA02();
+		case 18:
+			return new ProfileOA03();
+		case 19:
+			return new ProfileOA04();
 		}
-		throw new IllegalArgumentException("Only numbers from 1-15 are allowed");
+		throw new IllegalArgumentException("Only numbers from 1-19 are allowed");
 	}
 
 	private static void setAtCert(MasterFile mf) throws CertificateNotParseableException, AccessDeniedException {

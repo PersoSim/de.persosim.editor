@@ -128,13 +128,16 @@ public class StandaloneLauncher {
 			}
 		});
 
-		for (int i = 1; i <= 15; i++) {
+		int numberOfProfiles = 19;
+		for (int i = 1; i <= numberOfProfiles; i++) {
 			int currentNumber = i;
 			profileItem = new MenuItem(profilesMenu, SWT.NONE);
 			if (i <= 10) {
 				profileItem.setText("Profile " + i);
-			} else {
+			} else if ( i <= 15) {
 				profileItem.setText("ProfileUB " + (i-10));
+			} else {
+				profileItem.setText("ProfileOA " + (i-15));
 			}
 			profileItem.addSelectionListener(new SelectionAdapter() {
 				@Override
