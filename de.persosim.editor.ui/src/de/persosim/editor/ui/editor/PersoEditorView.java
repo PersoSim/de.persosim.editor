@@ -51,10 +51,12 @@ import de.persosim.editor.ui.editor.handlers.EidDatagroup9Handler;
 import de.persosim.editor.ui.editor.handlers.EidDedicatedFileHandler;
 import de.persosim.editor.ui.editor.handlers.EidOptionalDataDatagroupHandler;
 import de.persosim.editor.ui.editor.handlers.EidStringDatagroupHandler;
+import de.persosim.editor.ui.editor.handlers.MasterFileHandler;
 import de.persosim.editor.ui.editor.handlers.ObjectHandler;
 import de.persosim.editor.ui.editor.handlers.PasswordAuthObjectHandler;
 import de.persosim.editor.ui.editor.handlers.PrimitiveTlvHandler;
 import de.persosim.editor.ui.editor.handlers.RiKeyHandler;
+import de.persosim.editor.ui.editor.handlers.MobileIdSecInfoObjectHandler;
 import de.persosim.editor.ui.editor.handlers.StringTlvHandler;
 import de.persosim.editor.ui.editor.signing.SecInfoCmsBuilder;
 import de.persosim.editor.ui.editor.signing.SecInfoFileUpdater;
@@ -135,11 +137,14 @@ public class PersoEditorView {
 		dgMapping.put((Integer) 0x1B, "EF.ChipSecurity");
 		dgMapping.put((Integer) 0x1E, "EF.DIR");
 
+		
 		List<ObjectHandler> objectHandlers = new LinkedList<>();
 		objectHandlers.add(new PasswordAuthObjectHandler(Arrays.asList(new Integer [] {2,4})));
 		objectHandlers.add(new ChangeablePasswortAuthObjectHandler(Arrays.asList(new Integer[] {3})));
 		objectHandlers.add(new DatagroupDumpHandler(dgMapping));
 		objectHandlers.add(new RiKeyHandler());
+		objectHandlers.add(new MobileIdSecInfoObjectHandler());
+		objectHandlers.add(new MasterFileHandler(getMf(), new DefaultHandlerProvider(objectHandlers)));
 
 		DefaultHandlerProvider provider = new DefaultHandlerProvider(objectHandlers);
 
@@ -151,10 +156,10 @@ public class PersoEditorView {
 		DedicatedFile df = getDf(HexString.toByteArray(DefaultPersonalization.AID_EID));
 
 		objectHandlers = new LinkedList<>();
-
 		provider = new DefaultHandlerProvider(objectHandlers);
+
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 1,
-				new AndChecker(new LengthChecker(2, 2), new IcaoStringChecker()), "AR = Residence Permit\nAS = Residence Permit\nID = nPA\nUB = eID-card for union citizens"));
+				new AndChecker(new LengthChecker(2, 2), new IcaoStringChecker()), "AR = Residence Permit\nAS = Residence Permit\nID = nPA\nUB = eID-card for union citizens\nOA = Smart-eID"));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 2, new AndChecker(
 				new MultiLengthChecker(1, 3), new IcaoStringChecker())));
 		objectHandlers.add(new DateDatagroupHandler(dgMapping, 3, AuxOid.id_DateOfExpiry));
