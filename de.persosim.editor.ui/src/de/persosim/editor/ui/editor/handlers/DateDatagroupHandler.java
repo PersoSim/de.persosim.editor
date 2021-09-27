@@ -9,7 +9,6 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.persosim.editor.ui.editor.checker.AndChecker;
 import de.persosim.editor.ui.editor.checker.IcaoDateChecker;
 import de.persosim.editor.ui.editor.checker.LengthChecker;
-import de.persosim.simulator.cardobjects.AuxDataObject;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DateAuxObject;
 import de.persosim.simulator.cardobjects.ElementaryFile;
