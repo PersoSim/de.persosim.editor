@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="PersoSim Editor RCP" uid="de.persosim.editor.rcp.product" id="de.persosim.editor.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.18.3.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="PersoSim Editor RCP" uid="de.persosim.editor.rcp.product" id="de.persosim.editor.rcp.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.18.4.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
