@@ -19,3 +19,4 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.10.0",
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: de.persosim.editor.rcp.Activator
+Automatic-Module-Name: de.persosim.editor.rcp
