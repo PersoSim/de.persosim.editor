@@ -37,12 +37,16 @@ public class AboutDialog extends Dialog {
 
 		Label label2 = new Label(container, SWT.NONE);
 		label2.setText("PersoSim Editor");
-		label2.setFont(new Font(container.getDisplay(), FONT_NAME, 24, SWT.BOLD));
-
+		Font font = new Font(container.getDisplay(), FONT_NAME, 24, SWT.BOLD);
+		label2.setFont(font);
+		label2.addListener(SWT.Dispose, event -> font.dispose());
+		
 		Label label3 = new Label(container, SWT.NONE);
 		label3.setText(getProductVersion());
-		label3.setFont(new Font(container.getDisplay(), FONT_NAME, 12, SWT.NONE));
-
+		Font font2 = new Font(container.getDisplay(), FONT_NAME, 12, SWT.NONE);
+		label3.setFont(font2);
+		label3.addListener(SWT.Dispose, event -> font2.dispose());
+		
 		Link link = new Link(container, SWT.NONE);
 		link.setText("Visit our web site at " + PERSOSIM_URL);
 		link.setSize(link.computeSize(SWT.DEFAULT, SWT.DEFAULT));
