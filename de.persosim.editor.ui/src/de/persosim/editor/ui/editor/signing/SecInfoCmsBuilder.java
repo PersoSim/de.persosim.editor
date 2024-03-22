@@ -38,7 +38,7 @@ import de.persosim.simulator.tlv.TlvTagIdentifier;
  * CRLs or multiple signers/digestAlgorithms etc. If this kind of flexibility is
  * needed the interface {@link SecInfoCmsBuilder} needs to be implemented
  * independently.
- * 
+ *
  * @author amay, cstroh
  *
  */
@@ -113,7 +113,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 
 	/**
 	 * Build the encapContantInfo from the provided SecInfos
-	 * 
+	 *
 	 * @param secInfos
 	 * @return
 	 */
@@ -134,7 +134,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	/**
 	 * Return all used digestAlgorithms, defaults to a Collection of the single
 	 * digestAlgorithm returned by {@link #getDigestAlgorithm()}
-	 * 
+	 *
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 */
@@ -147,7 +147,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	 * <p/>
 	 * If more than one digestAlgorithm is used override
 	 * {@link #getDigestAlgorithms()} and ignore this method
-	 * 
+	 *
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 */
@@ -170,19 +170,19 @@ public class SecInfoCmsBuilder implements TlvConstants {
 			return new ConstructedTlvDataObject(TAG_SEQUENCE,
 					new PrimitiveTlvDataObject(TAG_OID, OID_SHA512.toByteArray()), noParameters);
 		} else {
-			throw new NoSuchAlgorithmException("Digest algorithm is not supported by Signer");
+			throw new NoSuchAlgorithmException("Digest algorithm '" + signatureAlg + "' is not supported by Signer.");
 		}
 	}
 
 	protected String getSignatureAlgorithmString() {
-		Oid sigAlg = new GenericOid(getSignatureAlgorithm().getTlvDataObject(TAG_OID).getValueField());		
+		Oid sigAlg = new GenericOid(getSignatureAlgorithm().getTlvDataObject(TAG_OID).getValueField());
 
 		if (SignatureOids.id_sha1withrsaencryption.equals(sigAlg)) {
 			return "SHA1withRSA";
 		} else if (SignatureOids.id_sha256withrsaencryption.equals(sigAlg)) {
 			return "SHA256withRSA";
 		} else if (SignatureOids.id_rsassapss.equals(sigAlg)) {
-			return "SHA256withRSA/PSS";
+			return "SHA256withRSA/PSS"; // FIXME: Possibly, this hardcoded SHA-RSA-PSS combination has to be changed to support other SHA algorithm (see GT implementation).
 		} if (SignatureOids.id_ecdsawithSHA224.equals(sigAlg)) {
 			return "SHA224withECDSA";
 		} if (SignatureOids.id_ecdsawithSHA256.equals(sigAlg)) {
@@ -192,23 +192,23 @@ public class SecInfoCmsBuilder implements TlvConstants {
 		} if (SignatureOids.id_ecdsawithSHA512.equals(sigAlg)) {
 			return "SHA512withECDSA";
 		} if (Tr03111.id_ecdsa_plain_SHA1.equals(sigAlg)) {
-			return "SHA1withECDSA";	
+			return "SHA1withECDSA";
 		} if (Tr03111.id_ecdsa_plain_SHA224.equals(sigAlg)) {
-			return "SHA224withECDSA";	
+			return "SHA224withECDSA";
 		} if (Tr03111.id_ecdsa_plain_SHA256.equals(sigAlg)) {
-			return "SHA256withECDSA";	
+			return "SHA256withECDSA";
 		} if (Tr03111.id_ecdsa_plain_SHA384.equals(sigAlg)) {
-			return "SHA384withECDSA";	
+			return "SHA384withECDSA";
 		} if (Tr03111.id_ecdsa_plain_SHA512.equals(sigAlg)) {
-			return "SHA512withECDSA";	
+			return "SHA512withECDSA";
 		}
-		
+
 		return null;
 	}
 
 	/**
 	 * Return the used signature algorithm
-	 * 
+	 *
 	 * @return
 	 */
 	protected ConstructedTlvDataObject getSignatureAlgorithm() {
@@ -221,7 +221,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	/**
 	 * Return all used certificates, defaults to a Collection of the single
 	 * certificate returned by {@link #getCertificate()}
-	 * 
+	 *
 	 * @return
 	 */
 	protected ConstructedTlvDataObject getCertificate() {
@@ -231,7 +231,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	/**
 	 * Return all used signerInfos, defaults to a Collection of the single
 	 * signerInfo returned by {@link #getSignerInfo()}
-	 * 
+	 *
 	 * @param eContent
 	 *            the encapContentInfo to be signed
 	 * @return
@@ -250,7 +250,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	 * <p/>
 	 * If more than one SignerInfo is used override {@link #getSignerInfos()} and
 	 * ignore this method
-	 * 
+	 *
 	 * @param eContent
 	 *            the encapContentInfo to be signed
 	 * @return
@@ -306,7 +306,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	 * The provided identifier is extracted from the certificate provided by
 	 * {@link #getCertificate()}. If more than one certificate is used you need to
 	 * override {@link #getSignerInfos()} anyhow and can safely ignore this method
-	 * 
+	 *
 	 * @return
 	 */
 	protected TlvDataObject getSid() {
@@ -323,7 +323,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	/**
 	 * Return the signed attributes to be used within the SignerInfo returned by
 	 * {@link #getSignerInfo()}
-	 * 
+	 *
 	 * @param eContent
 	 *            the encapContentInfo to be signed
 	 * @return
@@ -387,7 +387,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 
 	/**
 	 * Creates private key from an encoded EC private key
-	 * 
+	 *
 	 * @param encodedKey
 	 *            private key as byte array
 	 * @return the private key as PrivateKey object
@@ -417,7 +417,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	/**
 	 * Return the signature to be used within the SignerInfo returned by
 	 * {@link #getSignerInfo()}
-	 * 
+	 *
 	 * @param sigInput
 	 *            input to the signature generation process
 	 * @return
