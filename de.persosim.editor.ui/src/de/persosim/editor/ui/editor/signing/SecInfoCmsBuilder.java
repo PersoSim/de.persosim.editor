@@ -65,6 +65,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	private Oid encapContentInfoOid = OID_BSI_SECURITY_OBJECT;
 	private byte[] dscert;
 	private PrivateKey dsPrivKey;
+	private String dsAlgo;
 
 	/**
 	 * @param dscert
@@ -72,12 +73,16 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	 *            structure
 	 * @param dsPrivKey
 	 *            The corresponding private key of the DS certificate
+	 * @param dsAlgo
+	 *            The corresponding sign algorithm (has to be a null or a valid and supported algo like "SHA384withECDSA".
+	 *            In case of null algo from dscert will be used).
 	 * @return
 	 * @throws InvalidKeySpecException
 	 */
-	public SecInfoCmsBuilder(byte[] dscert, byte[] dsPrivKey) throws InvalidKeySpecException {
+	public SecInfoCmsBuilder(byte[] dscert, byte[] dsPrivKey, String dsAlgo) throws InvalidKeySpecException {
 		this.dscert = dscert;
 		this.dsPrivKey = getKeyFromByteArray(dsPrivKey);
+		this.dsAlgo = dsAlgo;
 	}
 
 	public ConstructedTlvDataObject buildSignedData(ConstructedTlvDataObject secInfos)
@@ -175,6 +180,9 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	}
 
 	protected String getSignatureAlgorithmString() {
+		if (dsAlgo != null)
+			return dsAlgo;
+
 		Oid sigAlg = new GenericOid(getSignatureAlgorithm().getTlvDataObject(TAG_OID).getValueField());
 
 		if (SignatureOids.id_sha1withrsaencryption.equals(sigAlg)) {
@@ -183,27 +191,36 @@ public class SecInfoCmsBuilder implements TlvConstants {
 			return "SHA256withRSA";
 		} else if (SignatureOids.id_rsassapss.equals(sigAlg)) {
 			return "SHA256withRSA/PSS"; // FIXME: Possibly, this hardcoded SHA-RSA-PSS combination has to be changed to support other SHA algorithm (see GT implementation).
-		} if (SignatureOids.id_ecdsawithSHA224.equals(sigAlg)) {
+		} else if (SignatureOids.id_ecdsawithSHA224.equals(sigAlg)) {
 			return "SHA224withECDSA";
-		} if (SignatureOids.id_ecdsawithSHA256.equals(sigAlg)) {
+		} else if (SignatureOids.id_ecdsawithSHA256.equals(sigAlg)) {
 			return "SHA256withECDSA";
-		} if (SignatureOids.id_ecdsawithSHA384.equals(sigAlg)) {
+		} else if (SignatureOids.id_ecdsawithSHA384.equals(sigAlg)) {
 			return "SHA384withECDSA";
-		} if (SignatureOids.id_ecdsawithSHA512.equals(sigAlg)) {
+		} else if (SignatureOids.id_ecdsawithSHA512.equals(sigAlg)) {
 			return "SHA512withECDSA";
-		} if (Tr03111.id_ecdsa_plain_SHA1.equals(sigAlg)) {
+		} else if (Tr03111.id_ecdsa_plain_SHA1.equals(sigAlg)) {
 			return "SHA1withECDSA";
-		} if (Tr03111.id_ecdsa_plain_SHA224.equals(sigAlg)) {
+		} else if (Tr03111.id_ecdsa_plain_SHA224.equals(sigAlg)) {
 			return "SHA224withECDSA";
-		} if (Tr03111.id_ecdsa_plain_SHA256.equals(sigAlg)) {
+		} else if (Tr03111.id_ecdsa_plain_SHA256.equals(sigAlg)) {
 			return "SHA256withECDSA";
-		} if (Tr03111.id_ecdsa_plain_SHA384.equals(sigAlg)) {
+		} else if (Tr03111.id_ecdsa_plain_SHA384.equals(sigAlg)) {
 			return "SHA384withECDSA";
-		} if (Tr03111.id_ecdsa_plain_SHA512.equals(sigAlg)) {
+		} else if (Tr03111.id_ecdsa_plain_SHA512.equals(sigAlg)) {
 			return "SHA512withECDSA";
 		}
 
 		return null;
+	}
+
+	protected Oid getSignatureAlgorithmOid(String sigAlgAsString) {
+		if ("SHA256withECDSA".equals(sigAlgAsString))
+			return SignatureOids.id_ecdsawithSHA256;
+		else if ("SHA512withECDSA".equals(sigAlgAsString))
+			return SignatureOids.id_ecdsawithSHA512;
+		else
+			return SignatureOids.id_ecdsawithSHA384;
 	}
 
 	/**
@@ -212,9 +229,16 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	 * @return
 	 */
 	protected ConstructedTlvDataObject getSignatureAlgorithm() {
-		ConstructedTlvDataObject dscertTLV = getCertificate();
-		ConstructedTlvDataObject sigAlg = (ConstructedTlvDataObject) dscertTLV
-				.getTlvDataObject(new TlvPath(TAG_SEQUENCE, TAG_SEQUENCE));
+		ConstructedTlvDataObject sigAlg = null;
+		if (dsAlgo != null) {
+			Oid oidFromDSAlgo = getSignatureAlgorithmOid(dsAlgo);
+			sigAlg = new ConstructedTlvDataObject(TlvConstants.TAG_SEQUENCE);
+			PrimitiveTlvDataObject tlvSigAlg = new PrimitiveTlvDataObject(TlvConstants.TAG_OID, oidFromDSAlgo.toByteArray());
+			sigAlg.addTlvDataObject(tlvSigAlg);
+		} else {
+			ConstructedTlvDataObject dscertTLV = getCertificate();
+			sigAlg = (ConstructedTlvDataObject) dscertTLV.getTlvDataObject(new TlvPath(TAG_SEQUENCE, TAG_SEQUENCE));
+		}
 		return sigAlg;
 	}
 
@@ -296,7 +320,6 @@ public class SecInfoCmsBuilder implements TlvConstants {
 		signerInfo.addTlvDataObject(signature);
 
 		return signerInfo;
-
 	}
 
 	/**
@@ -427,7 +450,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	 * @throws InvalidKeyException
 	 */
 	protected byte[] getSignature(byte[] sigInput)
-			throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException {
+			throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 		String signatureAlg = getSignatureAlgorithmString();
 
 		Signature signer = Signature.getInstance(signatureAlg, Crypto.getCryptoProvider());
