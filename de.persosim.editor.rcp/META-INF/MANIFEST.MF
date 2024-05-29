@@ -5,20 +5,23 @@ Bundle-SymbolicName: de.persosim.editor.rcp;singleton:=true
 Bundle-Version: 0.19.0.qualifier
 Bundle-Vendor: secunet Security Networks AG
 Require-Bundle: 
+ javax.inject,
  org.eclipse.core.runtime,
  org.eclipse.swt,
- org.eclipse.jface,
  org.eclipse.e4.ui.model.workbench,
+ org.eclipse.jface,
  org.eclipse.e4.ui.services,
  org.eclipse.e4.ui.workbench,
  org.eclipse.e4.core.di,
  org.eclipse.e4.ui.di,
  org.eclipse.e4.core.contexts,
- org.eclipse.e4.ui.workbench.swt,
+ javax.annotation,
  de.persosim.simulator,
- org.globaltester.logging
+ org.globaltester.logging,
+ org.eclipse.e4.ui.workbench.swt
 Import-Package: 
- javax.annotation
+ javax.annotation,
+ javax.inject
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: de.persosim.editor.rcp.Activator
