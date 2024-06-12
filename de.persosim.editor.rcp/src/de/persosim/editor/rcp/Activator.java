@@ -10,7 +10,7 @@ public class Activator extends Plugin implements BundleActivator {
 
 	@Override
 	public void start(BundleContext context) throws Exception {
-		PersoSimPreferenceManager.setPreferenceAccessor(new EclipsePreferenceAccessor());
+		PersoSimPreferenceManager.setPreferenceAccessorIfNotAvailable(new EclipsePreferenceAccessor());
 	}
 	
 }

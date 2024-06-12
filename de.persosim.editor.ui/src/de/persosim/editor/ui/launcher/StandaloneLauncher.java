@@ -29,7 +29,7 @@ public class StandaloneLauncher {
 
 	public static void main(String[] args) {
 		Crypto.setCryptoProvider(ProviderBc.getInstance().getCryptoProviderObject());
-		PersoSimPreferenceManager.setPreferenceAccessor(new IniPreferenceStoreAccessor(Paths.get("config.properties")));
+		PersoSimPreferenceManager.setPreferenceAccessorIfNotAvailable(new IniPreferenceStoreAccessor(Paths.get("config.properties")));
 
 		setDefault(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS);
 		setDefault(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY);
