@@ -2,7 +2,7 @@ package de.persosim.editor.ui.launcher;
 
 import java.nio.file.Paths;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;

@@ -5,7 +5,7 @@ Bundle-SymbolicName: de.persosim.editor.rcp;singleton:=true
 Bundle-Version: 0.19.0.qualifier
 Bundle-Vendor: secunet Security Networks AG
 Require-Bundle: 
- javax.inject,
+ jakarta.inject.jakarta.inject-api,
  org.eclipse.core.runtime,
  org.eclipse.swt,
  org.eclipse.e4.ui.model.workbench,
@@ -15,7 +15,7 @@ Require-Bundle:
  org.eclipse.e4.core.di,
  org.eclipse.e4.ui.di,
  org.eclipse.e4.core.contexts,
- javax.annotation,
+ jakarta.annotation-api,
  de.persosim.simulator,
  org.globaltester.logging,
  org.eclipse.e4.ui.workbench.swt

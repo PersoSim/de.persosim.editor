@@ -22,7 +22,8 @@ Require-Bundle: org.globaltester.cryptoprovider,
  org.eclipse.jface,
  org.globaltester.cryptoprovider.bc,
  org.eclipse.core.runtime,
- org.eclipse.osgi
+ org.eclipse.osgi,
+ jakarta.annotation-api
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Import-Package: org.osgi.framework,
   org.osgi.service.log,

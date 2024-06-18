@@ -90,11 +90,11 @@
          version="0.0.0"/>
 
    <plugin
-         id="javax.annotation"
+         id="jakarta.annotation-api"
          version="0.0.0"/>
 
    <plugin
-         id="javax.inject"
+         id="jakarta.inject.jakarta.inject-api"
          version="0.0.0"/>
 
    <plugin
@@ -103,14 +103,6 @@
 
    <plugin
          id="de.persosim.driver.connector"
-         version="0.0.0"/>
-
-   <plugin
-         id="jakarta.annotation-api"
-         version="0.0.0"/>
-
-   <plugin
-         id="jakarta.inject.jakarta.inject-api"
          version="0.0.0"/>
 
    <plugin
@@ -198,7 +190,7 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.slf4j.api"
+         id="slf4j.api"
          version="0.0.0"/>
 
 <!--
