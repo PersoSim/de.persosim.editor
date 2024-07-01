@@ -70,10 +70,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.globaltester.lib.domparser"
-         version="0.0.0"/>
-
-   <plugin
          id="org.eclipse.core.resources"
          version="0.0.0"/>
 
