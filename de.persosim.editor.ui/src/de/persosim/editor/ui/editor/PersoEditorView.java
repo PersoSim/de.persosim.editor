@@ -95,7 +95,7 @@ public class PersoEditorView {
 	protected Collection<DfEditor> toBePersisted = new HashSet<>();
 	protected Personalization perso;
 	private Path persoFile;
-	
+
 	public void updateContent(Path personalizationFile) {
 		if (!Files.exists(personalizationFile)) {
 			throw new IllegalArgumentException("Personalization file does not exist");
@@ -104,8 +104,8 @@ public class PersoEditorView {
 		this.persoFile = personalizationFile;
 
 		try (Reader reader = Files.newBufferedReader(personalizationFile)) {
-			Personalization perso = (Personalization) PersonalizationFactory.unmarshal(reader);
-			updateContent(perso);
+			Personalization personalization = (Personalization) PersonalizationFactory.unmarshal(reader);
+			updateContent(personalization);
 		} catch (IOException e) {
 			BasicLogger.logException(getClass(), "Reading the personalization file failed.", e, LogLevel.ERROR);
 			MessageDialog.openError(Display.getCurrent().getActiveShell(), "File error",
@@ -132,15 +132,15 @@ public class PersoEditorView {
 		Composite editor = new Composite(tabFolder, SWT.NONE);
 
 		Map<Integer, String> dgMapping = new HashMap<>();
-		dgMapping.put((Integer) 0x1C, "EF.CardAccess");
-		dgMapping.put((Integer) 0x1D, "EF.CardSecurity");
-		dgMapping.put((Integer) 0x1B, "EF.ChipSecurity");
-		dgMapping.put((Integer) 0x1E, "EF.DIR");
+		dgMapping.put(0x1C, "EF.CardAccess");
+		dgMapping.put(0x1D, "EF.CardSecurity");
+		dgMapping.put(0x1B, "EF.ChipSecurity");
+		dgMapping.put(0x1E, "EF.DIR");
 
-		
+
 		List<ObjectHandler> objectHandlers = new LinkedList<>();
-		objectHandlers.add(new PasswordAuthObjectHandler(Arrays.asList(new Integer [] {2,4})));
-		objectHandlers.add(new ChangeablePasswortAuthObjectHandler(Arrays.asList(new Integer[] {3})));
+		objectHandlers.add(new PasswordAuthObjectHandler(Arrays.asList(2, 4)));
+		objectHandlers.add(new ChangeablePasswortAuthObjectHandler(Arrays.asList(3)));
 		objectHandlers.add(new DatagroupDumpHandler(dgMapping));
 		objectHandlers.add(new RiKeyHandler());
 		objectHandlers.add(new MobileIdSecInfoObjectHandler());
@@ -247,14 +247,15 @@ public class PersoEditorView {
 				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY));
 		boolean updateEfChipSecurity = Boolean.parseBoolean(
 				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY));
-		
+
 		String dscert = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSCERT);
 		String dskey = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSKEY);
-		
-		if (!quiet && !(updateEfCardAccess | updateEfCardSecurity | updateEfChipSecurity)){
+		String dsAlgo = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSALGO);
+
+		if (!quiet && !(updateEfCardAccess || updateEfCardSecurity || updateEfChipSecurity)){
 			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Info", "No files are selected to be updated, please review signature settings.");
 		}
-		
+
 		if (updateEfCardAccess) {
 			if (getMf().findChildren(new FileIdentifier(0x011c)).isEmpty()) {
 				try {
@@ -274,7 +275,7 @@ public class PersoEditorView {
 		}
 
 		if (updateEfCardSecurity || updateEfChipSecurity) {
-			if (dscert == null || dskey == null) {
+			if (dscert == null || dskey == null || dsAlgo == null) {
 				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error on document signer certificates",
 						"Please check the document signer certificate settings.");
 			}
@@ -294,7 +295,7 @@ public class PersoEditorView {
 				}
 
 				SecInfoCmsBuilder builder = new SecInfoCmsBuilder(Files.readAllBytes(Paths.get(dscert)),
-						Files.readAllBytes(Paths.get(dskey)));
+						Files.readAllBytes(Paths.get(dskey)), dsAlgo);
 				new SignedSecInfoFileUpdater(null, new FileIdentifier(0x011d), SecInfoPublicity.PRIVILEGED, builder)
 						.execute(perso);
 			} catch (InvalidKeySpecException | IOException e) {
@@ -324,7 +325,7 @@ public class PersoEditorView {
 				}
 
 				SecInfoCmsBuilder builder = new SecInfoCmsBuilder(Files.readAllBytes(Paths.get(dscert)),
-						Files.readAllBytes(Paths.get(dskey)));
+						Files.readAllBytes(Paths.get(dskey)), dsAlgo);
 				new SignedSecInfoFileUpdater(null, new FileIdentifier(0x011b), SecInfoPublicity.AUTHENTICATED, builder)
 						.execute(perso);
 			} catch (InvalidKeySpecException | IOException e) {
@@ -346,7 +347,7 @@ public class PersoEditorView {
 		if (perso != null) {
 			if (path != null){
 				persoFile = path;
-				
+
 				PersonalizationFactory.marshal(perso, persoFile.toAbsolutePath().toString());
 				updateContent(perso);
 			}

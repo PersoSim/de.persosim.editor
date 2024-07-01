@@ -2,7 +2,7 @@
 <feature
       id="de.persosim.editor.rcp.feature"
       label="PersoSim Editor RCP"
-      version="0.19.0.qualifier"
+      version="1.0.0.qualifier"
       provider-name="secunet Security Networks AG">
 
    <copyright>
@@ -14,123 +14,189 @@
    </copyright>
 
    <requires>
-      <import feature="org.eclipse.e4.rcp" version="1.4.0.v20150603-0857"/>
+      <import feature="org.eclipse.e4.rcp" version="4.30.0.v20231113-1355"/>
    </requires>
 
    <plugin
+         id="com.ibm.icu"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.sun.jna"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.sun.jna.platform"
+         version="0.0.0"/>
+
+   <plugin
          id="de.persosim.simulator"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="de.persosim.simulator.adapter.socket"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.globaltester.cryptoprovider"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.globaltester.cryptoprovider.bc"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.globaltester.logging"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.globaltester.logging.consoleLogger"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.globaltester.simulator"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.globaltester.service"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.globaltester.lib.xstream"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.globaltester.base"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.globaltester.lib.domparser"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.core.resources"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.core.filesystem"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.globaltester.lib.bctls"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
-         id="org.globaltester.lib.json"
-         download-size="0"
-         install-size="0"
+         id="org.globaltester.cryptoprovider"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.globaltester.cryptoprovider.bc"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.globaltester.logging"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.globaltester.logging.consoleLogger"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.globaltester.simulator"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.globaltester.service"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.globaltester.lib.xstream"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.globaltester.base"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.globaltester.lib.domparser"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.core.resources"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.core.filesystem"
          version="0.0.0"/>
 
    <plugin
          id="de.persosim.editor.rcp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="de.persosim.editor.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
+
+   <plugin
+         id="jakarta.annotation-api"
+         version="0.0.0"/>
+
+   <plugin
+         id="jakarta.inject.jakarta.inject-api"
+         version="0.0.0"/>
+
+   <plugin
+         id="de.persosim.simulator.ui"
+         version="0.0.0"/>
+
+   <plugin
+         id="de.persosim.driver.connector"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.aries.spifly.dynamic.bundle"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.batik.constants"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.batik.css"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.batik.i18n"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.batik.util"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.commons.commons-io"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.commons.jxpath"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.apache.felix.scr"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.core.runtime"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.equinox.common"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.equinox.event"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.equinox.simpleconfigurator"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.orbit.xml-apis-ext"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.globaltester.lib.jaxws"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.objectweb.asm"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.objectweb.asm.commons"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.objectweb.asm.tree"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.objectweb.asm.tree.analysis"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.objectweb.asm.util"
+         version="0.0.0"/>
+
+   <plugin
+         id="slf4j.api"
+         version="0.0.0"/>
+
+   <plugin
+         id="slf4j.simple"
+         version="0.0.0"/>
+
+   <plugin
+         id="slf4j.api"
+         version="0.0.0"/>
+
+<!--
+   <plugin
+         id="org.slf4j.apis.jcl"
+         version="0.0.0"/>
+-->
 
 </feature>

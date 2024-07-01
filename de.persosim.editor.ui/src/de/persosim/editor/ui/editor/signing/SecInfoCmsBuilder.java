@@ -38,7 +38,7 @@ import de.persosim.simulator.tlv.TlvTagIdentifier;
  * CRLs or multiple signers/digestAlgorithms etc. If this kind of flexibility is
  * needed the interface {@link SecInfoCmsBuilder} needs to be implemented
  * independently.
- * 
+ *
  * @author amay, cstroh
  *
  */
@@ -65,6 +65,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	private Oid encapContentInfoOid = OID_BSI_SECURITY_OBJECT;
 	private byte[] dscert;
 	private PrivateKey dsPrivKey;
+	private String dsAlgo;
 
 	/**
 	 * @param dscert
@@ -72,12 +73,16 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	 *            structure
 	 * @param dsPrivKey
 	 *            The corresponding private key of the DS certificate
+	 * @param dsAlgo
+	 *            The corresponding sign algorithm (has to be a null or a valid and supported algo like "SHA384withECDSA".
+	 *            In case of null algo from dscert will be used).
 	 * @return
 	 * @throws InvalidKeySpecException
 	 */
-	public SecInfoCmsBuilder(byte[] dscert, byte[] dsPrivKey) throws InvalidKeySpecException {
+	public SecInfoCmsBuilder(byte[] dscert, byte[] dsPrivKey, String dsAlgo) throws InvalidKeySpecException {
 		this.dscert = dscert;
 		this.dsPrivKey = getKeyFromByteArray(dsPrivKey);
+		this.dsAlgo = dsAlgo;
 	}
 
 	public ConstructedTlvDataObject buildSignedData(ConstructedTlvDataObject secInfos)
@@ -113,7 +118,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 
 	/**
 	 * Build the encapContantInfo from the provided SecInfos
-	 * 
+	 *
 	 * @param secInfos
 	 * @return
 	 */
@@ -134,7 +139,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	/**
 	 * Return all used digestAlgorithms, defaults to a Collection of the single
 	 * digestAlgorithm returned by {@link #getDigestAlgorithm()}
-	 * 
+	 *
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 */
@@ -147,7 +152,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	 * <p/>
 	 * If more than one digestAlgorithm is used override
 	 * {@link #getDigestAlgorithms()} and ignore this method
-	 * 
+	 *
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 */
@@ -170,58 +175,77 @@ public class SecInfoCmsBuilder implements TlvConstants {
 			return new ConstructedTlvDataObject(TAG_SEQUENCE,
 					new PrimitiveTlvDataObject(TAG_OID, OID_SHA512.toByteArray()), noParameters);
 		} else {
-			throw new NoSuchAlgorithmException("Digest algorithm is not supported by Signer");
+			throw new NoSuchAlgorithmException("Digest algorithm '" + signatureAlg + "' is not supported by Signer.");
 		}
 	}
 
 	protected String getSignatureAlgorithmString() {
-		Oid sigAlg = new GenericOid(getSignatureAlgorithm().getTlvDataObject(TAG_OID).getValueField());		
+		if (dsAlgo != null)
+			return dsAlgo;
+
+		Oid sigAlg = new GenericOid(getSignatureAlgorithm().getTlvDataObject(TAG_OID).getValueField());
 
 		if (SignatureOids.id_sha1withrsaencryption.equals(sigAlg)) {
 			return "SHA1withRSA";
 		} else if (SignatureOids.id_sha256withrsaencryption.equals(sigAlg)) {
 			return "SHA256withRSA";
 		} else if (SignatureOids.id_rsassapss.equals(sigAlg)) {
-			return "SHA256withRSA/PSS";
-		} if (SignatureOids.id_ecdsawithSHA224.equals(sigAlg)) {
+			return "SHA256withRSA/PSS"; // FIXME: Possibly, this hardcoded SHA-RSA-PSS combination has to be changed to support other SHA algorithm (see GT implementation).
+		} else if (SignatureOids.id_ecdsawithSHA224.equals(sigAlg)) {
 			return "SHA224withECDSA";
-		} if (SignatureOids.id_ecdsawithSHA256.equals(sigAlg)) {
+		} else if (SignatureOids.id_ecdsawithSHA256.equals(sigAlg)) {
 			return "SHA256withECDSA";
-		} if (SignatureOids.id_ecdsawithSHA384.equals(sigAlg)) {
+		} else if (SignatureOids.id_ecdsawithSHA384.equals(sigAlg)) {
 			return "SHA384withECDSA";
-		} if (SignatureOids.id_ecdsawithSHA512.equals(sigAlg)) {
+		} else if (SignatureOids.id_ecdsawithSHA512.equals(sigAlg)) {
 			return "SHA512withECDSA";
-		} if (Tr03111.id_ecdsa_plain_SHA1.equals(sigAlg)) {
-			return "SHA1withECDSA";	
-		} if (Tr03111.id_ecdsa_plain_SHA224.equals(sigAlg)) {
-			return "SHA224withECDSA";	
-		} if (Tr03111.id_ecdsa_plain_SHA256.equals(sigAlg)) {
-			return "SHA256withECDSA";	
-		} if (Tr03111.id_ecdsa_plain_SHA384.equals(sigAlg)) {
-			return "SHA384withECDSA";	
-		} if (Tr03111.id_ecdsa_plain_SHA512.equals(sigAlg)) {
-			return "SHA512withECDSA";	
+		} else if (Tr03111.id_ecdsa_plain_SHA1.equals(sigAlg)) {
+			return "SHA1withECDSA";
+		} else if (Tr03111.id_ecdsa_plain_SHA224.equals(sigAlg)) {
+			return "SHA224withECDSA";
+		} else if (Tr03111.id_ecdsa_plain_SHA256.equals(sigAlg)) {
+			return "SHA256withECDSA";
+		} else if (Tr03111.id_ecdsa_plain_SHA384.equals(sigAlg)) {
+			return "SHA384withECDSA";
+		} else if (Tr03111.id_ecdsa_plain_SHA512.equals(sigAlg)) {
+			return "SHA512withECDSA";
 		}
-		
+
 		return null;
+	}
+
+	protected Oid getSignatureAlgorithmOid(String sigAlgAsString) {
+		if ("SHA256withECDSA".equals(sigAlgAsString))
+			return SignatureOids.id_ecdsawithSHA256;
+		else if ("SHA512withECDSA".equals(sigAlgAsString))
+			return SignatureOids.id_ecdsawithSHA512;
+		else
+			return SignatureOids.id_ecdsawithSHA384;
 	}
 
 	/**
 	 * Return the used signature algorithm
-	 * 
+	 *
 	 * @return
 	 */
 	protected ConstructedTlvDataObject getSignatureAlgorithm() {
-		ConstructedTlvDataObject dscertTLV = getCertificate();
-		ConstructedTlvDataObject sigAlg = (ConstructedTlvDataObject) dscertTLV
-				.getTlvDataObject(new TlvPath(TAG_SEQUENCE, TAG_SEQUENCE));
+		ConstructedTlvDataObject sigAlg = null;
+		if (dsAlgo != null) {
+			Oid oidFromDSAlgo = getSignatureAlgorithmOid(dsAlgo);
+			sigAlg = new ConstructedTlvDataObject(TlvConstants.TAG_SEQUENCE);
+			PrimitiveTlvDataObject tlvSigAlg = new PrimitiveTlvDataObject(TlvConstants.TAG_OID, oidFromDSAlgo.toByteArray());
+			sigAlg.addTlvDataObject(tlvSigAlg);
+		} else {
+			ConstructedTlvDataObject dscertTLV = getCertificate();
+			sigAlg = (ConstructedTlvDataObject) dscertTLV.getTlvDataObject(new TlvPath(TAG_SEQUENCE, TAG_SEQUENCE));
+		}
 		return sigAlg;
 	}
 
 	/**
 	 * Return all used certificates, defaults to a Collection of the single
 	 * certificate returned by {@link #getCertificate()}
-	 * 
+	 *
 	 * @return
 	 */
 	protected ConstructedTlvDataObject getCertificate() {
@@ -231,7 +255,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	/**
 	 * Return all used signerInfos, defaults to a Collection of the single
 	 * signerInfo returned by {@link #getSignerInfo()}
-	 * 
+	 *
 	 * @param eContent
 	 *            the encapContentInfo to be signed
 	 * @return
@@ -250,7 +274,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	 * <p/>
 	 * If more than one SignerInfo is used override {@link #getSignerInfos()} and
 	 * ignore this method
-	 * 
+	 *
 	 * @param eContent
 	 *            the encapContentInfo to be signed
 	 * @return
@@ -296,7 +320,6 @@ public class SecInfoCmsBuilder implements TlvConstants {
 		signerInfo.addTlvDataObject(signature);
 
 		return signerInfo;
-
 	}
 
 	/**
@@ -306,7 +329,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	 * The provided identifier is extracted from the certificate provided by
 	 * {@link #getCertificate()}. If more than one certificate is used you need to
 	 * override {@link #getSignerInfos()} anyhow and can safely ignore this method
-	 * 
+	 *
 	 * @return
 	 */
 	protected TlvDataObject getSid() {
@@ -323,7 +346,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	/**
 	 * Return the signed attributes to be used within the SignerInfo returned by
 	 * {@link #getSignerInfo()}
-	 * 
+	 *
 	 * @param eContent
 	 *            the encapContentInfo to be signed
 	 * @return
@@ -387,7 +410,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 
 	/**
 	 * Creates private key from an encoded EC private key
-	 * 
+	 *
 	 * @param encodedKey
 	 *            private key as byte array
 	 * @return the private key as PrivateKey object
@@ -417,7 +440,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	/**
 	 * Return the signature to be used within the SignerInfo returned by
 	 * {@link #getSignerInfo()}
-	 * 
+	 *
 	 * @param sigInput
 	 *            input to the signature generation process
 	 * @return
@@ -427,7 +450,7 @@ public class SecInfoCmsBuilder implements TlvConstants {
 	 * @throws InvalidKeyException
 	 */
 	protected byte[] getSignature(byte[] sigInput)
-			throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException {
+			throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
 		String signatureAlg = getSignatureAlgorithmString();
 
 		Signature signer = Signature.getInstance(signatureAlg, Crypto.getCryptoProvider());

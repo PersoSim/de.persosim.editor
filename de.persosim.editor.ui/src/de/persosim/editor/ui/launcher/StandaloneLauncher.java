@@ -2,7 +2,7 @@ package de.persosim.editor.ui.launcher;
 
 import java.nio.file.Paths;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -22,25 +22,25 @@ import de.persosim.editor.ui.editor.ConfigurationConstants;
 import de.persosim.editor.ui.editor.IniPreferenceStoreAccessor;
 import de.persosim.editor.ui.editor.PersoEditorView;
 import de.persosim.editor.ui.editor.SignatureSettingsDialog;
-import de.persosim.editor.ui.launcher.Persos.DefaultPerso;
+import de.persosim.editor.ui.launcher.Persos.Profile01;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
 
 public class StandaloneLauncher {
 
 	public static void main(String[] args) {
 		Crypto.setCryptoProvider(ProviderBc.getInstance().getCryptoProviderObject());
-		PersoSimPreferenceManager.setPreferenceAccessor(new IniPreferenceStoreAccessor(Paths.get("config.properties")));
+		PersoSimPreferenceManager.setPreferenceAccessorIfNotAvailable(new IniPreferenceStoreAccessor(Paths.get("config.properties")));
 
 		setDefault(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS);
 		setDefault(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY);
 		setDefault(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY);
-		
+
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setText("PersoSim Editor");
 
 		createGui(shell);
-		
+
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!shell.getDisplay().readAndDispatch()) {
@@ -48,7 +48,7 @@ public class StandaloneLauncher {
 			}
 		}
 	}
-	
+
 	@PostConstruct
 	private static void createGui(Composite parent) {
 		PersoEditorView editor = new PersoEditorView();
@@ -164,7 +164,7 @@ public class StandaloneLauncher {
 
 		editor.createEditor(parent);
 
-		editor.updateContent(new DefaultPerso());
+		editor.updateContent(new Profile01());
 
 		parent.addDisposeListener(e -> checkAndSave(parent.getShell(), editor));
 	}
