@@ -16,6 +16,7 @@
 		<vmArgs>--add-opens=java.base/java.security=ALL-UNNAMED
 			--add-opens=java.base/javax.crypto.spec=ALL-UNNAMED
 			--add-opens=java.base/java.util=ALL-UNNAMED
+			--add-opens=java.smartcardio/sun.security.smartcardio=ALL-UNNAMED
 		</vmArgs>
 		<vmArgsMac>-XstartOnFirstThread
 			-Dorg.eclipse.swt.internal.carbon.smallFonts
