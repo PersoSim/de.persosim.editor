@@ -2,6 +2,7 @@ package de.persosim.editor.ui.editor;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -70,6 +71,8 @@ import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
+import de.persosim.simulator.exportprofile.Profile;
+import de.persosim.simulator.exportprofile.ProfileMapper;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
@@ -139,8 +142,12 @@ public class PersoEditorView {
 
 
 		List<ObjectHandler> objectHandlers = new LinkedList<>();
-		objectHandlers.add(new PasswordAuthObjectHandler(Arrays.asList(2, 4)));
+		
+		int lengthCAN = 6;
+		int lengthPUK = 10;
+		objectHandlers.add(new ChangeablePasswortAuthObjectHandler(Arrays.asList(2), lengthCAN, lengthCAN, true));
 		objectHandlers.add(new ChangeablePasswortAuthObjectHandler(Arrays.asList(3)));
+		objectHandlers.add(new ChangeablePasswortAuthObjectHandler(Arrays.asList(4), lengthPUK, lengthPUK, true));
 		objectHandlers.add(new DatagroupDumpHandler(dgMapping));
 		objectHandlers.add(new RiKeyHandler());
 		objectHandlers.add(new MobileIdSecInfoObjectHandler());
@@ -338,18 +345,36 @@ public class PersoEditorView {
 	}
 
 	public void save(Path path){
+		save(path, false);
+	}
+
+	public void save(Path path, boolean isExport){
 		for (DfEditor editor : toBePersisted) {
 			editor.persist();
 		}
-
+		
 		updateSignedFiles(true);
 
 		if (perso != null) {
 			if (path != null){
 				persoFile = path;
-
-				PersonalizationFactory.marshal(perso, persoFile.toAbsolutePath().toString());
-				updateContent(perso);
+				if (isExport) {
+					Profile profile = new ProfileMapper().mapPersoToExportProfile(perso);
+					String jsonSerialized = profile.serialize();
+					try
+					{
+						Files.write(path, jsonSerialized.getBytes(StandardCharsets.UTF_8));
+					}
+					catch (IOException e)
+					{
+						BasicLogger.logException(getClass(), "Exporting profile failed.", e, LogLevel.ERROR);
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), "File error",
+								"Exporting profile failed.");
+					}
+				} else {
+					PersonalizationFactory.marshal(perso, persoFile.toAbsolutePath().toString());
+					updateContent(perso);
+				}
 			}
 		}
 	}

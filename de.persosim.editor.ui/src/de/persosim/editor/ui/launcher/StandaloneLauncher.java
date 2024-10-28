@@ -85,6 +85,16 @@ public class StandaloneLauncher {
 			}
 		});
 
+		MenuItem exportProfile = new MenuItem(fileMenu, SWT.NONE);
+		exportProfile.setText("Export profile");
+		exportProfile.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String[] filterExt = { "*.json", "*.*" };
+				openSaveDialog(editor, filterExt, true);
+			}
+		});
+
 		MenuItem saveas = new MenuItem(fileMenu, SWT.NONE);
 		saveas.setText("Save as...");
 		saveas.addSelectionListener(new SelectionAdapter() {
@@ -170,11 +180,16 @@ public class StandaloneLauncher {
 	}
 
 	protected static void openSaveDialog(PersoEditorView editor) {
-		FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
-		fd.setText("Open");
-		fd.setFilterPath(editor.getPath() == null ? "C:/" : editor.getPath().toString());
 		String[] filterExt = { "*.perso", "*.*" };
-		fd.setFilterExtensions(filterExt);
+		openSaveDialog(editor, filterExt, false);
+	}
+
+	protected static void openSaveDialog(PersoEditorView editor, String[] filterExt, boolean isExport) {
+		FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
+		fd.setText("Save");
+		fd.setFilterPath(editor.getPath() == null ? "C:/" : editor.getPath().toString());
+		if (filterExt != null)
+			fd.setFilterExtensions(filterExt);
 		String selection = fd.open();
 		if (selection != null) {
 			boolean write = true;
@@ -183,7 +198,7 @@ public class StandaloneLauncher {
 						"Do you want to overwrite the file at " + selection + "?");
 			}
 			if (write) {
-				editor.save(Paths.get(selection));
+				editor.save(Paths.get(selection), isExport);
 			}
 		}
 	}

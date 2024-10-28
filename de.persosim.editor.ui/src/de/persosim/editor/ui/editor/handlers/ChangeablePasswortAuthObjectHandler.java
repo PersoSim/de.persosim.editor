@@ -21,17 +21,34 @@ import de.persosim.simulator.exception.AccessDeniedException;
 
 public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandler implements ObjectHandler {
 
+	int minPwdLength = 5;
+	int maxPwdLength = 6;
+	boolean withPwdIsMandatoryCheckbox = false;
+	
 	public ChangeablePasswortAuthObjectHandler(Collection<Integer> allowedIds) {
 		super(allowedIds);
 	}
 	
+	public ChangeablePasswortAuthObjectHandler(Collection<Integer> allowedIds, int minPwdLength, int maxPwdLength, boolean withPwdIsMandatoryCheckbox) {
+		super(allowedIds);
+		this.minPwdLength = minPwdLength;
+		this.maxPwdLength = maxPwdLength;
+		this.withPwdIsMandatoryCheckbox = withPwdIsMandatoryCheckbox;
+	}
+
 	@Override
 	protected void createEditingComposite(Composite composite, TreeItem item) {
 		composite.setLayout(new GridLayout(2, false));
 		
 		ChangeablePasswordAuthObject authObject = ((ChangeablePasswordAuthObject)item.getData());
 		
-		EditorFieldHelper.createField(item, false, composite, new AbstractObjectModifier() {
+		String lengthInfo;
+		if (minPwdLength == maxPwdLength)
+			lengthInfo = "length has to be " + Integer.toString(minPwdLength) + " characters";
+		else
+			lengthInfo = "possible lengths are " + Integer.toString(minPwdLength) + " or " + Integer.toString(maxPwdLength) + " characters";
+		
+		EditorFieldHelper.createField(item, withPwdIsMandatoryCheckbox, composite, new AbstractObjectModifier() {
 			
 			@Override
 			public void setValue(String string) {
@@ -88,7 +105,7 @@ public class ChangeablePasswortAuthObjectHandler extends PasswordAuthObjectHandl
 					return false;
 				}
 			}
-		}, new AndChecker(new NumberChecker(), new LengthChecker(5,6,State.ERROR)), authObject.getPasswordName() + ", possible lengths are 5 or 6 characters");
+		}, new AndChecker(new NumberChecker(), new LengthChecker(minPwdLength, maxPwdLength, State.ERROR)), authObject.getPasswordName() + ", " + lengthInfo);
 		
 		if (authObject instanceof PasswordAuthObjectWithRetryCounter){
 			PasswordAuthObjectWithRetryCounter pwdWithRetryCounter = (PasswordAuthObjectWithRetryCounter) authObject;
