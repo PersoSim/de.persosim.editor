@@ -18,7 +18,8 @@ Require-Bundle:
  jakarta.annotation-api,
  de.persosim.simulator,
  org.globaltester.logging,
- org.eclipse.e4.ui.workbench.swt
+ org.eclipse.e4.ui.workbench.swt,
+ de.persosim.editor.ui
 Import-Package: 
  javax.annotation,
  javax.inject

@@ -53,15 +53,15 @@ import de.persosim.editor.ui.editor.handlers.EidDedicatedFileHandler;
 import de.persosim.editor.ui.editor.handlers.EidOptionalDataDatagroupHandler;
 import de.persosim.editor.ui.editor.handlers.EidStringDatagroupHandler;
 import de.persosim.editor.ui.editor.handlers.MasterFileHandler;
+import de.persosim.editor.ui.editor.handlers.MobileIdSecInfoObjectHandler;
 import de.persosim.editor.ui.editor.handlers.ObjectHandler;
-import de.persosim.editor.ui.editor.handlers.PasswordAuthObjectHandler;
 import de.persosim.editor.ui.editor.handlers.PrimitiveTlvHandler;
 import de.persosim.editor.ui.editor.handlers.RiKeyHandler;
-import de.persosim.editor.ui.editor.handlers.MobileIdSecInfoObjectHandler;
 import de.persosim.editor.ui.editor.handlers.StringTlvHandler;
 import de.persosim.editor.ui.editor.signing.SecInfoCmsBuilder;
 import de.persosim.editor.ui.editor.signing.SecInfoFileUpdater;
 import de.persosim.editor.ui.editor.signing.SignedSecInfoFileUpdater;
+import de.persosim.editor.ui.launcher.Persos;
 import de.persosim.simulator.cardobjects.CardFile;
 import de.persosim.simulator.cardobjects.CardObject;
 import de.persosim.simulator.cardobjects.DedicatedFile;
@@ -71,11 +71,12 @@ import de.persosim.simulator.cardobjects.FileIdentifier;
 import de.persosim.simulator.cardobjects.MasterFile;
 import de.persosim.simulator.cardobjects.ShortFileIdentifier;
 import de.persosim.simulator.exception.AccessDeniedException;
-import de.persosim.simulator.exportprofile.Profile;
-import de.persosim.simulator.exportprofile.ProfileMapper;
 import de.persosim.simulator.perso.DefaultPersonalization;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.PersonalizationFactory;
+import de.persosim.simulator.perso.export.Profile;
+import de.persosim.simulator.perso.export.ProfileHelper;
+import de.persosim.simulator.perso.export.ProfileMapper;
 import de.persosim.simulator.platform.CommandProcessor;
 import de.persosim.simulator.platform.PersonalizationHelper;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
@@ -92,14 +93,16 @@ import de.persosim.simulator.tlv.TlvDataObjectFactory;
 import de.persosim.simulator.utils.BitField;
 import de.persosim.simulator.utils.HexString;
 
-public class PersoEditorView {
+public class PersoEditorView
+{
 	public static final String ID = "de.persosim.editor.e4.ui.plugin.partdescriptor.persoeditor";
 	protected TabFolder tabFolder;
 	protected Collection<DfEditor> toBePersisted = new HashSet<>();
 	protected Personalization perso;
 	private Path persoFile;
 
-	public void updateContent(Path personalizationFile) {
+	public void updateContent(Path personalizationFile)
+	{
 		if (!Files.exists(personalizationFile)) {
 			throw new IllegalArgumentException("Personalization file does not exist");
 		}
@@ -109,19 +112,22 @@ public class PersoEditorView {
 		try (Reader reader = Files.newBufferedReader(personalizationFile)) {
 			Personalization personalization = (Personalization) PersonalizationFactory.unmarshal(reader);
 			updateContent(personalization);
-		} catch (IOException e) {
+			Persos.setSelectedInternalPerso(null);
+		}
+		catch (Exception e) {
 			BasicLogger.logException(getClass(), "Reading the personalization file failed.", e, LogLevel.ERROR);
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), "File error",
-					"Reading the personalization file failed.");
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), "File error", "Reading the personalization file failed.");
 		}
 	}
 
-	public void updateContent(Personalization perso) {
+	public void updateContent(Personalization perso)
+	{
 		this.persoFile = null;
 		updateUi(perso);
 	}
 
-	protected void updateUi(Personalization perso) {
+	protected void updateUi(Personalization perso)
+	{
 		this.perso = perso;
 
 		toBePersisted = new HashSet<>();
@@ -142,7 +148,7 @@ public class PersoEditorView {
 
 
 		List<ObjectHandler> objectHandlers = new LinkedList<>();
-		
+
 		int lengthCAN = 6;
 		int lengthPUK = 10;
 		objectHandlers.add(new ChangeablePasswortAuthObjectHandler(Arrays.asList(2), lengthCAN, lengthCAN, true));
@@ -165,10 +171,9 @@ public class PersoEditorView {
 		objectHandlers = new LinkedList<>();
 		provider = new DefaultHandlerProvider(objectHandlers);
 
-		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 1,
-				new AndChecker(new LengthChecker(2, 2), new IcaoStringChecker()), "AR = Residence Permit\nAS = Residence Permit\nID = nPA\nUB = eID-card for union citizens\nOA = Smart-eID"));
-		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 2, new AndChecker(
-				new MultiLengthChecker(1, 3), new IcaoStringChecker())));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 1, new AndChecker(new LengthChecker(2, 2), new IcaoStringChecker()),
+				"AR = Residence Permit\nAS = Residence Permit\nID = nPA\nUB = eID-card for union citizens\nOA = Smart-eID"));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 2, new AndChecker(new MultiLengthChecker(1, 3), new IcaoStringChecker())));
 		objectHandlers.add(new DateDatagroupHandler(dgMapping, 3, AuxOid.id_DateOfExpiry));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 4, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 5, new UpperCaseTextFieldChecker()));
@@ -176,16 +181,12 @@ public class PersoEditorView {
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 7, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new DateDatagroupHandler(dgMapping, 8, AuxOid.id_DateOfBirth));
 		objectHandlers.add(new EidDatagroup9Handler(dgMapping));
-		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 10, new AndChecker(
-				new MultiLengthChecker(1, 3), new IcaoStringChecker())));
-		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 11,
-				new AndChecker(new LengthChecker(1, 1), new IcaoSexChecker())));
-		objectHandlers.add(new EidOptionalDataDatagroupHandler(dgMapping, 12,
-				new EidDataTemplateProvider(Collections.emptySet())));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 10, new AndChecker(new MultiLengthChecker(1, 3), new IcaoStringChecker())));
+		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 11, new AndChecker(new LengthChecker(1, 1), new IcaoSexChecker())));
+		objectHandlers.add(new EidOptionalDataDatagroupHandler(dgMapping, 12, new EidDataTemplateProvider(Collections.emptySet())));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 13, new UpperCaseTextFieldChecker()));
 		objectHandlers.add(new EidDatagroup17HandlerSingularGeneralPlace(dgMapping));
-		objectHandlers.add(new EidDatagroup17SetOfGeneralPlaceHandler(dgMapping,
-				new EidDataTemplateProvider(Collections.emptySet())));
+		objectHandlers.add(new EidDatagroup17SetOfGeneralPlaceHandler(dgMapping, new EidDataTemplateProvider(Collections.emptySet())));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 21, new NullChecker()));
 		objectHandlers.add(new EidStringDatagroupHandler(dgMapping, 22, new NullChecker()));
 		objectHandlers.add(new DatagroupHandler(dgMapping));
@@ -201,7 +202,8 @@ public class PersoEditorView {
 		tbtmmf.setControl(editor);
 	}
 
-	protected DedicatedFile getDf(byte[] aid) {
+	protected DedicatedFile getDf(byte[] aid)
+	{
 		MasterFile mf = getMf();
 
 		Collection<CardObject> currentDfCandidates = mf.findChildren(new DedicatedFileIdentifier(aid));
@@ -213,12 +215,13 @@ public class PersoEditorView {
 		return (DedicatedFile) currentDfCandidates.iterator().next();
 	}
 
-	protected MasterFile getMf() {
-		return PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class)
-				.getObjectTree();
+	protected MasterFile getMf()
+	{
+		return PersonalizationHelper.getUniqueCompatibleLayer(perso.getLayerList(), CommandProcessor.class).getObjectTree();
 	}
 
-	public void createEditor(Composite parent) {
+	public void createEditor(Composite parent)
+	{
 		GridLayout gl_parent = new GridLayout(1, false);
 		gl_parent.horizontalSpacing = 0;
 		parent.setLayout(gl_parent);
@@ -240,40 +243,38 @@ public class PersoEditorView {
 		btnUpdateSignatures.addSelectionListener(new SelectionAdapter() {
 
 			@Override
-			public void widgetSelected(SelectionEvent e) {
+			public void widgetSelected(SelectionEvent e)
+			{
 				updateSignedFiles(false);
 				updateContent(perso);
 			}
 		});
 	}
 
-	protected void updateSignedFiles(boolean quiet) {
-		boolean updateEfCardAccess = Boolean.parseBoolean(
-				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS));
-		boolean updateEfCardSecurity = Boolean.parseBoolean(
-				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY));
-		boolean updateEfChipSecurity = Boolean.parseBoolean(
-				PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY));
+	protected void updateSignedFiles(boolean quiet)
+	{
+		boolean updateEfCardAccess = Boolean.parseBoolean(PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_ACCESS));
+		boolean updateEfCardSecurity = Boolean.parseBoolean(PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY));
+		boolean updateEfChipSecurity = Boolean.parseBoolean(PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY));
 
 		String dscert = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSCERT);
 		String dskey = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSKEY);
 		String dsAlgo = PersoSimPreferenceManager.getPreference(ConfigurationConstants.CFG_DSALGO);
 
-		if (!quiet && !(updateEfCardAccess || updateEfCardSecurity || updateEfChipSecurity)){
+		if (!quiet && !(updateEfCardAccess || updateEfCardSecurity || updateEfChipSecurity)) {
 			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Info", "No files are selected to be updated, please review signature settings.");
 		}
 
 		if (updateEfCardAccess) {
 			if (getMf().findChildren(new FileIdentifier(0x011c)).isEmpty()) {
 				try {
-					TlvDataObject efCardAccessTlv = TlvDataObjectFactory
-							.createTLVDataObject(HexString.toByteArray("3000"));
+					TlvDataObject efCardAccessTlv = TlvDataObjectFactory.createTLVDataObject(HexString.toByteArray("3000"));
 
-					CardFile eidDgCardAccess = new ElementaryFile(new FileIdentifier(0x011C),
-							new ShortFileIdentifier(0x1C), efCardAccessTlv.toByteArray(), SecCondition.ALLOWED,
-							SecCondition.DENIED, SecCondition.DENIED);
+					CardFile eidDgCardAccess = new ElementaryFile(new FileIdentifier(0x011C), new ShortFileIdentifier(0x1C), efCardAccessTlv.toByteArray(), SecCondition.ALLOWED, SecCondition.DENIED,
+							SecCondition.DENIED);
 					getMf().addChild(eidDgCardAccess);
-				} catch (AccessDeniedException e) {
+				}
+				catch (AccessDeniedException e) {
 					BasicLogger.logException(getClass(), e, LogLevel.WARN);
 				}
 			}
@@ -283,8 +284,7 @@ public class PersoEditorView {
 
 		if (updateEfCardSecurity || updateEfChipSecurity) {
 			if (dscert == null || dskey == null || dsAlgo == null) {
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error on document signer certificates",
-						"Please check the document signer certificate settings.");
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error on document signer certificates", "Please check the document signer certificate settings.");
 			}
 		}
 
@@ -292,23 +292,20 @@ public class PersoEditorView {
 			try {
 				if (getMf().findChildren(new FileIdentifier(0x011D)).isEmpty()) {
 					try {
-						CardFile eidDgCardSecurity = new ElementaryFile(new FileIdentifier(0x011D),
-								new ShortFileIdentifier(0x1D), HexString.toByteArray("3100"), new TaSecurityCondition(),
+						CardFile eidDgCardSecurity = new ElementaryFile(new FileIdentifier(0x011D), new ShortFileIdentifier(0x1D), HexString.toByteArray("3100"), new TaSecurityCondition(),
 								SecCondition.DENIED, SecCondition.DENIED);
 						getMf().addChild(eidDgCardSecurity);
-					} catch (AccessDeniedException e) {
+					}
+					catch (AccessDeniedException e) {
 						BasicLogger.logException(getClass(), e, LogLevel.WARN);
 					}
 				}
 
-				SecInfoCmsBuilder builder = new SecInfoCmsBuilder(Files.readAllBytes(Paths.get(dscert)),
-						Files.readAllBytes(Paths.get(dskey)), dsAlgo);
-				new SignedSecInfoFileUpdater(null, new FileIdentifier(0x011d), SecInfoPublicity.PRIVILEGED, builder)
-						.execute(perso);
-			} catch (InvalidKeySpecException | IOException e) {
-				MessageDialog.openError(Display.getCurrent().getActiveShell(),
-						"Error on reading document signer certificates",
-						"Please check the document signer certificate settings.");
+				SecInfoCmsBuilder builder = new SecInfoCmsBuilder(Files.readAllBytes(Paths.get(dscert)), Files.readAllBytes(Paths.get(dskey)), dsAlgo);
+				new SignedSecInfoFileUpdater(null, new FileIdentifier(0x011d), SecInfoPublicity.PRIVILEGED, builder).execute(perso);
+			}
+			catch (InvalidKeySpecException | IOException e) {
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error on reading document signer certificates", "Please check the document signer certificate settings.");
 			}
 		}
 
@@ -317,61 +314,60 @@ public class PersoEditorView {
 				if (getMf().findChildren(new FileIdentifier(0x011B)).isEmpty()) {
 					try {
 						SecCondition taWithIs = new TaSecurityCondition(TerminalType.IS, null);
-						SecCondition taWithAtPrivileged = new TaSecurityCondition(TerminalType.AT,
-								new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(3)));
+						SecCondition taWithAtPrivileged = new TaSecurityCondition(TerminalType.AT, new RelativeAuthorization(CertificateRole.TERMINAL, new BitField(38).flipBit(3)));
 
-						CardFile eidDgChipSecurity = new ElementaryFile(new FileIdentifier(0x011B),
-								new ShortFileIdentifier(0x1B), HexString.toByteArray("3100"),
-								new OrSecCondition(taWithIs, taWithAtPrivileged), SecCondition.DENIED,
-								SecCondition.DENIED);
+						CardFile eidDgChipSecurity = new ElementaryFile(new FileIdentifier(0x011B), new ShortFileIdentifier(0x1B), HexString.toByteArray("3100"),
+								new OrSecCondition(taWithIs, taWithAtPrivileged), SecCondition.DENIED, SecCondition.DENIED);
 
 						getMf().addChild(eidDgChipSecurity);
-					} catch (AccessDeniedException e) {
+					}
+					catch (AccessDeniedException e) {
 						BasicLogger.logException(getClass(), e, LogLevel.WARN);
 					}
 				}
 
-				SecInfoCmsBuilder builder = new SecInfoCmsBuilder(Files.readAllBytes(Paths.get(dscert)),
-						Files.readAllBytes(Paths.get(dskey)), dsAlgo);
-				new SignedSecInfoFileUpdater(null, new FileIdentifier(0x011b), SecInfoPublicity.AUTHENTICATED, builder)
-						.execute(perso);
-			} catch (InvalidKeySpecException | IOException e) {
-				MessageDialog.openError(Display.getCurrent().getActiveShell(),
-						"Error on reading document signer certificates",
-						"Please check the document signer certificate settings.");
+				SecInfoCmsBuilder builder = new SecInfoCmsBuilder(Files.readAllBytes(Paths.get(dscert)), Files.readAllBytes(Paths.get(dskey)), dsAlgo);
+				new SignedSecInfoFileUpdater(null, new FileIdentifier(0x011b), SecInfoPublicity.AUTHENTICATED, builder).execute(perso);
+			}
+			catch (InvalidKeySpecException | IOException e) {
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error on reading document signer certificates", "Please check the document signer certificate settings.");
 			}
 		}
 
 	}
 
-	public void save(Path path){
+	public void save(Path path)
+	{
 		save(path, false);
 	}
 
-	public void save(Path path, boolean isExport){
+	public void save(Path path, boolean isExport)
+	{
 		for (DfEditor editor : toBePersisted) {
 			editor.persist();
 		}
-		
+
 		updateSignedFiles(true);
 
 		if (perso != null) {
-			if (path != null){
+			if (path != null) {
 				persoFile = path;
 				if (isExport) {
 					Profile profile = new ProfileMapper().mapPersoToExportProfile(perso);
-					String jsonSerialized = profile.serialize();
-					try
-					{
+					boolean prettyPrint = false;
+					String prettyPrintCfg = ProfileHelper.getPreferenceStoreAccessorInstance().get(ProfileHelper.OVERLAY_PROFILES_PREF_PRETTY_PRINT);
+					if (prettyPrintCfg != null && ("true".equalsIgnoreCase(prettyPrintCfg.trim()) || "yes".equalsIgnoreCase(prettyPrintCfg.trim())))
+						prettyPrint = true;
+					String jsonSerialized = profile.serialize(prettyPrint);
+					try {
 						Files.write(path, jsonSerialized.getBytes(StandardCharsets.UTF_8));
 					}
-					catch (IOException e)
-					{
+					catch (IOException e) {
 						BasicLogger.logException(getClass(), "Exporting profile failed.", e, LogLevel.ERROR);
-						MessageDialog.openError(Display.getCurrent().getActiveShell(), "File error",
-								"Exporting profile failed.");
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), "File error", "Exporting profile failed.");
 					}
-				} else {
+				}
+				else {
 					PersonalizationFactory.marshal(perso, persoFile.toAbsolutePath().toString());
 					updateContent(perso);
 				}
@@ -379,13 +375,15 @@ public class PersoEditorView {
 		}
 	}
 
-	public Path getPath() {
+	public Path getPath()
+	{
 		return persoFile;
 	}
 
-	public boolean hasUnsavedChanges() {
+	public boolean hasUnsavedChanges()
+	{
 		for (DfEditor editor : toBePersisted) {
-			if (editor.hasChanges()){
+			if (editor.hasChanges()) {
 				return true;
 			}
 		}

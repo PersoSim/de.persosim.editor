@@ -1,8 +1,10 @@
 package de.persosim.editor.ui.launcher;
 
-import java.nio.file.Paths;
+import static org.globaltester.logging.BasicLogger.log;
 
-import jakarta.annotation.PostConstruct;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -16,17 +18,21 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.globaltester.cryptoprovider.Crypto;
 import org.globaltester.cryptoprovider.bc.ProviderBc;
+import org.globaltester.logging.tags.LogLevel;
 
 import de.persosim.editor.ui.editor.AboutDialog;
 import de.persosim.editor.ui.editor.ConfigurationConstants;
-import de.persosim.editor.ui.editor.IniPreferenceStoreAccessor;
 import de.persosim.editor.ui.editor.PersoEditorView;
 import de.persosim.editor.ui.editor.SignatureSettingsDialog;
-import de.persosim.editor.ui.launcher.Persos.Profile01;
+import de.persosim.simulator.perso.Personalization;
+import de.persosim.simulator.perso.export.ProfileHelper;
+import de.persosim.simulator.preferences.IniPreferenceStoreAccessor;
 import de.persosim.simulator.preferences.PersoSimPreferenceManager;
+import jakarta.annotation.PostConstruct;
 
 public class StandaloneLauncher {
 
+	
 	public static void main(String[] args) {
 		Crypto.setCryptoProvider(ProviderBc.getInstance().getCryptoProviderObject());
 		PersoSimPreferenceManager.setPreferenceAccessorIfNotAvailable(new IniPreferenceStoreAccessor(Paths.get("config.properties")));
@@ -35,12 +41,19 @@ public class StandaloneLauncher {
 		setDefault(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY);
 		setDefault(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY);
 
+		System.out.println(Paths.get("config.properties").toFile().getAbsolutePath().toString());
+		System.out.println(Paths.get("config.properties").toFile().exists());
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setText("PersoSim Editor");
+			
+		String currentAbsolutePath = Paths.get("").toAbsolutePath().toString();
+		log(StandaloneLauncher.class, "Current absolute path is: " + currentAbsolutePath, LogLevel.TRACE);
+		ProfileHelper.setRootPathPersoFiles(Path.of(currentAbsolutePath + File.separator + "../../de.persosim.simulator/de.persosim.simulator/personalization/" + ProfileHelper.PERSO_FILES_PARENT_DIR));
+		ProfileHelper.getPreferenceStoreAccessorInstance();
 
 		createGui(shell);
-
+		
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!shell.getDisplay().readAndDispatch()) {
@@ -48,9 +61,13 @@ public class StandaloneLauncher {
 			}
 		}
 	}
+	
 
 	@PostConstruct
 	private static void createGui(Composite parent) {
+		
+		ProfileHelper.createAllMissingOverlayProfileFiles(ProfileHelper.getRootPathPersoFiles());
+
 		PersoEditorView editor = new PersoEditorView();
 
 		Menu topLevelMenu = new Menu(parent.getShell(), SWT.BAR);
@@ -174,9 +191,10 @@ public class StandaloneLauncher {
 
 		editor.createEditor(parent);
 
-		editor.updateContent(new Profile01());
+		Personalization perso = Persos.getPerso(1);
+		editor.updateContent(perso);
 
-		parent.addDisposeListener(e -> checkAndSave(parent.getShell(), editor));
+		parent.addDisposeListener(e -> checkAndSave(parent.getShell(), editor));				
 	}
 
 	protected static void openSaveDialog(PersoEditorView editor) {
