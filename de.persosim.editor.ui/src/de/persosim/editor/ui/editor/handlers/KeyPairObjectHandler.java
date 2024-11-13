@@ -229,7 +229,7 @@ public class KeyPairObjectHandler extends AbstractObjectHandler
 			return;
 		}
 
-		OverlayProfile overlayProfile = ProfileHelper.getOverlayProfileForPerso(perso, true);
+		OverlayProfile overlayProfile = ProfileHelper.getOverlayProfile(overlayProfileFilePath);
 		if (overlayProfile == null) {
 			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Unable to persist");
 			return;

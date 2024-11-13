@@ -29,7 +29,6 @@ public class Activator extends Plugin implements BundleActivator
 		String pathString = folder.getAbsolutePath();
 
 		ProfileHelper.setRootPathPersoFiles(Path.of(pathString));
-		ProfileHelper.getPreferenceStoreAccessorInstance();
 	}
 
 }
