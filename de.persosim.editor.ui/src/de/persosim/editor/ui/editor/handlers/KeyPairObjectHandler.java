@@ -1,6 +1,8 @@
 package de.persosim.editor.ui.editor.handlers;
 
 
+import static org.globaltester.logging.BasicLogger.log;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -224,13 +226,14 @@ public class KeyPairObjectHandler extends AbstractObjectHandler
 	{
 		String overlayProfileFilePath = ProfileHelper.getOverlayProfileFilePathForPerso(perso);
 		if (overlayProfileFilePath == null) {
-			BasicLogger.log(ProfileHelper.class, "Unable to persist. Cannot get Overlay Profile file path for personalization '" + perso.getClass().getSimpleName() + "'.", LogLevel.ERROR);
+			BasicLogger.log(KeyPairObjectHandler.class, "Unable to persist. Cannot get Overlay Profile file path for personalization '" + perso.getClass().getSimpleName() + "'.", LogLevel.ERROR);
 			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Unable to persist");
 			return;
 		}
 
 		OverlayProfile overlayProfile = ProfileHelper.getOverlayProfile(overlayProfileFilePath);
 		if (overlayProfile == null) {
+			BasicLogger.log(KeyPairObjectHandler.class, "Unable to persist. Cannot get Overlay Profile for '" + overlayProfileFilePath + "'.", LogLevel.ERROR);
 			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Unable to persist");
 			return;
 		}
@@ -245,6 +248,7 @@ public class KeyPairObjectHandler extends AbstractObjectHandler
 			}
 		}
 		if (oid == null) {
+			BasicLogger.log(KeyPairObjectHandler.class, "Unable to persist. Cannot get OID for key pair object.", LogLevel.ERROR);
 			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Unable to persist");
 			return;
 		}
@@ -252,6 +256,7 @@ public class KeyPairObjectHandler extends AbstractObjectHandler
 		KeyPairObject existingKeyPairObject = ProfileHelper.findKeyPairObjectExt(masterFile, new OidIdentifier(oid), keyPairObject.isPrivilegedOnly(),
 				keyPairObject.getPrimaryIdentifier().getInteger());
 		if (existingKeyPairObject == null) {
+			BasicLogger.log(KeyPairObjectHandler.class, "Unable to persist. Cannot get key pair object.", LogLevel.ERROR);
 			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Unable to persist");
 			return;
 		}
@@ -260,7 +265,7 @@ public class KeyPairObjectHandler extends AbstractObjectHandler
 			existingKeyPairObject.setKeyPair(keyPairObject.getKeyPair());
 		}
 		catch (AccessDeniedException e) {
-			BasicLogger.logException(ProfileHelper.class, e);
+			BasicLogger.logException(KeyPairObjectHandler.class, e);
 			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Unable to persist:\n" + e.getMessage());
 			return;
 		}
@@ -282,9 +287,12 @@ public class KeyPairObjectHandler extends AbstractObjectHandler
 			Files.write(Path.of(overlayProfileFilePath), jsonSerialized.getBytes(StandardCharsets.UTF_8));
 		}
 		catch (IOException e) {
-			BasicLogger.logException(ProfileHelper.class, e);
+			BasicLogger.logException(KeyPairObjectHandler.class, e);
 			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Unable to persist:\n" + e.getMessage());
+			return;
 		}
+		log(ProfileHelper.class, "Overlay Profile file '" + overlayProfileFilePath + "' updated.", LogLevel.DEBUG);
+
 	}
 
 }
