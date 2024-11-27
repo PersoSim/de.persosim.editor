@@ -102,7 +102,7 @@ public class StandaloneLauncher {
 		});
 
 		MenuItem exportProfile = new MenuItem(fileMenu, SWT.NONE);
-		exportProfile.setText("Export profile");
+		exportProfile.setText("Export profile to JSON");
 		exportProfile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
