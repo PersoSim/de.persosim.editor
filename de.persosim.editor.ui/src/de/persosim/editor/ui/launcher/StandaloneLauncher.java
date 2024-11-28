@@ -41,7 +41,7 @@ public class StandaloneLauncher {
 		setDefault(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY);
 		setDefault(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY);
 
-		System.out.println(Paths.get("config.properties").toFile().getAbsolutePath().toString());
+		System.out.println(Paths.get("config.properties").toFile().getAbsolutePath());
 		System.out.println(Paths.get("config.properties").toFile().exists());
 		Display display = new Display();
 		Shell shell = new Shell(display);
@@ -141,38 +141,7 @@ public class StandaloneLauncher {
 			}
 		});
 
-		Menu profilesMenu = new Menu(topLevelMenu);
-		profilesItem.setMenu(profilesMenu);
-
-		MenuItem profileItem = new MenuItem(profilesMenu, SWT.NONE);
-		profileItem.setText("Default Profile");
-		profileItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				checkAndSave(parent.getShell(), editor);
-				editor.updateContent(Persos.getPerso(0));
-			}
-		});
-
-		int numberOfProfiles = 19;
-		for (int i = 1; i <= numberOfProfiles; i++) {
-			int currentNumber = i;
-			profileItem = new MenuItem(profilesMenu, SWT.NONE);
-			if (i <= 10) {
-				profileItem.setText("Profile " + i);
-			} else if ( i <= 15) {
-				profileItem.setText("ProfileUB " + (i-10));
-			} else {
-				profileItem.setText("ProfileOA " + (i-15));
-			}
-			profileItem.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					checkAndSave(parent.getShell(), editor);
-					editor.updateContent(Persos.getPerso(currentNumber));
-				}
-			});
-		}
+		populateProfilesMenu(parent, editor, topLevelMenu, profilesItem);
 
 		Menu aboutMenu = new Menu(topLevelMenu);
 		aboutItem.setMenu(aboutMenu);
@@ -194,6 +163,102 @@ public class StandaloneLauncher {
 		editor.updateContent(perso);
 
 		parent.addDisposeListener(e -> checkAndSave(parent.getShell(), editor));
+	}
+
+
+	private static void populateProfilesMenu(Composite parent, PersoEditorView editor, Menu topLevelMenu, MenuItem profilesItem)
+	{
+		Menu profilesMenu = new Menu(topLevelMenu);
+		profilesItem.setMenu(profilesMenu);
+
+		// populateProfilesSubMenus(parent, editor, profilesMenu);
+
+		MenuItem profileItem = new MenuItem(profilesMenu, SWT.NONE);
+		profileItem.setText("Default Profile");
+		profileItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				checkAndSave(parent.getShell(), editor);
+				editor.updateContent(Persos.getPerso(0));
+			}
+		});
+		for (int i = 1; i <= Persos.NUMBER_OF_PROFILES_CLASSIC; i++) {
+			int currentNumber = i;
+			profileItem = new MenuItem(profilesMenu, SWT.NONE);
+			profileItem.setText("Profile " + currentNumber);
+			profileItem.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					checkAndSave(parent.getShell(), editor);
+					editor.updateContent(Persos.getPerso(currentNumber));
+				}
+			});
+		}
+		for (int i = 1; i <= Persos.NUMBER_OF_PROFILES_UB; i++) {
+			int currentNumber = i;
+			profileItem = new MenuItem(profilesMenu, SWT.NONE);
+			profileItem.setText("ProfileUB " + currentNumber);
+			profileItem.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					checkAndSave(parent.getShell(), editor);
+					editor.updateContent(Persos.getPerso(currentNumber + Persos.NUMBER_OF_PROFILES_CLASSIC));
+				}
+			});
+		}
+		for (int i = 1; i <= Persos.NUMBER_OF_PROFILES_OA; i++) {
+			int currentNumber = i;
+			profileItem = new MenuItem(profilesMenu, SWT.NONE);
+			profileItem.setText("ProfileOA " + i);
+			profileItem.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					checkAndSave(parent.getShell(), editor);
+					editor.updateContent(Persos.getPerso(currentNumber + Persos.NUMBER_OF_PROFILES_CLASSIC + Persos.NUMBER_OF_PROFILES_UB));
+				}
+			});
+		}
+	}
+
+
+	private static void populateProfilesSubMenus(Composite parent, PersoEditorView editor, Menu profilesMenu)
+	{
+		Menu profileSubMenuBetaPKI = new Menu(profilesMenu);
+		MenuItem profileSubMenuItemBetaPKI = new MenuItem(profilesMenu, SWT.CASCADE);
+		profileSubMenuItemBetaPKI.setText("Beta-PKI");
+		profileSubMenuItemBetaPKI.setMenu(profileSubMenuBetaPKI);
+
+		for (int i = 1; i <= Persos.NUMBER_OF_PROFILES_BETA_PKI; i++) {
+			int currentNumber = i;
+			MenuItem profileSubItemBetaPKI = new MenuItem(profileSubMenuBetaPKI, SWT.NONE);
+			profileSubItemBetaPKI.setText("Profile" + String.format("%02d", i) + "BetaPki");
+			profileSubItemBetaPKI.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					checkAndSave(parent.getShell(), editor);
+					editor.updateContent(Persos.getPerso(currentNumber + Persos.NUMBER_OF_PROFILES_CLASSIC + Persos.NUMBER_OF_PROFILES_UB + Persos.NUMBER_OF_PROFILES_OA));
+				}
+			});
+		}
+
+
+		Menu profileSubMenuTr03124 = new Menu(profilesMenu);
+		MenuItem profileSubMenuItemTR03124 = new MenuItem(profilesMenu, SWT.CASCADE);
+		profileSubMenuItemTR03124.setText("TR-03124");
+		profileSubMenuItemTR03124.setMenu(profileSubMenuTr03124);
+
+		for (int i = 1; i <= Persos.NUMBER_OF_PROFILES_BETA_PKI; i++) {
+			int currentNumber = i;
+			MenuItem profileSubItemBetaTR03124 = new MenuItem(profileSubMenuTr03124, SWT.NONE);
+			profileSubItemBetaTR03124.setText("Profile" + String.format("%02d", i) + "Tr03124");
+			profileSubItemBetaTR03124.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					checkAndSave(parent.getShell(), editor);
+					editor.updateContent(Persos.getPerso(currentNumber + Persos.NUMBER_OF_PROFILES_CLASSIC + Persos.NUMBER_OF_PROFILES_UB + Persos.NUMBER_OF_PROFILES_OA + Persos.NUMBER_OF_PROFILES_BETA_PKI));
+				}
+			});
+		}
 	}
 
 	protected static void openSaveDialog(PersoEditorView editor) {
