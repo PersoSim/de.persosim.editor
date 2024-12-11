@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PersoSim Editor RCP
 Bundle-SymbolicName: de.persosim.editor.rcp;singleton:=true
-Bundle-Version: 1.0.1.qualifier
+Bundle-Version: 1.1.0.qualifier
 Bundle-Vendor: secunet Security Networks AG
 Require-Bundle: 
  jakarta.inject.jakarta.inject-api,
