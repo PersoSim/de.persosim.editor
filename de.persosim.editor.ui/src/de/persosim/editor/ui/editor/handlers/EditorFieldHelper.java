@@ -24,11 +24,16 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 
+import de.persosim.editor.ui.editor.UIHelper;
 import de.persosim.editor.ui.editor.checker.FieldCheckResult;
 import de.persosim.editor.ui.editor.checker.TextFieldChecker;
 import de.persosim.simulator.utils.HexString;
 
 public class EditorFieldHelper {
+
+	private EditorFieldHelper() {
+		// hide implicit public constructor
+	}
 
 	public static void createBinaryField(TreeItem item, boolean mandatory, Composite composite, ObjectModifier modifier,
 			TextFieldChecker checker, String infoText) {
@@ -48,9 +53,8 @@ public class EditorFieldHelper {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
+				FileDialog fd = new FileDialog(UIHelper.getShell(), SWT.OPEN);
 				fd.setText("Open");
-				fd.setFilterPath("C:/");
 				String[] filterExt = { "*.bin", "*.*" };
 				fd.setFilterExtensions(filterExt);
 				String selection = fd.open();
@@ -79,9 +83,8 @@ public class EditorFieldHelper {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
+				FileDialog fd = new FileDialog(UIHelper.getShell(), SWT.SAVE);
 				fd.setText("Save");
-				fd.setFilterPath("C:/");
 				String[] filterExt = { "*.bin", "*.*" };
 				fd.setFilterExtensions(filterExt);
 				String selection = fd.open();
@@ -149,9 +152,9 @@ public class EditorFieldHelper {
 		if (value != null) {
 			field.setText(value);
 		}
-		
+
 		field.setEnabled(editable);
-		
+
 		if (fieldUsed != null) {
 			boolean activationState = modifier.getActivationState();
 			fieldUsed.setSelection(activationState);

@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -84,9 +83,8 @@ public class SignatureSettingsDialog extends Dialog{
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-		        FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
+		        FileDialog fd = new FileDialog(UIHelper.getShell(), SWT.OPEN);
 		        fd.setText("Open");
-		        fd.setFilterPath("C:/");
 		        String[] filterExt = { "*.der", "*.*" };
 		        fd.setFilterExtensions(filterExt);
 		        String selection = fd.open();
@@ -113,9 +111,8 @@ public class SignatureSettingsDialog extends Dialog{
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-		        FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
+		        FileDialog fd = new FileDialog(UIHelper.getShell(), SWT.OPEN);
 		        fd.setText("Open");
-		        fd.setFilterPath("C:/");
 		        String[] filterExt = { "*.pkcs8", "*.*" };
 		        fd.setFilterExtensions(filterExt);
 		        String selection = fd.open();

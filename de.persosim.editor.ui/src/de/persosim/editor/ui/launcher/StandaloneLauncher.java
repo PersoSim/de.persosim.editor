@@ -24,6 +24,7 @@ import de.persosim.editor.ui.editor.AboutDialog;
 import de.persosim.editor.ui.editor.ConfigurationConstants;
 import de.persosim.editor.ui.editor.PersoEditorView;
 import de.persosim.editor.ui.editor.SignatureSettingsDialog;
+import de.persosim.editor.ui.editor.UIHelper;
 import de.persosim.simulator.perso.Personalization;
 import de.persosim.simulator.perso.export.ProfileHelper;
 import de.persosim.simulator.preferences.IniPreferenceStoreAccessor;
@@ -41,8 +42,8 @@ public class StandaloneLauncher {
 		setDefault(ConfigurationConstants.CFG_UPDATE_EF_CARD_SECURITY);
 		setDefault(ConfigurationConstants.CFG_UPDATE_EF_CHIP_SECURITY);
 
-		System.out.println(Paths.get("config.properties").toFile().getAbsolutePath());
-		System.out.println(Paths.get("config.properties").toFile().exists());
+		System.out.println(Paths.get("config.properties").toFile().getAbsolutePath()); // NOSONAR
+		System.out.println(Paths.get("config.properties").toFile().exists()); // NOSONAR
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setText("PersoSim Editor");
@@ -89,9 +90,8 @@ public class StandaloneLauncher {
 			public void widgetSelected(SelectionEvent e) {
 				checkAndSave(parent.getShell(), editor);
 
-				FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
+				FileDialog fd = new FileDialog(UIHelper.getShell(), SWT.OPEN);
 				fd.setText("Open");
-				fd.setFilterPath("C:/");
 				String[] filterExt = { "*.perso", "*.*" };
 				fd.setFilterExtensions(filterExt);
 				String selection = fd.open();
@@ -267,16 +267,17 @@ public class StandaloneLauncher {
 	}
 
 	protected static void openSaveDialog(PersoEditorView editor, String[] filterExt, boolean isExport) {
-		FileDialog fd = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
+		FileDialog fd = new FileDialog(UIHelper.getShell(), SWT.SAVE);
 		fd.setText("Save");
-		fd.setFilterPath(editor.getPath() == null ? "C:/" : editor.getPath().toString());
+		if (editor.getPath() != null)
+			fd.setFilterPath(editor.getPath().toString());
 		if (filterExt != null)
 			fd.setFilterExtensions(filterExt);
 		String selection = fd.open();
 		if (selection != null) {
 			boolean write = true;
 			if (Paths.get(selection).toFile().exists()) {
-				write = MessageDialog.openQuestion(Display.getDefault().getActiveShell(), "File exists",
+				write = MessageDialog.openQuestion(UIHelper.getShell(), "File exists",
 						"Do you want to overwrite the file at " + selection + "?");
 			}
 			if (write) {
