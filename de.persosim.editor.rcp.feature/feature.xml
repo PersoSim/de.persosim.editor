@@ -2,7 +2,7 @@
 <feature
       id="de.persosim.editor.rcp.feature"
       label="PersoSim Editor RCP"
-      version="1.1.1.qualifier"
+      version="1.1.2.qualifier"
       provider-name="secunet Security Networks AG">
 
    <copyright>
