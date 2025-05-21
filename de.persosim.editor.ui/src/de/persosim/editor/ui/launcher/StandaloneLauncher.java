@@ -220,47 +220,6 @@ public class StandaloneLauncher {
 		}
 	}
 
-
-	private static void populateProfilesSubMenus(Composite parent, PersoEditorView editor, Menu profilesMenu)
-	{
-		Menu profileSubMenuBetaPKI = new Menu(profilesMenu);
-		MenuItem profileSubMenuItemBetaPKI = new MenuItem(profilesMenu, SWT.CASCADE);
-		profileSubMenuItemBetaPKI.setText("Beta-PKI");
-		profileSubMenuItemBetaPKI.setMenu(profileSubMenuBetaPKI);
-
-		for (int i = 1; i <= Persos.NUMBER_OF_PROFILES_BETA_PKI; i++) {
-			int currentNumber = i;
-			MenuItem profileSubItemBetaPKI = new MenuItem(profileSubMenuBetaPKI, SWT.NONE);
-			profileSubItemBetaPKI.setText("Profile" + String.format("%02d", i) + "BetaPki");
-			profileSubItemBetaPKI.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					checkAndSave(parent.getShell(), editor);
-					editor.updateContent(Persos.getPerso(currentNumber + Persos.NUMBER_OF_PROFILES_CLASSIC + Persos.NUMBER_OF_PROFILES_UB + Persos.NUMBER_OF_PROFILES_OA));
-				}
-			});
-		}
-
-
-		Menu profileSubMenuTr03124 = new Menu(profilesMenu);
-		MenuItem profileSubMenuItemTR03124 = new MenuItem(profilesMenu, SWT.CASCADE);
-		profileSubMenuItemTR03124.setText("TR-03124");
-		profileSubMenuItemTR03124.setMenu(profileSubMenuTr03124);
-
-		for (int i = 1; i <= Persos.NUMBER_OF_PROFILES_BETA_PKI; i++) {
-			int currentNumber = i;
-			MenuItem profileSubItemBetaTR03124 = new MenuItem(profileSubMenuTr03124, SWT.NONE);
-			profileSubItemBetaTR03124.setText("Profile" + String.format("%02d", i) + "Tr03124");
-			profileSubItemBetaTR03124.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					checkAndSave(parent.getShell(), editor);
-					editor.updateContent(Persos.getPerso(currentNumber + Persos.NUMBER_OF_PROFILES_CLASSIC + Persos.NUMBER_OF_PROFILES_UB + Persos.NUMBER_OF_PROFILES_OA + Persos.NUMBER_OF_PROFILES_BETA_PKI));
-				}
-			});
-		}
-	}
-
 	protected static void openSaveDialog(PersoEditorView editor) {
 		String[] filterExt = { "*.perso", "*.*" };
 		openSaveDialog(editor, filterExt, false);
