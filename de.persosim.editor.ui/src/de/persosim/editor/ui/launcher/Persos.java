@@ -18,9 +18,7 @@ public class Persos
 {
 	public static final int NUMBER_OF_PROFILES_CLASSIC = 11;
 	public static final int NUMBER_OF_PROFILES_UB = 5;
-	public static final int NUMBER_OF_PROFILES_OA = 4;
-	public static final int NUMBER_OF_PROFILES_TR03124 = 1;
-	public static final int NUMBER_OF_PROFILES_ALL = NUMBER_OF_PROFILES_CLASSIC + NUMBER_OF_PROFILES_UB + NUMBER_OF_PROFILES_OA + NUMBER_OF_PROFILES_TR03124;
+	public static final int NUMBER_OF_PROFILES_ALL = NUMBER_OF_PROFILES_CLASSIC + NUMBER_OF_PROFILES_UB;
 
 	private static Personalization selectedInternalPerso = null;
 
@@ -51,11 +49,6 @@ public class Persos
 				perso = getPerso(number, "Profile", null);
 			else if (number > NUMBER_OF_PROFILES_CLASSIC && number <= NUMBER_OF_PROFILES_CLASSIC + NUMBER_OF_PROFILES_UB)
 				perso = getPerso(number - NUMBER_OF_PROFILES_CLASSIC, "ProfileUB", null);
-			else if (number > NUMBER_OF_PROFILES_CLASSIC + NUMBER_OF_PROFILES_UB && number <= NUMBER_OF_PROFILES_CLASSIC + NUMBER_OF_PROFILES_UB + NUMBER_OF_PROFILES_OA)
-				perso = getPerso(number - NUMBER_OF_PROFILES_CLASSIC - NUMBER_OF_PROFILES_UB, "ProfileOA", null);
-			else if (number > NUMBER_OF_PROFILES_CLASSIC + NUMBER_OF_PROFILES_UB + NUMBER_OF_PROFILES_OA
-					&& number <= NUMBER_OF_PROFILES_CLASSIC + NUMBER_OF_PROFILES_UB + NUMBER_OF_PROFILES_OA + NUMBER_OF_PROFILES_TR03124)
-				perso = getPerso(number - NUMBER_OF_PROFILES_CLASSIC - NUMBER_OF_PROFILES_UB - NUMBER_OF_PROFILES_OA, "Profile", "Tr03124");
 			else
 				throw new IllegalArgumentException("Only numbers from 1-" + NUMBER_OF_PROFILES_ALL + " are allowed");
 		}
