@@ -171,8 +171,6 @@ public class StandaloneLauncher {
 		Menu profilesMenu = new Menu(topLevelMenu);
 		profilesItem.setMenu(profilesMenu);
 
-		// populateProfilesSubMenus(parent, editor, profilesMenu);
-
 		MenuItem profileItem = new MenuItem(profilesMenu, SWT.NONE);
 		profileItem.setText("Default Profile");
 		profileItem.addSelectionListener(new SelectionAdapter() {
@@ -203,18 +201,6 @@ public class StandaloneLauncher {
 				public void widgetSelected(SelectionEvent e) {
 					checkAndSave(parent.getShell(), editor);
 					editor.updateContent(Persos.getPerso(currentNumber + Persos.NUMBER_OF_PROFILES_CLASSIC));
-				}
-			});
-		}
-		for (int i = 1; i <= Persos.NUMBER_OF_PROFILES_OA; i++) {
-			int currentNumber = i;
-			profileItem = new MenuItem(profilesMenu, SWT.NONE);
-			profileItem.setText("ProfileOA " + i);
-			profileItem.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					checkAndSave(parent.getShell(), editor);
-					editor.updateContent(Persos.getPerso(currentNumber + Persos.NUMBER_OF_PROFILES_CLASSIC + Persos.NUMBER_OF_PROFILES_UB));
 				}
 			});
 		}
