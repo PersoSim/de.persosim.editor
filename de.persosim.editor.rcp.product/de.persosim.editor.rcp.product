@@ -4,7 +4,7 @@
 <product name="PersoSim Editor RCP" uid="de.persosim.editor.rcp.product"
 	id="de.persosim.editor.rcp.product"
 	application="org.eclipse.e4.ui.workbench.swt.E4Application"
-	version="1.1.1.qualifier" type="mixed" includeLaunchers="true"
+	version="1.1.2.qualifier" type="mixed" includeLaunchers="true"
 	autoIncludeRequirements="true">
 
 	<configIni use="default">
