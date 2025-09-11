@@ -17,6 +17,7 @@ Require-Bundle:
  org.eclipse.e4.core.contexts,
  jakarta.annotation-api,
  de.persosim.simulator,
+ de.persosim.simulator.basics,
  org.globaltester.logging,
  org.eclipse.e4.ui.workbench.swt,
  de.persosim.editor.ui
