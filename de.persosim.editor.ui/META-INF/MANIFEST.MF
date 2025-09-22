@@ -5,11 +5,13 @@ Bundle-SymbolicName: de.persosim.editor.ui;singleton:=true
 Bundle-Version: 1.2.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: secunet Security Networks AG
-Export-Package: de.persosim.editor.ui.editor,
-  de.persosim.editor.ui.editor.checker,
-  de.persosim.editor.ui.editor.handlers,
-  de.persosim.editor.ui.launcher
-Require-Bundle: org.globaltester.cryptoprovider,
+Export-Package: 
+ de.persosim.editor.ui.editor,
+ de.persosim.editor.ui.editor.checker,
+ de.persosim.editor.ui.editor.handlers,
+ de.persosim.editor.ui.launcher
+Require-Bundle: 
+ org.globaltester.cryptoprovider,
  org.eclipse.equinox.registry,
  org.globaltester.simulator,
  org.globaltester.logging,
@@ -19,14 +21,16 @@ Require-Bundle: org.globaltester.cryptoprovider,
  org.eclipse.e4.core.di.annotations,
  org.eclipse.swt,
  de.persosim.simulator,
+ de.persosim.simulator.basics,
  org.eclipse.jface,
  org.globaltester.cryptoprovider.bc,
  org.eclipse.core.runtime,
  org.eclipse.osgi,
  jakarta.annotation-api
 Bundle-RequiredExecutionEnvironment: JavaSE-17
-Import-Package: org.osgi.framework,
-  org.osgi.service.log,
-  org.osgi.util.tracker
+Import-Package: 
+ org.osgi.framework,
+ org.osgi.service.log,
+ org.osgi.util.tracker
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: de.persosim.editor.ui
