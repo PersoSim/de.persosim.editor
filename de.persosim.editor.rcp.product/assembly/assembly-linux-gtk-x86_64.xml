@@ -1,0 +1,23 @@
+<assembly>
+    <id>linux.gtk.x86_64</id>
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+	<fileSets>
+		<fileSet>
+			<excludes>
+				<exclude>PersoSim Editor</exclude>
+			</excludes>
+			<directory>target/products/${project.artifactId}/linux/gtk/x86_64</directory>
+			<outputDirectory />
+		</fileSet>
+		<fileSet>
+			<includes>
+				<include>PersoSim Editor</include>
+			</includes>
+			<fileMode>0755</fileMode>
+			<directory>target/products/${project.artifactId}/linux/gtk/x86_64</directory>
+			<outputDirectory />
+		</fileSet>
+	</fileSets>
+</assembly>

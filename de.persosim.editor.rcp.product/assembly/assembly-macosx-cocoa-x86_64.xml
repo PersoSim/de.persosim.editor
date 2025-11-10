@@ -1,0 +1,23 @@
+<assembly>
+    <id>macosx.cocoa.x86_64</id>
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+	<fileSets>
+		<fileSet>
+			<excludes>
+				<exclude>Contents/MacOS/PersoSim Editor</exclude>
+			</excludes>
+			<directory>target/products/${project.artifactId}/macosx/cocoa/x86_64/PersoSim Editor.app</directory>
+			<outputDirectory>PersoSim Editor.app</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<includes>
+				<include>PersoSim Editor</include>
+			</includes>
+			<fileMode>0755</fileMode>
+			<directory>target/products/${project.artifactId}/macosx/cocoa/x86_64/PersoSim Editor.app/Contents/MacOS</directory>
+			<outputDirectory>PersoSim Editor.app/Contents/MacOS</outputDirectory>
+		</fileSet>
+	</fileSets>
+</assembly>
